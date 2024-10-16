@@ -305,7 +305,7 @@ export default function Index({
                                                                             key={
                                                                                 index
                                                                             }
-                                                                            className="bg-rose-500 text-white px-2 py-1 rounded-full text-sm font-bold my-1"
+                                                                            className="bg-indigo-500 text-white px-2 py-1 rounded-full text-sm font-bold my-1"
                                                                         >
                                                                             {
                                                                                 role.name
