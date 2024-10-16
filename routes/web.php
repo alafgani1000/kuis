@@ -40,7 +40,9 @@ Route::middleware('auth')->group(function () {
 
     // user
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
-    Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::put('/user/{id}/update', [UserController::class, 'update'])->name('user.update');
+    Route::put('user/{id}/change-role', [UserController::class, 'changeRole'])->name('user.change-role');
 
     // role
     Route::get('/roles', [RoleController::class, 'index'])->name('role.index');

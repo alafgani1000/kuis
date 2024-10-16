@@ -171,10 +171,10 @@ export default function Index({
             <Head title="Profile" />
 
             <div className="py-4 lg:py-12 md:py-12">
-                <div className="max-w-screen-2xl mx-auto px-6 lg:px-8 md:px-8 space-y-6">
+                <div className="max-w-full mx-auto px-6 lg:px-8 md:px-8 space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white-400 text-gray-800 p-3 mt-0 mb-4 font-bold border-b border-zinc rounded-t-md text-lg">
+                            <div className="bg-white-400 text-gray-500 p-3 mt-0 mb-4 font-bold border-b border-zinc rounded-t-md text-lg">
                                 Data User
                             </div>
                             <div className="flex justify-end mr-8">
@@ -305,7 +305,7 @@ export default function Index({
                                                                             key={
                                                                                 index
                                                                             }
-                                                                            className="bg-emerald-500 text-white px-2 py-1 rounded-full text-sm font-bold my-1"
+                                                                            className="bg-rose-500 text-white px-2 py-1 rounded-full text-sm font-bold my-1"
                                                                         >
                                                                             {
                                                                                 role.name
@@ -324,7 +324,7 @@ export default function Index({
                                                                         user
                                                                     );
                                                                 }}
-                                                                className="bg-blue-500 py-1 px-2 rounded text-white font-bold"
+                                                                className="bg-yellow-400 py-1 px-2 rounded text-gray-200 font-bold"
                                                             >
                                                                 <i className="bi bi-pencil-fill"></i>
                                                             </button>
@@ -334,7 +334,7 @@ export default function Index({
                                                                         user
                                                                     )
                                                                 }
-                                                                className="bg-slate-600 py-1 px-2 rounded text-white font-bold"
+                                                                className="bg-rose-500 py-1 px-2 rounded text-white font-bold"
                                                             >
                                                                 <i className="bi bi-wrench-adjustable-circle-fill"></i>
                                                             </button>

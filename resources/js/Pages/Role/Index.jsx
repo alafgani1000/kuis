@@ -132,7 +132,7 @@ export default function Index({ auth, roles, pgSearch, pgSort, pgPerPage }) {
             <Head title="Role" />
 
             <div className="py-4 lg:py-12 md:py-12">
-                <div className="max-w-screen-2xl mx-auto px-6 lg:px-8 md:px-8 space-y-6">
+                <div className="max-w-full mx-auto px-6 lg:px-8 md:px-8 space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
                             <div className="bg-white p-3 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
@@ -233,7 +233,7 @@ export default function Index({ auth, roles, pgSearch, pgSort, pgPerPage }) {
                                                                         role
                                                                     );
                                                                 }}
-                                                                className="bg-yellow-500 px-3 py-2 text-white text-sm rounded"
+                                                                className="bg-yellow-500 px-2 py-1 text-white text-sm rounded"
                                                             >
                                                                 <i className="bi bi-pencil-square"></i>
                                                             </button>
@@ -243,7 +243,7 @@ export default function Index({ auth, roles, pgSearch, pgSort, pgPerPage }) {
                                                                         role
                                                                     );
                                                                 }}
-                                                                className="bg-rose-600 px-3 py-2 text-white text-sm rounded"
+                                                                className="bg-rose-600 px-2 py-1 text-white text-sm rounded"
                                                             >
                                                                 <i className="bi bi-trash3-fill"></i>
                                                             </button>

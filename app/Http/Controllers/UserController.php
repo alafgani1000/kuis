@@ -42,11 +42,18 @@ class UserController extends Controller
             'role' => ['required']
         ]);
 
+        if ($request->status == false) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'active' => $active,
         ]);
         $user->assignRole($request->role);
         return "Create User Success";
@@ -55,6 +62,13 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::find($id);
+
+        if ($request->status == false) {
+            $active = 0;
+        } else {
+            $active = 1;
+        }
+
         if ($user->hasRole($request->role)) {
             // role sama
             if (isset($request->password)) {
@@ -63,34 +77,38 @@ class UserController extends Controller
                     'name' => $request->name,
                     'username' => $request->username,
                     'email' => $request->email,
-                    'password' => Hash::make($request->password)
+                    'password' => Hash::make($request->password),
+                    'active' => $active,
                 ]);
             } else {
                 // password tidak diganti
                 $user = User::where('id',$id)->update([
                     'name' => $request->name,
                     'username' => $request->username,
-                    'email' => $request->email
+                    'email' => $request->email,
+                    'active' => $active,
                 ]);
             }
         } else {
             // role beda
             if (isset($request->password)) {
                 // password di ganti
-                $user = User::where('id',$id)->update([
+                $update = User::where('id',$id)->update([
                     'name' => $request->name,
                     'username' => $request->username,
                     'email' => $request->email,
-                    'password' => Hash::make($request->password)
+                    'password' => Hash::make($request->password),
+                    'active' => $active,
                 ]);
                 $user->removeRole($user->roles[0]);
                 $user->assignRole($request->role);
             } else {
                 // password tidak diganti
-                $user = User::where('id',$id)->update([
+                $update = User::where('id',$id)->update([
                     'name' => $request->name,
                     'username' => $request->username,
-                    'email' => $request->email
+                    'email' => $request->email,
+                    'active' => $active,
                 ]);
                 $user->removeRole($user->roles[0]);
                 $user->assignRole($request->role);
@@ -106,5 +124,21 @@ class UserController extends Controller
             $dataUser->removeRole($dataUser->roles()->first()->name);
         }
         $dataUser->assignRole($request->role);
+    }
+
+    public function delete($id)
+    {
+        $user = User::where('id', $id)->first();
+        $perjanjians = Perjanjian::where('user_created',$user->id)->first();
+        if (is_null($perjanjians)) {
+            $user->roles->each(function($role, $index) {
+                $user->removeRole($role->name);
+            });
+            $user->delete();
+            return 'User Deleted';
+        } else {
+            return 'Delete Fail';
+        }
+
     }
 }
