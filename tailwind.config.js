@@ -14,6 +14,8 @@ export default {
         extend: {
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                lexend: ["Lexend"],
+                pacifico: ["Pacifico"],
             },
         },
         screens: {
@@ -22,6 +24,9 @@ export default {
             lg: "1024px",
             xl: "1280px",
             "2xl": "1536px",
+        },
+        backgroundImage: {
+            landing: "url('/images/bg1.jpg')",
         },
     },
 

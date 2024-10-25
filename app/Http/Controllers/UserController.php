@@ -22,13 +22,15 @@ class UserController extends Controller
         $roles = Role::orderBy('name','asc')->get();
         $users = User::with('roles')->where(function (Builder $query) use($search) {
             return $query->where('name', 'like', '%'.$search.'%')
-                        ->orWhere('email', 'like', '%'.$search.'%');
+                        ->orWhere('email', 'like', '%'.$search.'%')
+                        ->orWhere('username', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
         return Inertia::render('User/Index', [
             'users' => $users,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
             'roles' => $roles,
+            'pgSort' => $sort,
         ]);
     }
 

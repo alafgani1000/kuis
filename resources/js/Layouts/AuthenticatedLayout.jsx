@@ -10,16 +10,13 @@ export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const { user, role, permission } = auth;
-    console.log(auth);
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* side bar */}
             <div
                 className={
                     "md:flex flex-col w-64 h-screen bg-slate-800 sticky top-0 text-white " +
-                    (showingNavigationDropdown === false
-                        ? "hidden"
-                        : "fixed z-50")
+                    (showingNavigationDropdown === false ? "hidden" : "flex")
                 }
             >
                 <div className="overflow-auto mb-20">

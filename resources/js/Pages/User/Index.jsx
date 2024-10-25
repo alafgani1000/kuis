@@ -232,7 +232,7 @@ export default function Index({
                                                 </option>
                                             </select>
                                         </div>
-                                        <div className="flex items-center space-x-2 bg-white rounded-md ps-3 md:mb-2 mb-2">
+                                        <div className="flex items-center space-x-2 bg-white rounded-md ps-3 md:mb-2 mb-2 lg:w-96">
                                             <span className="text-sm text-slate-400">
                                                 <i className="bi bi-search"></i>
                                             </span>
@@ -324,9 +324,9 @@ export default function Index({
                                                                         user
                                                                     );
                                                                 }}
-                                                                className="bg-yellow-400 py-1 px-2 rounded text-gray-200 font-bold"
+                                                                className="bg-yellow-500 py-1 px-2 rounded text-gray-900 font-bold"
                                                             >
-                                                                <i className="bi bi-pencil-fill"></i>
+                                                                <i className="bi bi-pencil-square"></i>
                                                             </button>
                                                             <button
                                                                 onClick={() =>
@@ -367,7 +367,7 @@ export default function Index({
                                                             </Link>
                                                         ) : (
                                                             <Link
-                                                                href={`${link.url}&search=${search}&perPage=${perPage}`}
+                                                                href={`${link.url}&search=${search}&perPage=${perPage}&sort=${sort}`}
                                                                 className="flex items-center justify-center px-2 py-1 text-sm lg:text-base md:px-3 md:py-2"
                                                                 disabled
                                                             >
