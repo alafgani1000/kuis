@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('summary');
             $table->integer('score');
-            $table->date('start_at');
-            $table->date('end_at');
+            $table->dateTime('start_at');
+            $table->dateTime('end_at');
             $table->integer('published')->nullable();
-            $table->intger('published_at')->nullable();
+            $table->integer('published_at')->nullable();
             $table->timestamps();
         });
     }
