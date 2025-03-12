@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\TypeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -61,6 +62,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/role-permission', [RolePermissionController::class, 'store'])->name('role-perms.store');
     Route::post('/role-permission-revoke', [RolePermissionController::class, 'revoke'])->name('role-perms.revoke');
     Route::get('/role-permission/{id}/data', [RolePermissionCOntroller::class, 'dataPermission'])->name('role-perms.data');
+
+    // Type
+    Route::get('/types', [TypeController::class, 'index'])->name('type.index');
+    Route::post('/type', [TypeController::class, 'store'])->name('type.store');
+    Route::put('/type/{id}/update', [TypeController::class, 'update'])->name('type.update');
+    Route::delete('/type/{id}/delete', [TypeController::class, 'delete'])->name('type.delete');
+
 });
 
 require __DIR__.'/auth.php';
