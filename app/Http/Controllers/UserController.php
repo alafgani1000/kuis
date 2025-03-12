@@ -22,8 +22,7 @@ class UserController extends Controller
         $roles = Role::orderBy('name','asc')->get();
         $users = User::with('roles')->where(function (Builder $query) use($search) {
             return $query->where('name', 'like', '%'.$search.'%')
-                        ->orWhere('email', 'like', '%'.$search.'%')
-                        ->orWhere('username', 'like', '%'.$search.'%');
+                        ->orWhere('email', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
         return Inertia::render('User/Index', [
             'users' => $users,
@@ -38,7 +37,6 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'username' => 'required|unique:'.User::class,
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'same:repassword'],
             'role' => ['required']
@@ -52,7 +50,6 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'active' => $active,
@@ -77,7 +74,6 @@ class UserController extends Controller
                 // password di ganti
                 $user = User::where('id',$id)->update([
                     'name' => $request->name,
-                    'username' => $request->username,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'active' => $active,
@@ -86,7 +82,6 @@ class UserController extends Controller
                 // password tidak diganti
                 $user = User::where('id',$id)->update([
                     'name' => $request->name,
-                    'username' => $request->username,
                     'email' => $request->email,
                     'active' => $active,
                 ]);
@@ -97,7 +92,6 @@ class UserController extends Controller
                 // password di ganti
                 $update = User::where('id',$id)->update([
                     'name' => $request->name,
-                    'username' => $request->username,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'active' => $active,
@@ -108,7 +102,6 @@ class UserController extends Controller
                 // password tidak diganti
                 $update = User::where('id',$id)->update([
                     'name' => $request->name,
-                    'username' => $request->username,
                     'email' => $request->email,
                     'active' => $active,
                 ]);

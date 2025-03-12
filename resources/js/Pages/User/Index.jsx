@@ -24,7 +24,6 @@ export default function Index({
     });
     const [modalCreate, setModalCreate] = useState(false);
     const [formData, setFormData] = useState({});
-    const [username, setUsername] = useState("");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -112,7 +111,6 @@ export default function Index({
         setIsEdit(true);
         setIdEdit(data.id);
         setName(data.name);
-        setUsername(data.username);
         setEmail(data.email);
         setRole(data?.roles[0]?.name);
         setModalTitle("Edit User");
@@ -145,7 +143,6 @@ export default function Index({
         setIsEdit(false);
         setIdEdit("");
         setName("");
-        setUsername("");
         setEmail("");
         setRole("");
     };
@@ -163,7 +160,7 @@ export default function Index({
         <AuthenticatedLayout
             auth={auth}
             header={
-                <h2 className="font-semibold text-xl text-gray-500 leading-tight bg-blue-">
+                <h2 className="font-semibold text-xl text-gray-700 leading-tight bg-blue-">
                     User
                 </h2>
             }
@@ -174,7 +171,7 @@ export default function Index({
                 <div className="max-w-full mx-auto px-6 lg:px-8 md:px-8 space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white-400 text-gray-500 p-3 mt-0 mb-4 font-bold border-b border-zinc rounded-t-md text-lg">
+                            <div className="bg-white-400 text-gray-700 p-3 mt-0 mb-4 font-bold border-b border-zinc rounded-t-md text-lg">
                                 Data User
                             </div>
                             <div className="flex justify-end mr-8">
@@ -256,9 +253,6 @@ export default function Index({
                                             <th className="text-left py-4">
                                                 Name
                                             </th>
-                                            <th className="text-left py-4">
-                                                Username
-                                            </th>
                                             <th className="py-4 text-left hidden md:block lg:block sm:block align-middle">
                                                 Email
                                             </th>
@@ -279,9 +273,6 @@ export default function Index({
                                                 >
                                                     <td className="text-center py-3">
                                                         {user.id}
-                                                    </td>
-                                                    <td className="text-left py-3">
-                                                        {user.username}
                                                     </td>
                                                     <td>
                                                         <span>{user.name}</span>
@@ -486,17 +477,6 @@ export default function Index({
                         <h2 className="text-lg font-medium text-gray-900">
                             {modalTitle}
                         </h2>
-                        <div className="grid mt-4">
-                            <label className="mb-2">Username:</label>
-                            <input
-                                type="text"
-                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                                onChange={(e) => {
-                                    setUsername(e.target.value);
-                                }}
-                                value={username}
-                            />
-                        </div>
                         <div className="grid mt-4">
                             <label className="mb-2">Name:</label>
                             <input
