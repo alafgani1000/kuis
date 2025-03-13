@@ -147,7 +147,7 @@ export default function Authenticated({ auth, header, children }) {
                         </div>
                         <div className="flex ms-4 md:ms-6 items-center">
                             <Link
-                                className="flex me-2 font-medium py-1 px-2 rounded text-sm text-white bg-sky-950"
+                                className="flex me-2 font-medium py-1 px-2 rounded text-sm text-white bg-sky-500"
                                 href={route("role.index")}
                             >
                                 <i className="bi bi-book me-2 text-white"></i>
