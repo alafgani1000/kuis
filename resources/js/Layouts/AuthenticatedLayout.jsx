@@ -15,17 +15,16 @@ export default function Authenticated({ auth, header, children }) {
             {/* side bar */}
             <div
                 className={
-                    "md:flex flex-col w-64 h-screen bg-slate-800 sticky top-0 text-white " +
+                    "md:flex flex-col w-64 h-screen bg-white sticky top-0 text-gray-700 " +
                     (showingNavigationDropdown === false ? "hidden" : "flex")
                 }
             >
-                <div className="overflow-auto mb-20">
-                    <div className="flex w-full justify-between px-6 py-5">
-                        {/* <Link className="me-2" href="/">
-                                <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                            </Link> */}
-
-                        <h2 className="text-3xl">Regrinding </h2>
+                <div className="overflow-auto">
+                    <div className="flex w-full justify-between px-6 py-8">
+                        {/* <h2 className="text-2xl">Regrinding </h2> */}
+                        <Link className="mx-4" href="/">
+                            <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                        </Link>
 
                         {showingNavigationDropdown === true ? (
                             <button
@@ -41,7 +40,7 @@ export default function Authenticated({ auth, header, children }) {
                     </div>
 
                     {/* side bar menu */}
-                    <div className="mt-2 px-8 text-base">
+                    <div className="px-8 text-base">
                         <NavLink
                             className="ms-2"
                             href={route("dashboard")}
@@ -51,7 +50,7 @@ export default function Authenticated({ auth, header, children }) {
                             Dashboard
                         </NavLink>
                     </div>
-                    <div className="divider px-4 mt-8 text-xs text-gray-400 font-medium bg-slate-900 py-2 mx-6 rounded">
+                    <div className="divider px-4 mt-8 text-sm text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
                         <i className="bi bi-app-indicator me-2"></i>Main apps
                     </div>
                     <div className="py-4 px-8 text-base grid space-y-4">
@@ -73,7 +72,7 @@ export default function Authenticated({ auth, header, children }) {
                             Regrinding
                         </NavLink>
                     </div>
-                    <div className="divider px-4 mt-6 text-xs text-gray-400 font-medium bg-slate-900 py-2 mx-6 rounded">
+                    <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
                         <i className="bi bi-app me-2"></i>Master data
                     </div>
                     <div className="py-4 px-8 text-base grid space-y-4">
@@ -87,7 +86,7 @@ export default function Authenticated({ auth, header, children }) {
                         </NavLink>
                     </div>
 
-                    <div className="divider px-4 mt-6 text-xs text-gray-400 font-medium bg-slate-900 py-2 mx-6 rounded">
+                    <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
                         <i className="bi bi-gear-wide-connected me-2"></i>
                         Settings
                     </div>
@@ -128,15 +127,15 @@ export default function Authenticated({ auth, header, children }) {
                         </NavLink>
                     </div>
                 </div>
-                <div className="absolute bottom-2 my-4 mx-4 px-2 py-2 rounded text-xs font-semibold text-slate-400 bg-slate-950">
+                <div className="absolute bottom-2 my-4 mx-8 px-2 py-2 rounded text-xs font-semibold text-slate-400 bg-slate-300">
                     &copy; Yasunaga Indonesia 2024
                 </div>
             </div>
 
             {/* nav bar */}
-            <div className="flex flex-col flex-1">
+            <div className="flex flex-col mx-auto w-full max-w-screen-2xl my-4">
                 <div className="sticky top-0 z-50">
-                    <nav className="bg-white border-b border-gray-100 flex py-4 pe-8">
+                    <nav className="bg-white border-b border-gray-100 flex py-4 pe-8 rounded">
                         <div className="md:hidden px-5">
                             <button
                                 onClick={() =>
@@ -146,12 +145,13 @@ export default function Authenticated({ auth, header, children }) {
                                 <i className="bi bi-list text-2xl"></i>
                             </button>
                         </div>
-                        <div className="flex ms-4 md:ms-8 items-center">
+                        <div className="flex ms-4 md:ms-6 items-center">
                             <Link
-                                className="flex me-2 font-medium py-1 px-2 rounded text-sm bg-blue-500 text-gray-100"
+                                className="flex me-2 font-medium py-1 px-2 rounded text-sm text-white bg-sky-950"
                                 href={route("role.index")}
                             >
-                                <i className="bi bi-book me-2"></i>Panduan
+                                <i className="bi bi-book me-2 text-white"></i>
+                                Panduan
                             </Link>
                         </div>
                         <div className="flex sm:ms-6 w-full justify-end">
@@ -219,13 +219,13 @@ export default function Authenticated({ auth, header, children }) {
                         </div>
                     </nav>
 
-                    {header && (
-                        <header className="bg-white shadow">
-                            <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                    {/* {header && (
+                        <header className="bg-white">
+                            <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8 text-lg font-semibold">
                                 {header}
                             </div>
                         </header>
-                    )}
+                    )} */}
                 </div>
 
                 <main className="overflow-auto">{children}</main>

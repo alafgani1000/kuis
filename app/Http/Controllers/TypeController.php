@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
+use Inertia\Response;
 use App\Models\Type;
+
 
 class TypeController extends Controller
 {
@@ -15,7 +20,7 @@ class TypeController extends Controller
         $types = Type::where(function (Builder $query) use($search) {
             return $query->where('name', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
-        return Inertia::render('Type/Index', [
+        return Inertia::render('Type/Type', [
             'types' => $types,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
