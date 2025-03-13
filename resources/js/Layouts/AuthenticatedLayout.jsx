@@ -50,7 +50,7 @@ export default function Authenticated({ auth, header, children }) {
                             Dashboard
                         </NavLink>
                     </div>
-                    <div className="divider px-4 mt-8 text-sm text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
+                    <div className="divider px-4 mt-8 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
                         <i className="bi bi-app-indicator me-2"></i>Main apps
                     </div>
                     <div className="py-4 px-8 text-base grid space-y-4">
