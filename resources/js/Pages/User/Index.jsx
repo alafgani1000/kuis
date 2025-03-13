@@ -168,10 +168,10 @@ export default function Index({
             <Head title="Profile" />
 
             <div className="py-4 lg:py-12 md:py-12">
-                <div className="max-w-full mx-auto px-6 lg:px-8 md:px-8 space-y-6">
+                <div className="max-w-full mx-auto space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white-400 text-gray-700 p-3 mt-0 mb-4 font-bold border-b border-zinc rounded-t-md text-lg">
+                            <div className="bg-white-400 text-gray-700 py-3 px-6 mt-0 mb-4 font-bold border-b border-zinc rounded-t-md text-lg">
                                 Data User
                             </div>
                             <div className="flex justify-end mr-8">
@@ -179,7 +179,7 @@ export default function Index({
                                     onClick={() => {
                                         createUser();
                                     }}
-                                    className="border py-2 px-3 bg-blue-500 hover:text-white hover:bg-blue-600 hover:border-blue-500 rounded-md text-white text-sm"
+                                    className="py-2 px-3 bg-sky-950 hover:text-white hover:bg-sky-900 hover:border-sky-900 rounded text-white text-sm"
                                 >
                                     <span className="text-xs mr-2">
                                         <i className="bi bi-plus-square"></i>
@@ -296,7 +296,7 @@ export default function Index({
                                                                             key={
                                                                                 index
                                                                             }
-                                                                            className="bg-indigo-500 text-white px-2 py-1 rounded-full text-sm font-bold my-1"
+                                                                            className="bg-blue-400 text-white px-2 py-1 rounded-full text-sm font-bold my-1"
                                                                         >
                                                                             {
                                                                                 role.name
@@ -315,7 +315,7 @@ export default function Index({
                                                                         user
                                                                     );
                                                                 }}
-                                                                className="bg-yellow-500 py-1 px-2 rounded text-gray-900 font-bold"
+                                                                className="bg-yellow-500 py-1 px-2 rounded text-white font-bold"
                                                             >
                                                                 <i className="bi bi-pencil-square"></i>
                                                             </button>

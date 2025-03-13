@@ -131,10 +131,10 @@ export default function Index({
             <Head title="Role" />
 
             <div className="py-4 lg:py-12 md:py-12">
-                <div className="max-w-full mx-auto px-6 lg:px-8 md:px-8 space-y-6">
+                <div className="max-w-full mx-auto space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white p-3 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
+                            <div className="bg-white py-3 px-6 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
                                 Assigning Permissions to Roles
                             </div>
                             {/* <div className="flex justify-end mr-8"></div> */}
@@ -372,7 +372,7 @@ export default function Index({
                             <div className="grid justify-end mt-4">
                                 <button
                                     type="submit"
-                                    className="border border-blue-500 py-2 px-4 rounded-md text-sm bg-blue-500 text-white hover:bg-blue-600"
+                                    className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
                                 >
                                     Set
                                 </button>

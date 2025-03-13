@@ -135,13 +135,13 @@ export default function Index({ auth, roles, pgSearch, pgSort, pgPerPage }) {
                 <div className="max-w-full mx-auto space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white p-3 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
+                            <div className="bg-white py-3 px-6 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
                                 Data Role
                             </div>
                             <div className="flex justify-end mr-8">
                                 <button
                                     onClick={showModalCreate}
-                                    className="border border-blue-500 py-2 px-3 bg-blue-500 hover:text-white hover:bg-blue-600 hover:border-blue-600 rounded text-white text-sm"
+                                    className="border-sky-950 py-2 px-3 bg-sky-950 hover:text-white hover:bg-sky-900 hover:border-sky-900 rounded text-white text-sm"
                                 >
                                     <span className="text-sm mr-2">
                                         <i className="bi bi-plus-square"></i>

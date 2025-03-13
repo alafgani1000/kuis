@@ -127,7 +127,7 @@ export default function Authenticated({ auth, header, children }) {
                         </NavLink>
                     </div>
                 </div>
-                <div className="absolute bottom-2 my-4 mx-8 px-2 py-2 rounded text-xs font-semibold text-slate-400 bg-slate-300">
+                <div className="absolute bottom-2 my-4 mx-8 px-2 py-2 rounded text-xs font-semibold text-slate-600 bg-gray-300">
                     &copy; Yasunaga Indonesia 2024
                 </div>
             </div>
