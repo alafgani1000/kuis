@@ -22,8 +22,9 @@ export default function Authenticated({ auth, header, children }) {
                 <div className="overflow-auto">
                     <div className="flex w-full justify-between px-6 py-8">
                         {/* <h2 className="text-2xl">Regrinding </h2> */}
-                        <Link className="mx-4" href="/">
-                            <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                        <Link className="mx-4 flex" href="/">
+                            <div>Q</div>
+                            <ApplicationLogo className="block h-12 w-auto fill-current text-gray-800" />
                         </Link>
 
                         {showingNavigationDropdown === true ? (
