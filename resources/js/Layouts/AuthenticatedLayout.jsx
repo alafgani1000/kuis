@@ -134,7 +134,7 @@ export default function Authenticated({ auth, header, children }) {
             </div>
 
             {/* nav bar */}
-            <div className="flex flex-col mx-auto w-full max-w-screen-2xl my-4">
+            <div className="flex flex-col mx-auto w-full max-w-screen-2xl my-4 px-0 xl:px-10 lg:px-10 md:px-10">
                 <div className="sticky top-0 z-50">
                     <nav className="bg-white border-b border-gray-100 flex py-4 pe-8 rounded">
                         <div className="md:hidden px-5">
