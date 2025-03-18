@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\TypeController;
+use App\Http\Controllers\QuestionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -68,6 +69,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/type', [TypeController::class, 'store'])->name('type.store');
     Route::put('/type/{id}/update', [TypeController::class, 'update'])->name('type.update');
     Route::delete('/type/{id}/delete', [TypeController::class, 'delete'])->name('type.delete');
+
+    // Question
+    Route::get('/question', [QuestionController::class, 'index'])->name('question.index');
+    Route::post('/question', [QuestionController::class, 'store'])->name('question.store');
+    Route::put('/question/{id}/update', [QuestionController::class, 'update'])->name('question.update');
+    Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
 
 });
 

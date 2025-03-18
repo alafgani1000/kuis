@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Question;
+use App\Models\Type;
 use App\Models\Answer;
 
 class QuestionController extends Controller
@@ -21,11 +22,13 @@ class QuestionController extends Controller
         $questions = Question::where(function (Builder $query) use($search) {
             return $query->where('question', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
-        return Inertia::render('Question/Index', [
-            'question' => $question,
+        $types = Type::all();
+        return Inertia::render('Question/Question', [
+            'questions' => $questions,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
-            'pgSort' => $sort
+            'pgSort' => $sort,
+            'types' => $types
         ]);
     }
 

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('type_id');
             $table->text('question');
             $table->tinyInteger('active');
-            $table->integer('score');
             $table->timestamps();
         });
     }

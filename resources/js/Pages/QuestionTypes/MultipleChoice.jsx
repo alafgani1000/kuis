@@ -1,4 +1,4 @@
-export default function MultipeChoice({ question }) {
+export default function MultipleChoice({ question }) {
     return (
         <div key={question.id} className="text-xl">
             <div>{question.question} ?</div>

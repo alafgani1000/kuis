@@ -4,19 +4,29 @@ import { Head, Link, router, useForm } from "@inertiajs/react";
 import parse from "html-react-parser";
 import Modal from "@/Components/Modal";
 import axios from "axios";
+import QuestionType from "./QuestionType";
 
-export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
+export default function Question({
+    auth,
+    questions,
+    pgSearch,
+    pgSort,
+    pgPerPage,
+}) {
     const [search, setSearch] = useState(pgSearch || "");
     const [sort, setSort] = useState(pgSort || "");
     const [perPage, setPerPage] = useState(pgPerPage || 10);
     const [wasSearch, setWasSearch] = useState(false);
     const [modalCreate, setModalCreate] = useState(false);
     const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
-    const [name, setName] = useState("");
+    const [question, setQuestion] = useState("");
+    const [active, setActive] = useState(false);
+    const [score, setScore] = useState(0);
     const [id, setId] = useState("");
     const [idDelete, setIdDelete] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [formTitle, setFormTitle] = useState("Create Type Quiz Question");
+    const [formTitle, setFormTitle] = useState("Create Question");
+    const [questionType, setQuestionType] = useState("");
 
     const handleSearch = () => {
         // handle search
@@ -44,33 +54,13 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
         );
     };
 
-    const handleEdit = (data) => {
-        setName(data.name);
-        setId(data.id);
-        setIsEdit(true);
-        setModalCreate(true);
-        setFormTitle("Update Type");
-    };
-
     useEffect(() => {
         handleSearch();
     }, [search, sort, perPage]);
 
-    const closeModal = () => {
-        setModalCreate(false);
-        setName("");
-        setId("");
-        setIsEdit(false);
-        setFormTitle("Create New Type Quiz Question");
-    };
-
     const closeModalDelete = () => {
         setModalConfirmDelete(false);
         setIdDelete("");
-    };
-
-    const showModalCreate = () => {
-        setModalCreate(true);
     };
 
     const confirmDeleteType = (data) => {
@@ -91,39 +81,18 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
             });
     };
 
-    const saveType = (e) => {
-        e.preventDefault();
-        if (isEdit === false) {
-            axios
-                .post("/type", {
-                    name: name,
-                })
-                .then((res) => {
-                    handleRefresh();
-                    closeModal();
-                })
-                .catch((error) => {
-                    console.log(error.response.data);
-                });
-        } else if (isEdit === true) {
-            axios
-                .put(`/type/${id}/update`, {
-                    name: name,
-                })
-                .then((res) => {
-                    handleRefresh();
-                    closeModal();
-                })
-                .catch((error) => {
-                    console.log(error.response.data);
-                });
-        }
+    const showFormCreate = () => {
+        setModalCreate(true);
+    };
+
+    const closeModalCreate = () => {
+        setModalCreate(false);
     };
 
     return (
         <AuthenticatedLayout
             auth={auth}
-            header={<h2 className="leading-tight">Type</h2>}
+            header={<h2 className="leading-tight">Question</h2>}
         >
             <Head title="Role" />
 
@@ -132,17 +101,17 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
                             <div className="bg-white py-3 px-6 mt-0 mb-4 text-gray-700 font-bold border-b border-zinc rounded-t-md text-lg">
-                                Data Type
+                                Data Question
                             </div>
                             <div className="flex justify-end mr-8">
                                 <button
-                                    onClick={showModalCreate}
+                                    onClick={() => showFormCreate()}
                                     className="border-blue-950 py-2 px-2.5 bg-sky-950 hover:text-white hover:bg-sky-900 hover:border-sky-900 rounded text-white text-sm"
                                 >
                                     <span className="text-sm mr-2">
                                         <i className="bi bi-plus-square"></i>
                                     </span>
-                                    New Type
+                                    New Question
                                 </button>
                             </div>
                             <div className="lg:mx-8 md:mx-8 mx-0 my-8 border border-zinc-100 md:rounded-lg lg:rounded-lg">
@@ -179,7 +148,7 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                                                 className="py-2 bg-white border-none focus:outline-none focus:border-white focus:ring-white block rounded-md text-base focus:ring-0 text-gray-500 w-full"
                                             >
                                                 <option value="name">
-                                                    Name
+                                                    Question
                                                 </option>
                                             </select>
                                         </div>
@@ -204,7 +173,13 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                                     <thead className="bg-zinc-100 p-2">
                                         <tr className="p-8">
                                             <th className="text-left py-4 px-4">
-                                                Name
+                                                Question
+                                            </th>
+                                            <th className="text-left py-4 px-4">
+                                                Active
+                                            </th>
+                                            <th className="text-left py-4 px-4">
+                                                Score
                                             </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
@@ -212,48 +187,49 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {types.data.map((type, index) => {
-                                            return (
-                                                <tr
-                                                    className="border-t last:border-b"
-                                                    key={index}
-                                                >
-                                                    <td className="text-left py-3 px-4">
-                                                        {type.name}
-                                                    </td>
-                                                    <td className="content-center">
-                                                        <div className="flex flex-wrap space-x-1">
-                                                            <button
-                                                                onClick={() => {
-                                                                    handleEdit(
-                                                                        type
-                                                                    );
-                                                                }}
-                                                                className="bg-yellow-500 px-2 py-1 text-white text-sm rounded"
-                                                            >
-                                                                <i className="bi bi-pencil-square"></i>
-                                                            </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    confirmDeleteType(
-                                                                        type
-                                                                    );
-                                                                }}
-                                                                className="bg-rose-600 px-2 py-1 text-white text-sm rounded"
-                                                            >
-                                                                <i className="bi bi-trash3-fill"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
+                                        {questions.data.map(
+                                            (question, index) => {
+                                                return (
+                                                    <tr
+                                                        className="border-t last:border-b"
+                                                        key={index}
+                                                    >
+                                                        <td className="text-left py-3 px-4">
+                                                            {question.question}
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {question.active}
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {question.score}
+                                                        </td>
+                                                        <td className="content-center">
+                                                            <div className="flex flex-wrap space-x-1">
+                                                                <button className="bg-yellow-500 px-2 py-1 text-white text-sm rounded">
+                                                                    <i className="bi bi-pencil-square"></i>
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        confirmDeleteType(
+                                                                            question
+                                                                        );
+                                                                    }}
+                                                                    className="bg-rose-600 px-2 py-1 text-white text-sm rounded"
+                                                                >
+                                                                    <i className="bi bi-trash3-fill"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }
+                                        )}
                                     </tbody>
                                 </table>
                                 {/* pagination */}
                                 <div className="hidden mt-4 mb-4 w-full md:block md:w-auto">
                                     <ul className="flex justify-center items-center -space-x-px text-base h-10">
-                                        {types.links.map((link, index) => {
+                                        {questions.links.map((link, index) => {
                                             return (
                                                 <li
                                                     key={index}
@@ -300,21 +276,20 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                                     <div className="grid grid-cols-2 text-sm md:grid-cols-2 lg:grid-cols-2 md:text-base lg:text-base space-x-4 my-4 mx-8">
                                         <div className="flex justify-start text-zinc-600 ">
                                             <span className="py-2 px-2 bg-zinc-100 rounded">
-                                                Page {types.current_page}
-                                                &nbsp; from {
-                                                    types.last_page
-                                                }{" "}
+                                                Page {questions.current_page}
+                                                &nbsp; from{" "}
+                                                {questions.last_page}{" "}
                                             </span>{" "}
                                         </div>
                                         <div className="flex justify-start space-x-4">
                                             <Link
-                                                href={`${types.prev_page_url}&search=${search}&perPage=${perPage}`}
+                                                href={`${questions.prev_page_url}&search=${search}&perPage=${perPage}`}
                                                 className="border py-2 px-4 rounded-md hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                                             >
                                                 Prev
                                             </Link>
                                             <Link
-                                                href={`${types.next_page_url}&search=${search}&perPage=${perPage}`}
+                                                href={`${questions.next_page_url}&search=${search}&perPage=${perPage}`}
                                                 className="border py-2 px-4 rounded-md hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                                             >
                                                 Next
@@ -327,43 +302,6 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                     </div>
                 </div>
             </div>
-
-            <Modal show={modalCreate}>
-                <div className="bg-white rounded md:w-96 lg:w-96 sm:w-96 w-full mx-auto">
-                    <div className="flex flex-col items-end m-0 p-0">
-                        <button
-                            onClick={() => closeModal()}
-                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-rose-600 rounded-tr"
-                        >
-                            <i className="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    <form onSubmit={saveType} className="px-6 pb-6">
-                        <h2 className="text-lg font-medium text-gray-900">
-                            {formTitle}
-                        </h2>
-                        <div className="grid mt-4">
-                            <label className="mb-2">Type Name:</label>
-                            <input
-                                type="text"
-                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                }}
-                                value={name}
-                            />
-                            <div className="grid justify-end mt-4">
-                                <button
-                                    type="submit"
-                                    className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
 
             <Modal show={modalConfirmDelete}>
                 <div className="bg-white rounded max-w-lg mx-auto">
@@ -384,6 +322,59 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                             <p className="mt-1 text-sm text-gray-600">
                                 Data will be permanently deleted.
                             </p>
+                            <div className="grid justify-end mt-4">
+                                <button
+                                    type="submit"
+                                    className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
+
+            <Modal show={modalCreate} top="items-start">
+                <div className="bg-white rounded max-w-5xl mx-auto">
+                    <div className="flex flex-col items-end m-0 p-0">
+                        <button
+                            onClick={() => closeModalCreate()}
+                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <form className="px-6 pb-6">
+                        <h2 className="text-lg font-medium text-gray-900">
+                            Form Create Question
+                        </h2>
+
+                        <div className="mt-8 space-y-4">
+                            <div className="max-w-xl">
+                                <label>Type Question</label>
+                                <select
+                                    onChange={(e) =>
+                                        setQuestionType(e.target.value)
+                                    }
+                                    className="mt-1 block w-full rounded border-gray-400 ring-gray-400"
+                                >
+                                    <option value="">
+                                        --- Please Choice ---
+                                    </option>
+                                    <option value="multiple_choice">
+                                        Multiple Choice
+                                    </option>
+                                    <option value="multiple_response">
+                                        Multiple Response
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div className="max-w-xl">
+                                <QuestionType type={questionType} />
+                            </div>
+
                             <div className="grid justify-end mt-4">
                                 <button
                                     type="submit"

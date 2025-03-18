@@ -19,7 +19,7 @@ export default function Authenticated({ auth, header, children }) {
                     (showingNavigationDropdown === false ? "hidden" : "flex")
                 }
             >
-                <div className="overflow-auto">
+                <div className="overflow-auto mb-20">
                     <div className="flex w-full justify-between px-6 py-8">
                         {/* <h2 className="text-2xl">Regrinding </h2> */}
                         <Link className="mx-4 flex" href="/">
@@ -84,6 +84,14 @@ export default function Authenticated({ auth, header, children }) {
                         >
                             <i className="bi bi-clipboard me-4 text-base"></i>
                             Type
+                        </NavLink>
+                        <NavLink
+                            className="ms-2 block"
+                            href={route("question.index")}
+                            active={route().current("question.index")}
+                        >
+                            <i className="bi bi-clipboard me-4 text-base"></i>
+                            Question
                         </NavLink>
                     </div>
 

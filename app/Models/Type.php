@@ -12,7 +12,7 @@ class Type extends Model
 
     protected $table = 'types';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['code', 'name'];
 
     public function questions()
     {
