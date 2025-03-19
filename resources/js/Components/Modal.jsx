@@ -5,7 +5,8 @@ export default function Modal({
     children,
     show = false,
     closeable = true,
-    top = "items-center",
+    vcenter = "items-center",
+    padding = "p-4",
     onClose = () => {},
 }) {
     const close = () => {
@@ -46,11 +47,24 @@ export default function Modal({
                     leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
-                    <Dialog.Panel
-                        className={`mb-6 rounded-lg overflow-hidden transform transition-all w-full`}
+                    <div
+                        className={
+                            "fixed inset-0 w-screen overflow-y-auto max-h-screen " +
+                            padding
+                        }
                     >
-                        {children}
-                    </Dialog.Panel>
+                        <div
+                            className={
+                                "flex min-h-full justify-center " + vcenter
+                            }
+                        >
+                            <Dialog.Panel
+                                className={`mb-6 rounded-lg transform transition-all w-full`}
+                            >
+                                {children}
+                            </Dialog.Panel>
+                        </div>
+                    </div>
                 </Transition.Child>
             </Dialog>
         </Transition>

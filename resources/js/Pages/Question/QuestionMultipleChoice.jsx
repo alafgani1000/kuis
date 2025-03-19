@@ -24,7 +24,7 @@ export default function QuestionMultipleChoice({ className = "" }) {
             <div>
                 <label>Question</label>
                 <textarea
-                    className="rounded block mt-1 w-full border-gray-400 ring-gray-400"
+                    className="rounded block mt-1 w-full border-gray-300 ring-gray-300"
                     onChange={(e) => {
                         question.content = e.target.value;
                     }}
@@ -41,20 +41,39 @@ export default function QuestionMultipleChoice({ className = "" }) {
                 </button>
                 <span>{counter}</span>
             </div>
-            <div className="mt-6">
-                <h3>List answer</h3>
-                <ul>
+            <div className="my-4">
+                <h3 className="my-4">List answer</h3>
+                <div>
                     {question.answers.map((item, index) => {
                         return (
-                            <li key={item.id} className="mt-2">
+                            <div key={item.id} className="mt-2 flex">
                                 <label className="me-2">
-                                    <input type="radio" name="" />
+                                    <input
+                                        type="radio"
+                                        name=""
+                                        className="border-gray-300 ring-gray-300"
+                                    />
                                 </label>
-                                <input type="text" className="rounded" />
-                            </li>
+                                <input
+                                    type="text"
+                                    className="rounded-s h-8 w-full border-gray-300 ring-gray-300"
+                                />
+                                <button
+                                    type="button"
+                                    className="bg-rose-400 px-2 py-1 rounded-e text-white hover:bg-rose-500"
+                                >
+                                    x
+                                </button>
+                            </div>
                         );
                     })}
-                </ul>
+                </div>
+                <div className="flex justify-end py-8">
+                    <button className="bg-sky-950 py-2 px-3 text-white rounded text-sm">
+                        <i class="bi bi-save"> </i>
+                        Save
+                    </button>
+                </div>
             </div>
         </div>
     );

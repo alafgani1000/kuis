@@ -335,7 +335,7 @@ export default function Question({
                 </div>
             </Modal>
 
-            <Modal show={modalCreate} top="items-start">
+            <Modal show={modalCreate} vcenter="items-start">
                 <div className="bg-white rounded max-w-5xl mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
                         <button
@@ -357,7 +357,7 @@ export default function Question({
                                     onChange={(e) =>
                                         setQuestionType(e.target.value)
                                     }
-                                    className="mt-1 block w-full rounded border-gray-400 ring-gray-400"
+                                    className="mt-1 block w-full rounded border-gray-300 ring-gray-300"
                                 >
                                     <option value="">
                                         --- Please Choice ---
@@ -374,15 +374,7 @@ export default function Question({
                             <div className="max-w-xl">
                                 <QuestionType type={questionType} />
                             </div>
-
-                            <div className="grid justify-end mt-4">
-                                <button
-                                    type="submit"
-                                    className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
-                                >
-                                    Delete
-                                </button>
-                            </div>
+                            {/* <div className="grid justify-end mt-4"></div> */}
                         </div>
                     </form>
                 </div>
