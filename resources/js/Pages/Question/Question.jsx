@@ -348,7 +348,7 @@ export default function Question({
                     <h2 className="text-lg font-medium text-gray-900">
                         Form Create Question
                     </h2>
-                    <div className="px-6 pb-4 bg-gray-100 mt-4 py-4 rounded">
+                    <div className="px-4 pb-4 bg-gray-100 mt-4 py-4 rounded">
                         <div className="space-y-4">
                             <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
                                 <label>Type Question</label>
@@ -366,6 +366,9 @@ export default function Question({
                                     </option>
                                     <option value="multiple_response">
                                         Multiple Response
+                                    </option>
+                                    <option value="short_answer">
+                                        Short Answer
                                     </option>
                                 </select>
                             </div>

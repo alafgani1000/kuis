@@ -19,8 +19,15 @@ export default function QuestionMultipleChoice({ className = "" }) {
         question.answers = answers;
     };
 
-    const deleteAnswer = () => {
-        let answer;
+    const deleteAnswer = (id) => {
+        let answers = question.answers;
+        answers = answers.filter((item, index) => {
+            return item.id != id;
+        });
+        console.log(answers);
+        let count = answers.length;
+        setCounter(count);
+        question.answers = answers;
     };
 
     return (
@@ -63,6 +70,7 @@ export default function QuestionMultipleChoice({ className = "" }) {
                                     className="rounded-s h-8 w-full border-gray-300 ring-gray-300"
                                 />
                                 <button
+                                    onClick={() => deleteAnswer(item.id)}
                                     type="button"
                                     className="bg-rose-500 px-2 py-1 rounded-e text-white hover:bg-rose-600"
                                 >
@@ -74,7 +82,7 @@ export default function QuestionMultipleChoice({ className = "" }) {
                 </div>
                 <div className="flex justify-end pt-8">
                     <button className="bg-sky-950 py-2 px-3 text-white rounded text-sm">
-                        <i class="bi bi-save"> </i>
+                        <i className="bi bi-save"> </i>
                         Save
                     </button>
                 </div>
