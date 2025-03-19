@@ -19,12 +19,16 @@ export default function QuestionMultipleChoice({ className = "" }) {
         question.answers = answers;
     };
 
+    const deleteAnswer = () => {
+        let answer;
+    };
+
     return (
         <div className={className}>
-            <div>
+            <div className="bg-white rounded pt-2 pb-4 px-3">
                 <label>Question</label>
                 <textarea
-                    className="rounded block mt-1 w-full border-gray-300 ring-gray-300"
+                    className="rounded block mt-1 w-full border-gray-200 ring-gray-200"
                     onChange={(e) => {
                         question.content = e.target.value;
                     }}
@@ -35,7 +39,7 @@ export default function QuestionMultipleChoice({ className = "" }) {
                 <button
                     onClick={createAnwer}
                     type="button"
-                    className="bg-gray-300 px-3 rounded"
+                    className="bg-sky-950 px-3 rounded text-white"
                 >
                     +
                 </button>
@@ -60,7 +64,7 @@ export default function QuestionMultipleChoice({ className = "" }) {
                                 />
                                 <button
                                     type="button"
-                                    className="bg-rose-400 px-2 py-1 rounded-e text-white hover:bg-rose-500"
+                                    className="bg-rose-500 px-2 py-1 rounded-e text-white hover:bg-rose-600"
                                 >
                                     x
                                 </button>
@@ -68,7 +72,7 @@ export default function QuestionMultipleChoice({ className = "" }) {
                         );
                     })}
                 </div>
-                <div className="flex justify-end py-8">
+                <div className="flex justify-end pt-8">
                     <button className="bg-sky-950 py-2 px-3 text-white rounded text-sm">
                         <i class="bi bi-save"> </i>
                         Save

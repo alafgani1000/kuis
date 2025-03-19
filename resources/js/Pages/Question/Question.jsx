@@ -336,7 +336,7 @@ export default function Question({
             </Modal>
 
             <Modal show={modalCreate} vcenter="items-start">
-                <div className="bg-white rounded max-w-5xl mx-auto">
+                <div className="bg-white rounded max-w-4xl mx-auto px-4 py-4">
                     <div className="flex flex-col items-end m-0 p-0">
                         <button
                             onClick={() => closeModalCreate()}
@@ -345,19 +345,18 @@ export default function Question({
                             <i className="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <form className="px-6 pb-6">
-                        <h2 className="text-lg font-medium text-gray-900">
-                            Form Create Question
-                        </h2>
-
-                        <div className="mt-8 space-y-4">
-                            <div className="max-w-xl">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Form Create Question
+                    </h2>
+                    <div className="px-6 pb-4 bg-gray-100 mt-4 py-4 rounded">
+                        <div className="space-y-4">
+                            <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
                                 <label>Type Question</label>
                                 <select
                                     onChange={(e) =>
                                         setQuestionType(e.target.value)
                                     }
-                                    className="mt-1 block w-full rounded border-gray-300 ring-gray-300"
+                                    className="mt-1 block w-full rounded border-gray-200 ring-gray-200"
                                 >
                                     <option value="">
                                         --- Please Choice ---
@@ -376,7 +375,7 @@ export default function Question({
                             </div>
                             {/* <div className="grid justify-end mt-4"></div> */}
                         </div>
-                    </form>
+                    </div>
                 </div>
             </Modal>
         </AuthenticatedLayout>
