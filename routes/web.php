@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/type', [TypeController::class, 'store'])->name('type.store');
     Route::put('/type/{id}/update', [TypeController::class, 'update'])->name('type.update');
     Route::delete('/type/{id}/delete', [TypeController::class, 'delete'])->name('type.delete');
+    Route::get('/type/data', [TypeController::class, 'data'])->name('type.data');
 
     // Question
     Route::get('/question', [QuestionController::class, 'index'])->name('question.index');

@@ -27,6 +27,7 @@ export default function Question({
     const [isEdit, setIsEdit] = useState(false);
     const [formTitle, setFormTitle] = useState("Create Question");
     const [questionType, setQuestionType] = useState("");
+    const [typeQuestions, setTypeQuestions] = useState([]);
 
     const handleSearch = () => {
         // handle search
@@ -53,6 +54,21 @@ export default function Question({
             }
         );
     };
+
+    const getTypeQuestion = () => {
+        axios
+            .get("/type/data")
+            .then((res) => {
+                setTypeQuestions(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+    useEffect(() => {
+        getTypeQuestion();
+    }, []);
 
     useEffect(() => {
         handleSearch();
@@ -95,7 +111,7 @@ export default function Question({
             auth={auth}
             header={<h2 className="leading-tight">Question</h2>}
         >
-            <Head title="Role" />
+            <Head title="Question" />
 
             <div className="py-4 lg:py-12 md:py-12">
                 <div className="max-w-full mx-auto space-y-6">
@@ -362,15 +378,13 @@ export default function Question({
                                     <option value="">
                                         --- Please Choice ---
                                     </option>
-                                    <option value="multiple_choice">
-                                        Multiple Choice
-                                    </option>
-                                    <option value="multiple_response">
-                                        Multiple Response
-                                    </option>
-                                    <option value="short_answer">
-                                        Short Answer
-                                    </option>
+                                    {typeQuestions.map((type, i) => {
+                                        return (
+                                            <option key={i} value={type.code}>
+                                                {type.name}
+                                            </option>
+                                        );
+                                    })}
                                 </select>
                             </div>
 

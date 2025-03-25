@@ -125,7 +125,7 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
             auth={auth}
             header={<h2 className="leading-tight">Type</h2>}
         >
-            <Head title="Role" />
+            <Head title="Type Question" />
 
             <div className="py-4 lg:py-12 md:py-12">
                 <div className="max-w-full mx-auto space-y-6">

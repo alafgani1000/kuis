@@ -28,6 +28,11 @@ class TypeController extends Controller
         ]);
     }
 
+    public function data()
+    {
+        return Type::all();
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -35,7 +35,7 @@ export default function QuestionShortAnswer({ className = "" }) {
 
             <div className="flex justify-end pt-8">
                 <button className="bg-sky-950 py-2 px-3 text-white rounded text-sm">
-                    <i class="bi bi-save"> </i>
+                    <i className="bi bi-save"> </i>
                     Save
                 </button>
             </div>
