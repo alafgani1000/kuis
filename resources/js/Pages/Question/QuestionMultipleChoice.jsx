@@ -1,6 +1,8 @@
+import axios from "axios";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
-export default function QuestionMultipleChoice({ className = "" }) {
+export default function QuestionMultipleChoice({ className = "", typeId = 0 }) {
     const [question, setQuestion] = useState({
         content: "",
         answers: [],
@@ -19,15 +21,57 @@ export default function QuestionMultipleChoice({ className = "" }) {
         question.answers = answers;
     };
 
+    const pickTrueValue = (id) => {
+        let answers = question.answers;
+        answers.map((item) => {
+            if (item.id == id) {
+                item.correct = true;
+            } else {
+                item.correct = false;
+            }
+        });
+        setQuestion((prev) => ({ ...prev, answers: answers }));
+    };
+
     const deleteAnswer = (id) => {
         let answers = question.answers;
         answers = answers.filter((item, index) => {
             return item.id != id;
         });
-        console.log(answers);
         let count = answers.length;
         setCounter(count);
         question.answers = answers;
+    };
+
+    const resetData = () => {
+        setQuestion({
+            content: "",
+            answers: [],
+        });
+        setCounter(0);
+    };
+
+    const storeQuestion = () => {
+        axios
+            .post("/question", {
+                question: question,
+                type: typeId,
+            })
+            .then((res) => {
+                Swal.fire({
+                    title: "Message",
+                    text: res.data,
+                    icon: "success",
+                });
+                resetData();
+            })
+            .catch((err) => {
+                Swal.fire({
+                    title: "Error",
+                    text: err.message,
+                    icon: "error",
+                });
+            });
     };
 
     return (
@@ -60,12 +104,17 @@ export default function QuestionMultipleChoice({ className = "" }) {
                             <div key={item.id} className="mt-2 flex">
                                 <label className="me-2">
                                     <input
+                                        onChange={() => pickTrueValue(item.id)}
                                         type="radio"
                                         name=""
                                         className="border-gray-300 ring-gray-300"
+                                        checked={item.correct}
                                     />
                                 </label>
                                 <input
+                                    onChange={(e) =>
+                                        (item.content = e.target.value)
+                                    }
                                     type="text"
                                     className="rounded-s h-8 w-full border-gray-300 ring-gray-300"
                                 />
@@ -81,7 +130,10 @@ export default function QuestionMultipleChoice({ className = "" }) {
                     })}
                 </div>
                 <div className="flex justify-end pt-8">
-                    <button className="bg-sky-950 py-2 px-3 text-white rounded text-sm">
+                    <button
+                        onClick={() => storeQuestion()}
+                        className="bg-sky-950 py-2 px-3 text-white rounded text-sm"
+                    >
                         <i className="bi bi-save"> </i>
                         Save
                     </button>

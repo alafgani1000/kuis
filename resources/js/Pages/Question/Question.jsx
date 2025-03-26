@@ -196,9 +196,6 @@ export default function Question({
                                                 Active
                                             </th>
                                             <th className="text-left py-4 px-4">
-                                                Score
-                                            </th>
-                                            <th className="text-left py-4 px-4">
                                                 Action
                                             </th>
                                         </tr>
@@ -216,9 +213,6 @@ export default function Question({
                                                         </td>
                                                         <td className="text-left py-3 px-4">
                                                             {question.active}
-                                                        </td>
-                                                        <td className="text-left py-3 px-4">
-                                                            {question.score}
                                                         </td>
                                                         <td className="content-center">
                                                             <div className="flex flex-wrap space-x-1">
@@ -370,9 +364,16 @@ export default function Question({
                             <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
                                 <label>Type Question</label>
                                 <select
-                                    onChange={(e) =>
-                                        setQuestionType(e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        let code = typeQuestions.find(
+                                            (item) => {
+                                                return (
+                                                    item.id == e.target.value
+                                                );
+                                            }
+                                        );
+                                        setQuestionType(code);
+                                    }}
                                     className="mt-1 block w-full rounded border-gray-200 ring-gray-200"
                                 >
                                     <option value="">
@@ -380,7 +381,7 @@ export default function Question({
                                     </option>
                                     {typeQuestions.map((type, i) => {
                                         return (
-                                            <option key={i} value={type.code}>
+                                            <option key={i} value={type.id}>
                                                 {type.name}
                                             </option>
                                         );
@@ -389,7 +390,10 @@ export default function Question({
                             </div>
 
                             <div className="max-w-xl">
-                                <QuestionType type={questionType} />
+                                <QuestionType
+                                    type={questionType.code}
+                                    typeId={questionType.id}
+                                />
                             </div>
                             {/* <div className="grid justify-end mt-4"></div> */}
                         </div>

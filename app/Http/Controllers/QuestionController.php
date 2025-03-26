@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Question;
@@ -34,12 +35,38 @@ class QuestionController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required'
-        ]);
-        Question::create([
-            'name' => $request->name
-        ]);
+        $error = array();
+        $question = $request->question;
+        if ($question['content'] == "") {
+            $error['qustion.content'] = 'A Question is required';
+        }
+        foreach ($question['answers'] as $answer) {
+            if ($answer['content'] == "") {
+                $error['answer'.$answer['id']] = 'A answer is required';
+            }
+        }
+        if (count($error)) {
+            return response()->json($error, 422);
+        } else {
+            DB::beginTransaction();
+            try {
+                $create = Question::create([
+                    'type_id' => $request->type,
+                    'question' => $question['content']
+                ]);
+                foreach ($question['answers'] as $answer) {
+                    $create->answers()->create([
+                        'content' => $answer['content'],
+                        'correct' => $answer['correct']
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+            DB::commit();
+        }
         return 'Store Success';
     }
 
