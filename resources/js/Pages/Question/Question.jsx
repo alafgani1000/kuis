@@ -198,7 +198,7 @@ export default function Question({
                                             <th className="text-left py-4 px-4">
                                                 Active
                                             </th>
-                                            <th className="text-left py-4 px-4">
+                                            <th className="text-center py-4 px-4">
                                                 Action
                                             </th>
                                         </tr>
@@ -231,7 +231,7 @@ export default function Question({
                                                             {question.active}
                                                         </td>
                                                         <td className="content-center">
-                                                            <div className="flex flex-wrap space-x-1">
+                                                            <div className="flex flex-wrap items-center justify-center space-x-1">
                                                                 <button className="bg-yellow-500 px-2 py-1 text-white text-sm rounded">
                                                                     <i className="bi bi-pencil-square"></i>
                                                                 </button>
