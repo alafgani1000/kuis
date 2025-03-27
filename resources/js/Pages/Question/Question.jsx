@@ -193,6 +193,9 @@ export default function Question({
                                                 Question
                                             </th>
                                             <th className="text-left py-4 px-4">
+                                                Answers
+                                            </th>
+                                            <th className="text-left py-4 px-4">
                                                 Active
                                             </th>
                                             <th className="text-left py-4 px-4">
@@ -210,6 +213,19 @@ export default function Question({
                                                     >
                                                         <td className="text-left py-3 px-4">
                                                             {question.question}
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {question.answers.map(
+                                                                (answer, i) => {
+                                                                    return (
+                                                                        <p>
+                                                                            {
+                                                                                answer.content
+                                                                            }
+                                                                        </p>
+                                                                    );
+                                                                }
+                                                            )}
                                                         </td>
                                                         <td className="text-left py-3 px-4">
                                                             {question.active}

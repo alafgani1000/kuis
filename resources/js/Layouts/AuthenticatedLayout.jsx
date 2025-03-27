@@ -79,19 +79,19 @@ export default function Authenticated({ auth, header, children }) {
                     <div className="py-4 px-8 text-base grid space-y-4">
                         <NavLink
                             className="ms-2 block"
-                            href={route("type.index")}
-                            active={route().current("type.index")}
-                        >
-                            <i className="bi bi-clipboard me-4 text-base"></i>
-                            Type
-                        </NavLink>
-                        <NavLink
-                            className="ms-2 block"
                             href={route("question.index")}
                             active={route().current("question.index")}
                         >
                             <i className="bi bi-clipboard me-4 text-base"></i>
                             Question
+                        </NavLink>
+                        <NavLink
+                            className="ms-2 block"
+                            href={route("type.index")}
+                            active={route().current("type.index")}
+                        >
+                            <i className="bi bi-clipboard me-4 text-base"></i>
+                            Type
                         </NavLink>
                     </div>
 

@@ -20,7 +20,7 @@ class QuestionController extends Controller
         $search = $request->search;
         $perPage = isset($request->perPage) ? $request->perPage : 10;
         $sort = isset($request->sort) ? $request->sort : 'id';
-        $questions = Question::where(function (Builder $query) use($search) {
+        $questions = Question::with('answers')->where(function (Builder $query) use($search) {
             return $query->where('question', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
         $types = Type::all();
