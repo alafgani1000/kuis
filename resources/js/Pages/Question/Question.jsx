@@ -5,6 +5,7 @@ import parse from "html-react-parser";
 import Modal from "@/Components/Modal";
 import axios from "axios";
 import QuestionType from "./QuestionType";
+import QuestionTypeEdit from "./QuestionTypeEdit";
 
 export default function Question({
     auth,
@@ -18,8 +19,9 @@ export default function Question({
     const [perPage, setPerPage] = useState(pgPerPage || 10);
     const [wasSearch, setWasSearch] = useState(false);
     const [modalCreate, setModalCreate] = useState(false);
+    const [modalEdit, setModalEdit] = useState(false);
     const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
-    const [question, setQuestion] = useState("");
+    const [question, setQuestion] = useState({});
     const [active, setActive] = useState(false);
     const [score, setScore] = useState(0);
     const [id, setId] = useState("");
@@ -104,6 +106,11 @@ export default function Question({
 
     const closeModalCreate = () => {
         setModalCreate(false);
+    };
+
+    const showModalEdit = (data) => {
+        setQuestion(data);
+        setModalEdit(true);
     };
 
     return (
@@ -409,6 +416,62 @@ export default function Question({
                                 <QuestionType
                                     type={questionType.code}
                                     typeId={questionType.id}
+                                />
+                            </div>
+                            {/* <div className="grid justify-end mt-4"></div> */}
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal show={modalEdit} vcenter="items-start">
+                <div className="bg-white rounded max-w-4xl mx-auto pb-4">
+                    <div className="flex flex-col items-end m-0 p-0">
+                        <button
+                            onClick={() => closeModalCreate()}
+                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <h2 className="text-lg font-medium text-gray-900 mx-4">
+                        Form Create Question
+                    </h2>
+                    <div className="px-4 pb-4 bg-gray-100 mt-4 py-4 rounded mx-4">
+                        <div className="space-y-4">
+                            <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
+                                <label>Type Question</label>
+                                <select
+                                    onChange={(e) => {
+                                        let code = typeQuestions.find(
+                                            (item) => {
+                                                return (
+                                                    item.id == e.target.value
+                                                );
+                                            }
+                                        );
+                                        setQuestionType(code);
+                                    }}
+                                    className="mt-1 block w-full rounded border-gray-200 ring-gray-200"
+                                >
+                                    <option value="">
+                                        --- Please Choice ---
+                                    </option>
+                                    {typeQuestions.map((type, i) => {
+                                        return (
+                                            <option key={i} value={type.id}>
+                                                {type.name}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+
+                            <div className="max-w-xl">
+                                <QuestionTypeEdit
+                                    type={questionType.code}
+                                    typeId={questionType.id}
+                                    data={question}
                                 />
                             </div>
                             {/* <div className="grid justify-end mt-4"></div> */}
