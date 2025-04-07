@@ -238,7 +238,14 @@ export default function Question({
                                                             {question.active}
                                                         </td>
                                                         <td className="content-center">
-                                                            <div className="flex flex-wrap items-center justify-center space-x-1">
+                                                            <div
+                                                                onClick={() =>
+                                                                    showModalEdit(
+                                                                        question
+                                                                    )
+                                                                }
+                                                                className="flex flex-wrap items-center justify-center space-x-1"
+                                                            >
                                                                 <button className="bg-yellow-500 px-2 py-1 text-white text-sm rounded">
                                                                     <i className="bi bi-pencil-square"></i>
                                                                 </button>
