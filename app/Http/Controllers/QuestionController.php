@@ -52,12 +52,15 @@ class QuestionController extends Controller
             try {
                 $create = Question::create([
                     'type_id' => $request->type,
-                    'question' => $question['content']
+                    'question' => $question['content'],
+                    'created_by' => Auth::id(),
+                    'active' => 1
                 ]);
                 foreach ($question['answers'] as $answer) {
                     $create->answers()->create([
                         'content' => $answer['content'],
-                        'correct' => $answer['correct']
+                        'correct' => $answer['correct'],
+                        'active' => '1'
                     ]);
                 }
 

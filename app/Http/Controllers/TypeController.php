@@ -36,9 +36,11 @@ class TypeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'code' => 'required',
             'name' => 'required'
         ]);
         Type::create([
+            'code' => $request->code,
             'name' => $request->name
         ]);
         return 'Input Success';

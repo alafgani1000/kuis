@@ -81,9 +81,12 @@ export default function QuestionMultipleChoice({ className = "", typeId = 0 }) {
                 <textarea
                     className="rounded block mt-1 w-full border-gray-200 ring-gray-200"
                     onChange={(e) => {
-                        question.content = e.target.value;
+                        setQuestion((prev) => ({
+                            ...prev,
+                            content: e.target.value,
+                        }));
                     }}
-                    value={question.question}
+                    value={question.content}
                 ></textarea>
             </div>
             <div className="mt-4 flex space-x-2">

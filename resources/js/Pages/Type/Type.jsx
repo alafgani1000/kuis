@@ -13,6 +13,7 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
     const [modalCreate, setModalCreate] = useState(false);
     const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
     const [name, setName] = useState("");
+    const [code, setCode] = useState("");
     const [id, setId] = useState("");
     const [idDelete, setIdDelete] = useState("");
     const [isEdit, setIsEdit] = useState(false);
@@ -342,6 +343,19 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                         <h2 className="text-lg font-medium text-gray-900">
                             {formTitle}
                         </h2>
+                        {isEdit === false && (
+                            <div className="grid mt-4">
+                                <label className="mb-2">Type Code:</label>
+                                <input
+                                    type="text"
+                                    className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                    onChange={(e) => {
+                                        setCode(e.target.value);
+                                    }}
+                                    value={code}
+                                />
+                            </div>
+                        )}
                         <div className="grid mt-4">
                             <label className="mb-2">Type Name:</label>
                             <input
