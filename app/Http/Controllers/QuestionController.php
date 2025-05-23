@@ -90,7 +90,7 @@ class QuestionController extends Controller
         } else {
             DB::beginTransaction();
             try {
-                $create = Question::create([
+                $create = Question::where('id', $id)->update([
                     'type_id' => $request->type,
                     'question' => $question['content'],
                     'created_by' => Auth::id(),

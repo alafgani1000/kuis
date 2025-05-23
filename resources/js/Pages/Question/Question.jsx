@@ -117,7 +117,6 @@ export default function Question({
 
     const closeModalEdit = () => {
         setModalEdit(false);
-        setQuestion({});
         handleRefresh();
     };
 
@@ -247,7 +246,7 @@ export default function Question({
                                                                                 }{" "}
                                                                                 {answer.correct ==
                                                                                     1 && (
-                                                                                    <i className="bi bi-check2-circle"></i>
+                                                                                    <i className="bi bi-check2-circle text-teal-600"></i>
                                                                                 )}
                                                                             </li>
                                                                         );
@@ -456,7 +455,7 @@ export default function Question({
                 <div className="bg-white rounded max-w-4xl mx-auto pb-4">
                     <div className="flex flex-col items-end m-0 p-0">
                         <button
-                            onClick={() => closeModalCreate()}
+                            onClick={() => closeModalEdit()}
                             className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
                         >
                             <i className="bi bi-x-lg"></i>

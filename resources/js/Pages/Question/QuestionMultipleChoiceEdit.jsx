@@ -12,6 +12,7 @@ export default function QuestionMultipleChoiceEdit({
         content: data.question,
         answers: data.answers,
     });
+    const [id, setId] = useState(data.id);
 
     const createAnwer = () => {
         let answers = question.answers;
@@ -67,7 +68,7 @@ export default function QuestionMultipleChoiceEdit({
 
     const storeQuestion = () => {
         axios
-            .post("/question", {
+            .put(`/question/${id}/update`, {
                 question: question,
                 type: typeId,
             })
@@ -115,7 +116,7 @@ export default function QuestionMultipleChoiceEdit({
                 <div>
                     {question.answers.map((item, index) => {
                         return (
-                            <div key={item.id} className="mt-2 flex">
+                            <div key={index} className="mt-2 flex">
                                 <label className="me-2">
                                     <input
                                         onChange={() => pickTrueValue(item.id)}
