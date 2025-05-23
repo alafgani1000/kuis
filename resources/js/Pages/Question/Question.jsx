@@ -106,11 +106,19 @@ export default function Question({
 
     const closeModalCreate = () => {
         setModalCreate(false);
+        handleRefresh();
     };
 
     const showModalEdit = (data) => {
         setQuestion(data);
+        setQuestionType(data?.type);
         setModalEdit(true);
+    };
+
+    const closeModalEdit = () => {
+        setModalEdit(false);
+        setQuestion({});
+        handleRefresh();
     };
 
     return (
@@ -222,17 +230,30 @@ export default function Question({
                                                             {question.question}
                                                         </td>
                                                         <td className="text-left py-3 px-4">
-                                                            {question.answers.map(
-                                                                (answer, i) => {
-                                                                    return (
-                                                                        <p>
-                                                                            {
-                                                                                answer.content
-                                                                            }
-                                                                        </p>
-                                                                    );
-                                                                }
-                                                            )}
+                                                            <ul className="list-disc">
+                                                                {question.answers.map(
+                                                                    (
+                                                                        answer,
+                                                                        i
+                                                                    ) => {
+                                                                        return (
+                                                                            <li
+                                                                                key={
+                                                                                    i
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    answer.content
+                                                                                }{" "}
+                                                                                {answer.correct ==
+                                                                                    1 && (
+                                                                                    <i className="bi bi-check2-circle"></i>
+                                                                                )}
+                                                                            </li>
+                                                                        );
+                                                                    }
+                                                                )}
+                                                            </ul>
                                                         </td>
                                                         <td className="text-left py-3 px-4">
                                                             {question.active}
@@ -449,6 +470,7 @@ export default function Question({
                             <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
                                 <label>Type Question</label>
                                 <select
+                                    value={question.type_id}
                                     onChange={(e) => {
                                         let code = typeQuestions.find(
                                             (item) => {

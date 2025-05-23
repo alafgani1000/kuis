@@ -5,10 +5,13 @@ import Swal from "sweetalert2";
 export default function QuestionMultipleChoiceEdit({
     className = "",
     typeId = 0,
-    data = { content: "", answers: [] },
+    data = {},
 }) {
-    const [question, setQuestion] = useState(data);
-    const [counter, setCounter] = useState(0);
+    const [counter, setCounter] = useState(data?.answers.length);
+    const [question, setQuestion] = useState({
+        content: data.question,
+        answers: data.answers,
+    });
 
     const createAnwer = () => {
         let answers = question.answers;
@@ -29,6 +32,16 @@ export default function QuestionMultipleChoiceEdit({
                 item.correct = true;
             } else {
                 item.correct = false;
+            }
+        });
+        setQuestion((prev) => ({ ...prev, answers: answers }));
+    };
+
+    const changeAnswer = (id, content) => {
+        let answers = question.answers;
+        answers.map((item) => {
+            if (item.id == id) {
+                item.content = content;
             }
         });
         setQuestion((prev) => ({ ...prev, answers: answers }));
@@ -84,7 +97,7 @@ export default function QuestionMultipleChoiceEdit({
                     onChange={(e) => {
                         question.content = e.target.value;
                     }}
-                    value={question.question}
+                    value={question.content}
                 ></textarea>
             </div>
             <div className="mt-4 flex space-x-2">
@@ -113,9 +126,10 @@ export default function QuestionMultipleChoiceEdit({
                                     />
                                 </label>
                                 <input
-                                    onChange={(e) =>
-                                        (item.content = e.target.value)
-                                    }
+                                    value={item.content}
+                                    onChange={(e) => {
+                                        changeAnswer(item.id, e.target.value);
+                                    }}
                                     type="text"
                                     className="rounded-s h-8 w-full border-gray-300 ring-gray-300"
                                 />
@@ -136,7 +150,7 @@ export default function QuestionMultipleChoiceEdit({
                         className="bg-sky-950 py-2 px-3 text-white rounded text-sm"
                     >
                         <i className="bi bi-save"> </i>
-                        Save
+                        Update
                     </button>
                 </div>
             </div>

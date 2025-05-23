@@ -20,7 +20,7 @@ class QuestionController extends Controller
         $search = $request->search;
         $perPage = isset($request->perPage) ? $request->perPage : 10;
         $sort = isset($request->sort) ? $request->sort : 'id';
-        $questions = Question::with('answers')->where(function (Builder $query) use($search) {
+        $questions = Question::with('answers')->with('type')->where(function (Builder $query) use($search) {
             return $query->where('question', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
         $types = Type::all();
@@ -75,13 +75,42 @@ class QuestionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required'
-        ]);
-        Role::where('id',$id)->update([
-            'name' => $request->name
-        ]);
-        return 'Update Success';
+       $error = array();
+        $question = $request->question;
+        if ($question['content'] == "") {
+            $error['qustion.content'] = 'A Question is required';
+        }
+        foreach ($question['answers'] as $answer) {
+            if ($answer['content'] == "") {
+                $error['answer'.$answer['id']] = 'A answer is required';
+            }
+        }
+        if (count($error)) {
+            return response()->json($error, 422);
+        } else {
+            DB::beginTransaction();
+            try {
+                $create = Question::create([
+                    'type_id' => $request->type,
+                    'question' => $question['content'],
+                    'created_by' => Auth::id(),
+                    'active' => 1
+                ]);
+                foreach ($question['answers'] as $answer) {
+                    $create->answers()->create([
+                        'content' => $answer['content'],
+                        'correct' => $answer['correct'],
+                        'active' => '1'
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+            DB::commit();
+        }
+        return 'Store Success';
     }
 
     public function delete(Request $request, $id)
