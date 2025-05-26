@@ -86,10 +86,10 @@ export default function Question({
         setIdDelete(data.id);
     };
 
-    const deleteType = (e) => {
+    const deleteQuestion = (e) => {
         e.preventDefault();
         axios
-            .delete(`/type/${idDelete}/delete`)
+            .delete(`/question/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();
@@ -486,7 +486,7 @@ export default function Question({
                             <i className="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <form className="px-6 pb-6">
+                    <form onSubmit={deleteQuestion} className="px-6 pb-6">
                         <div className="mt-4">
                             <h2 className="text-lg font-medium text-gray-900">
                                 Are you sure you want to delete this question
