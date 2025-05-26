@@ -81,7 +81,7 @@ export default function Question({
         setIdDelete("");
     };
 
-    const confirmDeleteType = (data) => {
+    const confirmDeleteQuestion = (data) => {
         setModalConfirmDelete(true);
         setIdDelete(data.id);
     };
@@ -258,20 +258,20 @@ export default function Question({
                                                             {question.active}
                                                         </td>
                                                         <td className="content-center">
-                                                            <div
-                                                                onClick={() =>
-                                                                    showModalEdit(
-                                                                        question
-                                                                    )
-                                                                }
-                                                                className="flex flex-wrap items-center justify-center space-x-1"
-                                                            >
-                                                                <button className="bg-yellow-500 px-2 py-1 text-white text-sm rounded">
+                                                            <div className="flex flex-wrap items-center justify-center space-x-1">
+                                                                <button
+                                                                    onClick={() =>
+                                                                        showModalEdit(
+                                                                            question
+                                                                        )
+                                                                    }
+                                                                    className="bg-yellow-500 px-2 py-1 text-white text-sm rounded"
+                                                                >
                                                                     <i className="bi bi-pencil-square"></i>
                                                                 </button>
                                                                 <button
                                                                     onClick={() => {
-                                                                        confirmDeleteType(
+                                                                        confirmDeleteQuestion(
                                                                             question
                                                                         );
                                                                     }}
@@ -364,38 +364,6 @@ export default function Question({
                 </div>
             </div>
 
-            <Modal show={modalConfirmDelete}>
-                <div className="bg-white rounded max-w-lg mx-auto">
-                    <div className="flex flex-col items-end m-0 p-0">
-                        <button
-                            onClick={() => closeModalDelete()}
-                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
-                        >
-                            <i className="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    <form onSubmit={deleteType} className="px-6 pb-6">
-                        <div className="mt-4">
-                            <h2 className="text-lg font-medium text-gray-900">
-                                Are you sure you want to delete this type?
-                            </h2>
-
-                            <p className="mt-1 text-sm text-gray-600">
-                                Data will be permanently deleted.
-                            </p>
-                            <div className="grid justify-end mt-4">
-                                <button
-                                    type="submit"
-                                    className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-
             <Modal show={modalCreate} vcenter="items-start">
                 <div className="bg-white rounded max-w-4xl mx-auto pb-4">
                     <div className="flex flex-col items-end m-0 p-0">
@@ -411,7 +379,7 @@ export default function Question({
                     </h2>
                     <div className="px-4 pb-4 bg-gray-100 mt-4 py-4 rounded mx-4">
                         <div className="space-y-4">
-                            <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
+                            <div className="max-w-full rounded pt-2 pb-4 px-3 bg-white">
                                 <label>Type Question</label>
                                 <select
                                     onChange={(e) => {
@@ -439,7 +407,7 @@ export default function Question({
                                 </select>
                             </div>
 
-                            <div className="max-w-xl">
+                            <div className="max-w-full">
                                 <QuestionType
                                     type={questionType.code}
                                     typeId={questionType.id}
@@ -466,7 +434,7 @@ export default function Question({
                     </h2>
                     <div className="px-4 pb-4 bg-gray-100 mt-4 py-4 rounded mx-4">
                         <div className="space-y-4">
-                            <div className="max-w-xl rounded pt-2 pb-4 px-3 bg-white">
+                            <div className="max-w-full rounded pt-2 pb-4 px-3 bg-white">
                                 <label>Type Question</label>
                                 <select
                                     value={question.type_id}
@@ -495,7 +463,7 @@ export default function Question({
                                 </select>
                             </div>
 
-                            <div className="max-w-xl">
+                            <div className="max-w-full">
                                 <QuestionTypeEdit
                                     type={questionType.code}
                                     typeId={questionType.id}
@@ -505,6 +473,39 @@ export default function Question({
                             {/* <div className="grid justify-end mt-4"></div> */}
                         </div>
                     </div>
+                </div>
+            </Modal>
+
+            <Modal show={modalConfirmDelete}>
+                <div className="bg-white rounded max-w-lg mx-auto">
+                    <div className="flex flex-col items-end m-0 p-0">
+                        <button
+                            onClick={() => closeModalDelete()}
+                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <form className="px-6 pb-6">
+                        <div className="mt-4">
+                            <h2 className="text-lg font-medium text-gray-900">
+                                Are you sure you want to delete this question
+                                data?
+                            </h2>
+
+                            <p className="mt-1 text-sm text-gray-600">
+                                Data will be permanently deleted.
+                            </p>
+                            <div className="grid justify-end mt-4">
+                                <button
+                                    type="submit"
+                                    className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </Modal>
         </AuthenticatedLayout>

@@ -96,8 +96,10 @@ class QuestionController extends Controller
                     'created_by' => Auth::id(),
                     'active' => 1
                 ]);
+                $delete = Answer::where('question_id', $id)->delete();
                 foreach ($question['answers'] as $answer) {
-                    $create->answers()->create([
+                    Answer::create([
+                        'question_id' => $id,
                         'content' => $answer['content'],
                         'correct' => $answer['correct'],
                         'active' => '1'
@@ -115,7 +117,19 @@ class QuestionController extends Controller
 
     public function delete(Request $request, $id)
     {
-        Role::where('id',$id)->delete();
+        $question = Question::find($id);
+        if (!$question) {
+            return response()->json(['message' => 'Question not found'], 404);
+        }
+        DB::beginTransaction();
+        try {
+            $question->answers()->delete();
+            $question->delete();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+        DB::commit();
         return 'Delete Success';
     }
 }
