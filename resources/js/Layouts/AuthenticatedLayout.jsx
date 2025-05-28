@@ -23,8 +23,8 @@ export default function Authenticated({ auth, header, children }) {
                     <div className="flex w-full justify-between px-6 py-8">
                         {/* <h2 className="text-2xl">Regrinding </h2> */}
                         <Link className="mx-4 flex" href="/">
-                            <div>Q</div>
                             <ApplicationLogo className="block h-12 w-auto fill-current text-gray-800" />
+                            {/* <div>Q</div> */}
                         </Link>
 
                         {showingNavigationDropdown === true ? (
@@ -219,13 +219,13 @@ export default function Authenticated({ auth, header, children }) {
                         </div>
                     </nav>
 
-                    {/* {header && (
+                    {header && (
                         <header className="bg-white">
                             <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8 text-lg font-semibold">
                                 {header}
                             </div>
                         </header>
-                    )} */}
+                    )}
                 </div>
 
                 <main className="overflow-auto">{children}</main>

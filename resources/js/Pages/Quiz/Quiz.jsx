@@ -273,16 +273,15 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                             >
                                                                 <i className="bi bi-trash3-fill"></i>
                                                             </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    confirmDeleteQuiz(
-                                                                        quiz
-                                                                    );
-                                                                }}
+                                                            <Link
                                                                 className="bg-blue-400 px-2 py-1 text-white text-sm rounded"
+                                                                href={route(
+                                                                    "quiz.question.index",
+                                                                    [quiz.id]
+                                                                )}
                                                             >
                                                                 <i className="bi bi-postcard"></i>
-                                                            </button>
+                                                            </Link>
                                                         </div>
                                                     </td>
                                                 </tr>

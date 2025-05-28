@@ -30,7 +30,7 @@ class QuizQuestion extends Model
         return $this->belongsTo(Type::class, 'type_id');
     }
 
-    public function created()
+    public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
     }

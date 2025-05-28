@@ -11,7 +11,8 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\QuizQuestion;
-
+use App\Models\Quiz;
+use App\Models\QuizQuestionAnswer;
 class QuizQuestionController extends Controller
 {
     public function index(Request $request, $quizId): Response
@@ -25,12 +26,13 @@ class QuizQuestionController extends Controller
             })
             ->orderBy($sort)
             ->paginate($perPage);
+        $quiz = Quiz::findOrFail($quizId);
         return Inertia::render('Quiz/QuizQuestion', [
             'questions' => $questions,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
             'pgSort' => $sort,
-            'quizId' => $quizId
+            'quiz' => $quiz
         ]);
     }
 
