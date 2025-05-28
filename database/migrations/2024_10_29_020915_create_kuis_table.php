@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('host_id');
             $table->string('title');
-            $table->text('summary');
-            $table->integer('total_score');
-            $table->dateTime('start_at');
-            $table->dateTime('end_at');
+            $table->text('description')->nullable();
             $table->integer('published')->nullable();
             $table->integer('published_at')->nullable();
             $table->timestamps();

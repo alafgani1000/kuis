@@ -7,6 +7,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\QuizQuestionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -76,6 +78,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/question', [QuestionController::class, 'store'])->name('question.store');
     Route::put('/question/{id}/update', [QuestionController::class, 'update'])->name('question.update');
     Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
+
+    // Quiz
+    Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');
+    Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
+    Route::put('/quiz/{id}/update', [QuizController::class, 'update'])->name('quiz.update');
+    Route::delete('/quiz/{id}/delete', [QuizController::class, 'delete'])->name('quiz.delete');
+    Route::put('/quiz/{id}/publish', [QuizController::class, 'publish'])->name('quiz.publish');
+
+    // Quiz question
+    Route::get('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'index'])->name('quiz.question.index');
+    Route::post('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'store'])->name('quiz.question.store');
+    Route::get('/quiz/{id}/question-check', [QuizQuestionController::class, 'check'])->name('quiz.question.check');
+    Route::put('/quiz/question/{id}/update', [QuizQuestionController::class, 'update'])->name('quiz.question.update');
+    Route::delete('/quiz/question/{id}/delete', [QuizQuestionController::class, 'delete'])->name('quiz.question.delete');
+
 
 });
 
