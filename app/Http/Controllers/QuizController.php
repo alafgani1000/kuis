@@ -76,12 +76,12 @@ class QuizController extends Controller
         } else {
             DB::beginTransaction();
             try {
-                $quiz = Quiz->where('id',$id)->update([
+                $quiz = Quiz::where('id',$id)->update([
                     'title' => $request->title,
                     'description' => $request->description,
                 ]);
                 DB::commit();
-                return response('success', 'Quiz updated successfully');
+                return response('Quiz updated successfully',200);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['error' => 'Failed to update quiz'], 500);
@@ -100,7 +100,7 @@ class QuizController extends Controller
             $quiz = Quiz::findOrFail($id);
             $quiz->delete();
             DB::commit();
-            return response('success', 'Quiz deleted successfully');
+            return response('Quiz deleted successfully',200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Failed to delete quiz'], 500);

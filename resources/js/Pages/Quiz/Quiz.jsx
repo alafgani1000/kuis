@@ -113,7 +113,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
             axios
                 .put(`/quiz/${id}/update`, {
                     title: title,
-                    descrption: description,
+                    description: description,
                 })
                 .then((res) => {
                     handleRefresh();
@@ -243,11 +243,11 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                         {quiz.published ===
                                                         1 ? (
                                                             <span className="text-green-600 bg-green-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                True
+                                                                Published
                                                             </span>
                                                         ) : (
                                                             <span className="text-red-600 bg-red-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                False
+                                                                Unpublished
                                                             </span>
                                                         )}
                                                     </td>
@@ -407,7 +407,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                 type="submit"
                                 className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
                             >
-                                Save
+                                {isEdit === true ? "Update" : "Save"}
                             </button>
                         </div>
                     </form>
