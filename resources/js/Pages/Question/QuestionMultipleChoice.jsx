@@ -2,8 +2,13 @@ import axios from "axios";
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-export default function QuestionMultipleChoice({ className = "", typeId = 0 }) {
+export default function QuestionMultipleChoice({
+    className = "",
+    typeId = 0,
+    categories = [],
+}) {
     const [question, setQuestion] = useState({
+        category: "",
         content: "",
         answers: [],
     });
@@ -76,6 +81,28 @@ export default function QuestionMultipleChoice({ className = "", typeId = 0 }) {
 
     return (
         <div className={className}>
+            <div className="bg-white rounded pt-2 pb-4 px-3">
+                <label>Category</label>
+                <select
+                    className="rounded block mt-1 w-full border-gray-200 ring-gray-200"
+                    value={question.category}
+                    onChange={(e) => {
+                        setQuestion((prev) => ({
+                            ...prev,
+                            category: e.target.value,
+                        }));
+                    }}
+                >
+                    <option value="">--- Please select category ---</option>
+                    {categories.map((item) => {
+                        return (
+                            <option key={item.id} value={item.id}>
+                                {item.name}
+                            </option>
+                        );
+                    })}
+                </select>
+            </div>
             <div className="bg-white rounded pt-2 pb-4 px-3">
                 <label>Question</label>
                 <textarea

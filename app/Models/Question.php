@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Answer;
 use App\Models\Type;
+use App\Models\Category;
 
 class Question extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type_id', 'question', 'active', 'created_by'];
+    protected $fillable = ['category_id', 'type_id', 'question', 'active', 'created_by'];
 
     public function answers()
     {
@@ -21,5 +22,10 @@ class Question extends Model
     public function type()
     {
         return $this->belongsTo(Type::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

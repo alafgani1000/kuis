@@ -21,7 +21,7 @@ class QuestionController extends Controller
         $search = $request->search;
         $perPage = isset($request->perPage) ? $request->perPage : 10;
         $sort = isset($request->sort) ? $request->sort : 'id';
-        $questions = Question::with('answers')->with('type')->where(function (Builder $query) use($search) {
+        $questions = Question::with('answers','type','category')->with('type')->where(function (Builder $query) use($search) {
             return $query->where('question', 'like', '%'.$search.'%');
         })->orderBy($sort)->paginate($perPage);
         $types = Type::all();
@@ -39,7 +39,10 @@ class QuestionController extends Controller
         $error = array();
         $question = $request->question;
         if ($question['content'] == "") {
-            $error['qustion.content'] = 'A Question is required';
+            $error['question.content'] = 'A Question is required';
+        }
+        if ($question['category'] == "") {
+            $error['question.category'] == 'A category is required';
         }
         foreach ($question['answers'] as $answer) {
             if ($answer['content'] == "") {
@@ -53,6 +56,7 @@ class QuestionController extends Controller
             try {
                 $create = Question::create([
                     'type_id' => $request->type,
+                    'category_id' => $question['category'],
                     'question' => $question['content'],
                     'created_by' => Auth::id(),
                     'active' => 1

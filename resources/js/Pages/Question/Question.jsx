@@ -30,6 +30,7 @@ export default function Question({
     const [formTitle, setFormTitle] = useState("Create Question");
     const [questionType, setQuestionType] = useState("");
     const [typeQuestions, setTypeQuestions] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     const handleSearch = () => {
         // handle search
@@ -68,8 +69,18 @@ export default function Question({
             });
     };
 
+    const getCategories = async () => {
+        try {
+            const response = await axios.get(route("category.data"));
+            setCategories(response.data);
+        } catch (error) {
+            console.error("Error fetching master questions:", error);
+        }
+    };
+
     useEffect(() => {
         getTypeQuestion();
+        getCategories();
     }, []);
 
     useEffect(() => {
@@ -207,6 +218,12 @@ export default function Question({
                                                 Question
                                             </th>
                                             <th className="text-left py-4 px-4">
+                                                Type
+                                            </th>
+                                            <th className="text-left py-4 px-4">
+                                                Category
+                                            </th>
+                                            <th className="text-left py-4 px-4">
                                                 Answers
                                             </th>
                                             <th className="text-left py-4 px-4">
@@ -227,6 +244,19 @@ export default function Question({
                                                     >
                                                         <td className="text-left py-3 px-4">
                                                             {question.question}
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {
+                                                                question.type
+                                                                    ?.name
+                                                            }
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {
+                                                                question
+                                                                    .category
+                                                                    ?.name
+                                                            }
                                                         </td>
                                                         <td className="text-left py-3 px-4">
                                                             <ul className="list-disc">
@@ -411,6 +441,7 @@ export default function Question({
                                 <QuestionType
                                     type={questionType.code}
                                     typeId={questionType.id}
+                                    categories={categories}
                                 />
                             </div>
                             {/* <div className="grid justify-end mt-4"></div> */}

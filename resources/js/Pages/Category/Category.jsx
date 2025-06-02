@@ -237,7 +237,9 @@ export default function Category({
                                                             {category.name}
                                                         </td>
                                                         <td className="text-left py-3 px-4">
-                                                            {category.name}
+                                                            {
+                                                                category.description
+                                                            }
                                                         </td>
                                                         <td className="content-center">
                                                             <div className="flex flex-wrap space-x-1">
@@ -387,7 +389,7 @@ export default function Category({
                                 type="submit"
                                 className="border border-sky-500 py-2 px-4 rounded text-sm bg-sky-500 text-white hover:bg-sky-600"
                             >
-                                Save
+                                {isEdit == true ? "Update" : "Save"}
                             </button>
                         </div>
                     </form>
