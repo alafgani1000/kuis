@@ -37,7 +37,7 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required'
         ]);
-        Categories::create([
+        Category::create([
             'name' => $request->name,
             'description' => $request->description
         ]);
