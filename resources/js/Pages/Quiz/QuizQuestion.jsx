@@ -353,6 +353,7 @@ export default function QuizQuestion({
                                 <option value="">
                                     --- Please Select Type ---
                                 </option>
+                                <option value="All">All</option>
                                 {types.map((type, index) => (
                                     <option key={index} value={type.id}>
                                         {type.name}
@@ -375,6 +376,7 @@ export default function QuizQuestion({
                                 <option value="">
                                     --- Please Select Category ---
                                 </option>
+                                <option value="All">All</option>
                                 {categories.map((category, index) => (
                                     <option key={index} value={category.id}>
                                         {category.name}
