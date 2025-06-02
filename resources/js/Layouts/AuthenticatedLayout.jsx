@@ -20,7 +20,7 @@ export default function Authenticated({ auth, header, children }) {
                 }
             >
                 <div className="overflow-auto mb-20">
-                    <div className="flex w-full justify-between px-6 py-8">
+                    <div className="flex w-full justify-between px-6 py-5">
                         {/* <h2 className="text-2xl">Regrinding </h2> */}
                         <Link className="mx-4 flex" href="/">
                             <ApplicationLogo className="block h-12 w-auto fill-current text-gray-800" />
@@ -83,6 +83,14 @@ export default function Authenticated({ auth, header, children }) {
                         >
                             <i className="bi bi-clipboard me-4 text-base"></i>
                             Type
+                        </NavLink>
+                        <NavLink
+                            className="ms-2 block"
+                            href={route("category.index")}
+                            active={route().current("category.index")}
+                        >
+                            <i className="bi bi-clipboard me-4 text-base"></i>
+                            Category
                         </NavLink>
                     </div>
 
@@ -221,7 +229,7 @@ export default function Authenticated({ auth, header, children }) {
 
                     {header && (
                         <header className="bg-white">
-                            <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8 text-lg font-semibold">
+                            <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8 text-base font-semibold">
                                 {header}
                             </div>
                         </header>

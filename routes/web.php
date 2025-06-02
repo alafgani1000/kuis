@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\TypeController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizQuestionController;
@@ -73,11 +74,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/type/{id}/delete', [TypeController::class, 'delete'])->name('type.delete');
     Route::get('/type/data', [TypeController::class, 'data'])->name('type.data');
 
+    // Category
+    Route::get('/cateories', [CategoryController::class, 'index'])->name('category.index');
+    Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
+    Route::put('/category/{id}/update', [CategoryController::class, 'update'])->name('category.update');
+    Route::delete('/category/{id}/delete', [CategoryController::class, 'delete'])->name('category.delete');
+    Route::get('/category/data', [CategoryController::class, 'data'])->name('category.data');
+
     // Question
     Route::get('/question', [QuestionController::class, 'index'])->name('question.index');
     Route::post('/question', [QuestionController::class, 'store'])->name('question.store');
     Route::put('/question/{id}/update', [QuestionController::class, 'update'])->name('question.update');
     Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
+    Route::get('/question/data', [QuestionController::class, 'data'])->name('question.data');
+    Route::get('/question/datas', [QuestionController::class, 'datas'])->name('question.datas');
 
     // Quiz
     Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Question;
+use App\Models\QuizQuestion;
 use App\Models\Type;
 use App\Models\Answer;
 
@@ -131,5 +132,28 @@ class QuestionController extends Controller
         }
         DB::commit();
         return 'Delete Success';
+    }
+
+    public function data($id)
+    {
+        $question = Question::with('answers')->find($id);
+        if (!$question) {
+            return response()->json(['message' => 'Question not found'], 404);
+        }
+        return response()->json($question);
+    }
+
+    public function datas(Request $request)
+    {
+        $quizQuestions = QuizQuestion::where('quiz_id', $request->quiz_id)->get();
+        if (isset($quizQuestions)) {
+            $questions = Question::with('answers','type')
+                ->get();
+        } else {
+            $questions = Question::with('answers','type')
+                ->whereNotIn('id', $quizQuestions->pluck('question_id'))
+                ->get();
+        }
+        return response()->json($questions);
     }
 }

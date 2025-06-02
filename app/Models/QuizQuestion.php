@@ -13,8 +13,9 @@ class QuizQuestion extends Model
 
     protected $fillable = [
         'quiz_id',
-        'question',
+        'question_id',
         'type_id',
+        'question',
         'active',
         'created_by',
         'score',
