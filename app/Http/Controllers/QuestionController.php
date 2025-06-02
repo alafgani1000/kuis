@@ -155,10 +155,10 @@ class QuestionController extends Controller
     {
         $quizQuestions = QuizQuestion::where('quiz_id', $request->quiz_id)->get();
         if (isset($quizQuestions)) {
-            $questions = Question::with('answers','type')
+            $questions = Question::with('answers','type','category')
                 ->get();
         } else {
-            $questions = Question::with('answers','type')
+            $questions = Question::with('answers','type','category')
                 ->whereNotIn('id', $quizQuestions->pluck('question_id'))
                 ->get();
         }

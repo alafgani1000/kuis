@@ -22,6 +22,7 @@ export default function QuizQuestion({
     const [question, setQuestion] = useState("");
     const [active, setActive] = useState("");
     const [type, setType] = useState("");
+    const [category, setCategory] = useState("");
     const [score, setScore] = useState("");
     const [id, setId] = useState("");
     const [idDelete, setIdDelete] = useState("");
@@ -29,6 +30,12 @@ export default function QuizQuestion({
     const [formTitle, setFormTitle] = useState("Create New Quiz Question");
     const [masterQuestions, setMasterQuestions] = useState([]);
     const [types, setTypes] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [filter, setFilter] = useState({
+        category: "",
+        type: "",
+        search: "",
+    });
 
     const handleSearch = () => {
         // handle search
@@ -76,8 +83,18 @@ export default function QuizQuestion({
         }
     };
 
+    const getCategories = async () => {
+        try {
+            const response = await axios.get(route("category.data"));
+            setCategories(response.data);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
+    };
+
     useEffect(() => {
         getMasterQuestions();
+        getCategories();
         getTypes();
     }, []);
 
@@ -324,8 +341,13 @@ export default function QuizQuestion({
                         <div className="grid mt-4">
                             <label className="mb-2">Type:</label>
                             <select
-                                value={type}
-                                onChange={(e) => setType(e.target.value)}
+                                value={filter.type}
+                                onChange={(e) =>
+                                    setFilter({
+                                        ...filter,
+                                        type: e.target.value,
+                                    })
+                                }
                                 className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
                             >
                                 <option value="">
@@ -338,18 +360,95 @@ export default function QuizQuestion({
                                 ))}
                             </select>
                         </div>
+                        <div className="grid mt-4">
+                            <label className="mb-2">Category:</label>
+                            <select
+                                value={filter.category}
+                                onChange={(e) =>
+                                    setFilter({
+                                        ...filter,
+                                        category: e.target.value,
+                                    })
+                                }
+                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                            >
+                                <option value="">
+                                    --- Please Select Category ---
+                                </option>
+                                {categories.map((category, index) => (
+                                    <option key={index} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                         <div className="grid mt-6">
                             <h3 className="font-medium">
                                 Master Data Questions
                             </h3>
                             <div className="grid mt-4">
-                                <label className="mb-2">Question:</label>
+                                <label className="mb-2">Search Question:</label>
                                 <input
+                                    onChange={(e) =>
+                                        setFilter({
+                                            ...filter,
+                                            search: e.target.value,
+                                        })
+                                    }
                                     type="text"
+                                    value={filter.search}
                                     className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
                                 />
                             </div>
-                            <div></div>
+                            <div className="grid mt-4">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr>
+                                            <th className="text-left py-2 px-4">
+                                                Question
+                                            </th>
+                                            <th className="text-left py-2 px-4">
+                                                Category
+                                            </th>
+                                            <th className="text-left py-2 px-4">
+                                                Type
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {masterQuestions
+                                            .filter(
+                                                (q) =>
+                                                    q.question
+                                                        .toLowerCase()
+                                                        .includes(
+                                                            filter.search.toLowerCase()
+                                                        ) &&
+                                                    q.category_id ==
+                                                        filter.category
+                                            )
+                                            .map((question, index) => (
+                                                <tr
+                                                    key={index}
+                                                    className="border-t last:border-b"
+                                                >
+                                                    <td className="text-left py-2 px-4">
+                                                        {question.question}
+                                                    </td>
+                                                    <td className="text-left py-2 px-4">
+                                                        {
+                                                            question.category
+                                                                ?.name
+                                                        }
+                                                    </td>
+                                                    <td className="text-left py-2 px-4">
+                                                        {question.type?.name}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
                             <div className="grid justify-end mt-4">
                                 <button
                                     type="submit"
