@@ -83,7 +83,10 @@ class QuestionController extends Controller
        $error = array();
         $question = $request->question;
         if ($question['content'] == "") {
-            $error['qustion.content'] = 'A Question is required';
+            $error['question.content'] = 'A Question is required';
+        }
+        if ($question['category'] == "") {
+            $error['question.category'] = 'A Question Category is required';
         }
         foreach ($question['answers'] as $answer) {
             if ($answer['content'] == "") {
@@ -97,6 +100,7 @@ class QuestionController extends Controller
             try {
                 $create = Question::where('id', $id)->update([
                     'type_id' => $request->type,
+                    'category_id' => $question['category'],
                     'question' => $question['content'],
                     'created_by' => Auth::id(),
                     'active' => 1
@@ -117,7 +121,7 @@ class QuestionController extends Controller
             }
             DB::commit();
         }
-        return 'Store Success';
+        return 'Update Success';
     }
 
     public function delete(Request $request, $id)

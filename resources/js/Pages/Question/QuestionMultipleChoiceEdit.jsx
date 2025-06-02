@@ -1,14 +1,18 @@
 import axios from "axios";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import Category from "../Category/Category";
 
 export default function QuestionMultipleChoiceEdit({
     className = "",
     typeId = 0,
     data = {},
+    categories = [],
+    categoryId = "",
 }) {
     const [counter, setCounter] = useState(data?.answers.length);
     const [question, setQuestion] = useState({
+        category: categoryId,
         content: data.question,
         answers: data.answers,
     });
@@ -61,6 +65,7 @@ export default function QuestionMultipleChoiceEdit({
     const resetData = () => {
         setQuestion({
             content: "",
+            category: "",
             answers: [],
         });
         setCounter(0);
@@ -91,6 +96,28 @@ export default function QuestionMultipleChoiceEdit({
 
     return (
         <div className={className}>
+            <div className="bg-white rounded pt-2 pb-4 px-3">
+                <label>Category</label>
+                <select
+                    className="rounded block mt-1 w-full border-gray-200 ring-gray-200"
+                    onChange={(e) => {
+                        setQuestion((prev) => ({
+                            ...prev,
+                            category: e.target.value,
+                        }));
+                    }}
+                    value={question.category}
+                >
+                    <option value="">Select Category</option>
+                    {categories.map((item) => {
+                        return (
+                            <option value={item.id} key={item.id}>
+                                {item.name}
+                            </option>
+                        );
+                    })}
+                </select>
+            </div>
             <div className="bg-white rounded pt-2 pb-4 px-3">
                 <label>Question</label>
                 <textarea

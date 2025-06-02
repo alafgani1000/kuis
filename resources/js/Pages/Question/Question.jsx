@@ -499,6 +499,8 @@ export default function Question({
                                     type={questionType.code}
                                     typeId={questionType.id}
                                     data={question}
+                                    categories={categories}
+                                    categoryId={question.category_id}
                                 />
                             </div>
                             {/* <div className="grid justify-end mt-4"></div> */}
