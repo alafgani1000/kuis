@@ -17,6 +17,7 @@ return new class extends Migration
             $table->tinyInteger('active');
             $table->tinyInteger('correct');
             $table->text('content');
+            $table->integer('score')->default(0);
             $table->timestamps();
         });
     }

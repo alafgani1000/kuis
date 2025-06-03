@@ -4,6 +4,8 @@ import { Head, Link, router, useForm } from "@inertiajs/react";
 import parse from "html-react-parser";
 import Modal from "@/Components/Modal";
 import axios from "axios";
+import QuizQuestionAnswer from "./QuizQuestionAnswer";
+import Swal from "sweetalert2";
 
 export default function QuizQuestion({
     auth,
@@ -36,12 +38,14 @@ export default function QuizQuestion({
         type: "",
         search: "",
     });
+    const [questionPick, setQuestionPick] = useState("");
+    const [processing, setProcessing] = useState(false);
 
     const handleSearch = () => {
         // handle search
         if (wasSearch) {
             router.get(
-                route(route().current()),
+                route(route().current(), { quiz_id: quiz.id }),
                 { search: search, sort: sort, perPage: perPage },
                 {
                     replace: true,
@@ -54,7 +58,7 @@ export default function QuizQuestion({
     const handleRefresh = () => {
         // handle search
         router.get(
-            route(route().current()),
+            route(route().current(), { quiz_id: quiz.id }),
             { search: search, sort: sort, perPage: perPage },
             {
                 replace: true,
@@ -96,7 +100,7 @@ export default function QuizQuestion({
         getMasterQuestions();
         getCategories();
         getTypes();
-    }, []);
+    }, [processing]);
 
     useEffect(() => {
         handleSearch();
@@ -108,6 +112,45 @@ export default function QuizQuestion({
 
     const closeModalCreate = () => {
         setModalCreate(false);
+    };
+
+    const reset = () => {
+        setQuestionPick("");
+        setScore("");
+    };
+
+    const quizQuestionStore = (e) => {
+        e.preventDefault();
+        if (questionPick === "") {
+            alert("Please select a question from the master data.");
+            return;
+        }
+        const data = {
+            question: questionPick,
+            score: score,
+        };
+        setProcessing(true);
+        axios
+            .put(route("quiz.question.store", quiz.id), data)
+            .then((response) => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: "Question added successfully..",
+                });
+                handleRefresh();
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to add question.",
+                });
+            })
+            .finally(() => {
+                setProcessing(false);
+                reset();
+            });
     };
 
     return (
@@ -201,7 +244,16 @@ export default function QuizQuestion({
                                                 Question
                                             </th>
                                             <th className="text-left py-4 px-4">
+                                                Type
+                                            </th>
+                                            <th className="text-left py-4 px-4">
+                                                Category
+                                            </th>
+                                            <th className="text-left py-4 px-4">
                                                 Active
+                                            </th>
+                                            <th className="text-left py-4 px-4">
+                                                Answers
                                             </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
@@ -220,16 +272,36 @@ export default function QuizQuestion({
                                                             {question.question}
                                                         </td>
                                                         <td className="text-left py-3 px-4">
-                                                            {quiz.active ===
+                                                            {
+                                                                question.type
+                                                                    ?.name
+                                                            }
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {
+                                                                question
+                                                                    .category
+                                                                    ?.name
+                                                            }
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            {question.active ===
                                                             1 ? (
                                                                 <span className="text-green-600 bg-green-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                    True
+                                                                    Published
                                                                 </span>
                                                             ) : (
                                                                 <span className="text-red-600 bg-red-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                    False
+                                                                    Unpublished
                                                                 </span>
                                                             )}
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            <QuizQuestionAnswer
+                                                                answers={
+                                                                    question.answers
+                                                                }
+                                                            />
                                                         </td>
                                                         <td className="content-center">
                                                             <div className="flex flex-wrap space-x-1">
@@ -334,7 +406,7 @@ export default function QuizQuestion({
                             <i className="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <form className="px-6 pb-6">
+                    <form onSubmit={quizQuestionStore} className="px-6 pb-6">
                         <h2 className="text-lg font-medium text-gray-900">
                             {formTitle}
                         </h2>
@@ -384,7 +456,8 @@ export default function QuizQuestion({
                                 ))}
                             </select>
                         </div>
-                        <div className="grid mt-6">
+
+                        <div className="grid mt-6 max-h-screen overflow-y-auto">
                             <h3 className="font-medium">
                                 Master Data Questions
                             </h3>
@@ -402,10 +475,30 @@ export default function QuizQuestion({
                                     className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
                                 />
                             </div>
+                            {questionPick !== "" ? (
+                                <div className="grid mt-4">
+                                    <label className="mb-2">Score:</label>
+                                    <input
+                                        type="number"
+                                        placeholder="Enter score"
+                                        min="0"
+                                        max="100"
+                                        value={score}
+                                        onChange={(e) =>
+                                            setScore(e.target.value)
+                                        }
+                                        required={true}
+                                        className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                    />
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                             <div className="grid mt-4">
                                 <table className="w-full">
                                     <thead>
                                         <tr>
+                                            <th></th>
                                             <th className="text-left py-2 px-4">
                                                 Question
                                             </th>
@@ -415,25 +508,72 @@ export default function QuizQuestion({
                                             <th className="text-left py-2 px-4">
                                                 Type
                                             </th>
+                                            <th className="text-left py-2 px-4">
+                                                Answers
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {masterQuestions
                                             .filter(
                                                 (q) =>
-                                                    q.question
-                                                        .toLowerCase()
-                                                        .includes(
-                                                            filter.search.toLowerCase()
-                                                        ) &&
-                                                    q.category_id ==
-                                                        filter.category
+                                                    (filter.type === "" &&
+                                                        (filter.category ===
+                                                            "" ||
+                                                            filter.category ===
+                                                                "All" ||
+                                                            q.category_id ==
+                                                                filter.category) &&
+                                                        q.question
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                filter.search.toLowerCase()
+                                                            )) ||
+                                                    (filter.type === "All" &&
+                                                        (filter.category ===
+                                                            "" ||
+                                                            filter.category ===
+                                                                "All" ||
+                                                            q.category_id ==
+                                                                filter.category) &&
+                                                        q.question
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                filter.search.toLowerCase()
+                                                            )) ||
+                                                    (q.type_id == filter.type &&
+                                                        (filter.category ===
+                                                            "" ||
+                                                            filter.category ===
+                                                                "All" ||
+                                                            q.category_id ==
+                                                                filter.category) &&
+                                                        q.question
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                filter.search.toLowerCase()
+                                                            ))
                                             )
                                             .map((question, index) => (
                                                 <tr
                                                     key={index}
                                                     className="border-t last:border-b"
                                                 >
+                                                    <td className="text-left py-2 px-4">
+                                                        <input
+                                                            onChange={() => {
+                                                                setQuestionPick(
+                                                                    question.id
+                                                                );
+                                                            }}
+                                                            checked={
+                                                                questionPick ===
+                                                                question.id
+                                                            }
+                                                            type="radio"
+                                                            name="pick_question"
+                                                        />
+                                                    </td>
                                                     <td className="text-left py-2 px-4">
                                                         {question.question}
                                                     </td>
@@ -445,6 +585,13 @@ export default function QuizQuestion({
                                                     </td>
                                                     <td className="text-left py-2 px-4">
                                                         {question.type?.name}
+                                                    </td>
+                                                    <td className="text-left py-2 px-4">
+                                                        <QuizQuestionAnswer
+                                                            answers={
+                                                                question.answers
+                                                            }
+                                                        />
                                                     </td>
                                                 </tr>
                                             ))}

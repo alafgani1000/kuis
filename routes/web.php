@@ -98,7 +98,7 @@ Route::middleware('auth')->group(function () {
 
     // Quiz question
     Route::get('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'index'])->name('quiz.question.index');
-    Route::post('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'store'])->name('quiz.question.store');
+    Route::put('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'store'])->name('quiz.question.store');
     Route::get('/quiz/{id}/question-check', [QuizQuestionController::class, 'check'])->name('quiz.question.check');
     Route::put('/quiz/question/{id}/update', [QuizQuestionController::class, 'update'])->name('quiz.question.update');
     Route::delete('/quiz/question/{id}/delete', [QuizQuestionController::class, 'delete'])->name('quiz.question.delete');

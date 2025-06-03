@@ -16,6 +16,7 @@ class QuizQuestionAnswer extends Model
         'content',
         'correct',
         'active',
+        'score',
     ];
 
     public function quizQuestion()

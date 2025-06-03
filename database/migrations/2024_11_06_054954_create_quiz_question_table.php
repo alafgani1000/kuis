@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->integer('quiz_id');
             $table->integer('type_id');
+            $table->integer('category_id');
             $table->integer('question_id');
             $table->text('question');
             $table->tinyInteger('active');
             $table->integer('created_by');
-            $table->integer('score');
             $table->timestamps();
         });
     }

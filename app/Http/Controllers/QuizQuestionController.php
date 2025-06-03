@@ -13,6 +13,10 @@ use Inertia\Response;
 use App\Models\QuizQuestion;
 use App\Models\Quiz;
 use App\Models\QuizQuestionAnswer;
+use App\Models\Question;
+use App\Models\Type;
+use App\Models\Answer;
+
 class QuizQuestionController extends Controller
 {
     public function index(Request $request, $quizId): Response
@@ -20,7 +24,7 @@ class QuizQuestionController extends Controller
         $search = $request->search;
         $perPage = isset($request->perPage) ? $request->perPage : 10;
         $sort = isset($request->sort) ? $request->sort : 'id';
-        $questions = QuizQuestion::where('quiz_id', $quizId)
+        $questions = QuizQuestion::with('type','category','answers')->where('quiz_id', $quizId)
             ->where(function (Builder $query) use ($search) {
                 return $query->where('question', 'like', '%' . $search . '%');
             })
@@ -36,43 +40,38 @@ class QuizQuestionController extends Controller
         ]);
     }
 
-    public function store(Request $request, $quizId)
+    public function store(Request $request, $quiz_id)
     {
-        $error = array();
-        $question = $request->question;
-        if ($question['content'] == "") {
-            $error['qustion.content'] = 'A Question is required';
-        }
-        foreach ($question['answers'] as $answer) {
-            if ($answer['content'] == "") {
-                $error['answer'.$answer['id']] = 'A answer is required';
-            }
-        }
-        if (count($error)) {
-            return response()->json($error, 422);
-        } else {
-            DB::beginTransaction();
-            try {
-                $create = QuizQuestion::create([
-                    'quize_id' => $quizId,
-                    'type_id' => $request->type,
-                    'question' => $question['content'],
-                    'created_by' => Auth::id(),
-                    'active' => 1
+        $request->validate([
+            'question' => 'required',
+            'score' => 'required|numeric'
+        ]);
+        $question = Question::with('answers')
+            ->where('id', $request->question)
+            ->first();
+        DB::beginTransaction();
+        try {
+            $create = QuizQuestion::create([
+                'quiz_id' => $quiz_id,
+                'type_id' => $question->type_id,
+                'category_id' => $question->category_id,
+                'question' => $question->question,
+                'created_by' => Auth::id(),
+                'active' => 1
+            ]);
+            foreach ($question->answers as $answer) {
+                $create->answers()->create([
+                    'content' => $answer->content,
+                    'correct' => $answer->correct,
+                    'active' => '1',
+                    'score' => $request->score
                 ]);
-                foreach ($question['answers'] as $answer) {
-                    $create->answers()->create([
-                        'content' => $answer['content'],
-                        'correct' => $answer['correct'],
-                        'active' => '1'
-                    ]);
-                }
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
             }
-            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
+        DB::commit();
         return response('Store Success');
     }
 

@@ -15,10 +15,10 @@ class QuizQuestion extends Model
         'quiz_id',
         'question_id',
         'type_id',
+        'category_id',
         'question',
         'active',
         'created_by',
-        'score',
     ];
 
     public function quiz()
@@ -31,6 +31,11 @@ class QuizQuestion extends Model
         return $this->belongsTo(Type::class, 'type_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -38,7 +43,7 @@ class QuizQuestion extends Model
 
     public function answers()
     {
-        return $this->hasMany(QuizAnswer::class);
+        return $this->hasMany(QuizQuestionAnswer::class);
     }
 
     public function takeAnswers()
