@@ -56,6 +56,7 @@ class QuizQuestionController extends Controller
                 'type_id' => $question->type_id,
                 'category_id' => $question->category_id,
                 'question' => $question->question,
+                'question_id' => $question->id,
                 'created_by' => Auth::id(),
                 'active' => 1
             ]);

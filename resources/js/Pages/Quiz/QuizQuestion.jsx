@@ -288,11 +288,11 @@ export default function QuizQuestion({
                                                             {question.active ===
                                                             1 ? (
                                                                 <span className="text-green-600 bg-green-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                    Published
+                                                                    Active
                                                                 </span>
                                                             ) : (
                                                                 <span className="text-red-600 bg-red-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                    Unpublished
+                                                                    Inactive
                                                                 </span>
                                                             )}
                                                         </td>

@@ -153,13 +153,14 @@ class QuestionController extends Controller
 
     public function datas(Request $request)
     {
-        $quizQuestions = QuizQuestion::where('quiz_id', $request->quiz_id)->get();
+        $quizQuestions = QuizQuestion::where('quiz_id', $request->quiz)->get();
         if (isset($quizQuestions)) {
             $questions = Question::with('answers','type','category')
+                ->whereNotIn('id', $quizQuestions->pluck('question_id'))
                 ->get();
         } else {
+
             $questions = Question::with('answers','type','category')
-                ->whereNotIn('id', $quizQuestions->pluck('question_id'))
                 ->get();
         }
         return response()->json($questions);
