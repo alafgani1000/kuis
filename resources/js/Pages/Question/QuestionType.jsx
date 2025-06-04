@@ -13,7 +13,9 @@ export default function QuestionType({
             <QuestionMultipleChoice typeId={typeId} categories={categories} />
         );
     } else if (type == "multiple_response") {
-        return <QuestionMultipleResponse />;
+        return (
+            <QuestionMultipleResponse typeId={typeId} categories={categories} />
+        );
     } else if (type == "short_answer") {
         return <QuestionShortAnswer />;
     }

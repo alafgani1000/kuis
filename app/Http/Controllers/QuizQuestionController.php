@@ -61,11 +61,17 @@ class QuizQuestionController extends Controller
                 'active' => 1
             ]);
             foreach ($question->answers as $answer) {
+                if ($answer->correct == 1) {
+                    $score = $request->score;
+                } else {
+                    $score = 0;
+                }
+                // Create answers for the quiz question
                 $create->answers()->create([
                     'content' => $answer->content,
                     'correct' => $answer->correct,
                     'active' => '1',
-                    'score' => $request->score
+                    'score' => $score
                 ]);
             }
         } catch (\Exception $e) {

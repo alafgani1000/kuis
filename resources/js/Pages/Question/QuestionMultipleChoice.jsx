@@ -50,6 +50,7 @@ export default function QuestionMultipleChoice({
 
     const resetData = () => {
         setQuestion({
+            category: "",
             content: "",
             answers: [],
         });
