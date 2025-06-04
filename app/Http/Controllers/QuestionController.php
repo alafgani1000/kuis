@@ -44,36 +44,65 @@ class QuestionController extends Controller
         if ($question['category'] == "") {
             $error['question.category'] == 'A category is required';
         }
-        foreach ($question['answers'] as $answer) {
-            if ($answer['content'] == "") {
-                $error['answer'.$answer['id']] = 'A answer is required';
+        $type = Type::find($request->type);
+        if (!$type) {
+            return response()->json(['message' => 'Type not found'], 404);
+        }
+        if ($type->code != 'short_answer') {
+            foreach ($question['answers'] as $answer) {
+                if ($answer['content'] == "") {
+                    $error['answer'.$answer['id']] = 'A answer is required';
+                }
             }
         }
         if (count($error)) {
             return response()->json($error, 422);
         } else {
-            DB::beginTransaction();
-            try {
-                $create = Question::create([
-                    'type_id' => $request->type,
-                    'category_id' => $question['category'],
-                    'question' => $question['content'],
-                    'created_by' => Auth::id(),
-                    'active' => 1
-                ]);
-                foreach ($question['answers'] as $answer) {
-                    $create->answers()->create([
-                        'content' => $answer['content'],
-                        'correct' => $answer['correct'],
-                        'active' => '1'
+            if ($type->code == 'short_answer') {
+                DB::beginTransaction();
+                try {
+                    $create = Question::create([
+                        'type_id' => $request->type,
+                        'category_id' => $question['category'],
+                        'question' => $question['content'],
+                        'created_by' => Auth::id(),
+                        'active' => 1
                     ]);
-                }
+                    $create->answers()->create([
+                        'content' => strtolower($question['answer']),
+                        'correct' => 1,
+                        'active' => 1
+                    ]);
 
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    throw $e;
+                }
+                DB::commit();
+            } else {
+                DB::beginTransaction();
+                try {
+                    $create = Question::create([
+                        'type_id' => $request->type,
+                        'category_id' => $question['category'],
+                        'question' => $question['content'],
+                        'created_by' => Auth::id(),
+                        'active' => 1
+                    ]);
+                    foreach ($question['answers'] as $answer) {
+                        $create->answers()->create([
+                            'content' => $answer['content'],
+                            'correct' => $answer['correct'],
+                            'active' => '1'
+                        ]);
+                    }
+
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    throw $e;
+                }
+                DB::commit();
             }
-            DB::commit();
         }
         return 'Store Success';
     }

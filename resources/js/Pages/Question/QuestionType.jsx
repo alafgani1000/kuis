@@ -17,6 +17,6 @@ export default function QuestionType({
             <QuestionMultipleResponse typeId={typeId} categories={categories} />
         );
     } else if (type == "short_answer") {
-        return <QuestionShortAnswer />;
+        return <QuestionShortAnswer typeId={typeId} categories={categories} />;
     }
 }
