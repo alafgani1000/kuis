@@ -461,7 +461,7 @@ export default function Question({
                         </button>
                     </div>
                     <h2 className="text-lg font-medium text-gray-900 mx-4">
-                        Form Create Question
+                        Form Edit Question
                     </h2>
                     <div className="px-4 pb-4 bg-gray-100 mt-4 py-4 rounded mx-4">
                         <div className="space-y-4">

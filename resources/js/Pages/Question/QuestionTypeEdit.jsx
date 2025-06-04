@@ -1,5 +1,5 @@
 import QuestionMultipleChoiceEdit from "./QuestionMultipleChoiceEdit";
-import QuestionMultipleResponse from "./QuestionMultipleResponse";
+import QuestionMultipleResponseEdit from "./QuestionMultipleResponseEdit";
 import QuestionShortAnswer from "./QuestionShortAnswer";
 
 export default function QuestionTypeEdit({
@@ -10,6 +10,7 @@ export default function QuestionTypeEdit({
     categoryId = "",
     data = { content: "", answers: [] },
 }) {
+    console.log(data);
     if (type == "multiple_choice") {
         return (
             <QuestionMultipleChoiceEdit
@@ -20,7 +21,14 @@ export default function QuestionTypeEdit({
             />
         );
     } else if (type == "multiple_response") {
-        return <QuestionMultipleResponse />;
+        return (
+            <QuestionMultipleResponseEdit
+                typeId={typeId}
+                data={data}
+                categories={categories}
+                categoryId={categoryId}
+            />
+        );
     } else if (type == "short_answer") {
         return <QuestionShortAnswer />;
     }
