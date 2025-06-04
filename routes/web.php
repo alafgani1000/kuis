@@ -102,6 +102,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/quiz/{id}/question-check', [QuizQuestionController::class, 'check'])->name('quiz.question.check');
     Route::put('/quiz/question/{id}/update', [QuizQuestionController::class, 'update'])->name('quiz.question.update');
     Route::delete('/quiz/question/{id}/delete', [QuizQuestionController::class, 'delete'])->name('quiz.question.delete');
+    Route::get('/quiz/{quiz_id}/question-data', [QuizQuestionController::class, 'data'])->name('quiz.question.data');
 
 
 });

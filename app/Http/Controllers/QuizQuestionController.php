@@ -176,4 +176,12 @@ class QuizQuestionController extends Controller
         }
     }
 
+    public function data($quiz_id)
+    {
+        $questions = QuizQuestion::with('type', 'category', 'answers')
+            ->where('quiz_id', $quiz_id)
+            ->get();
+        return response()->json($questions);
+    }
+
 }

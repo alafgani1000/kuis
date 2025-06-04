@@ -13,7 +13,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                         {/* multiple choice */}
                         {questions.map((question, index) => {
                             return (
-                                <MultipleResponse
+                                <MultipeChoice
                                     question={question}
                                     key={question.id}
                                 />

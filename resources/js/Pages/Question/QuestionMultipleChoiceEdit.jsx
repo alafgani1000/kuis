@@ -130,15 +130,17 @@ export default function QuestionMultipleChoiceEdit({
                     value={question.content}
                 ></textarea>
             </div>
-            <div className="mt-4 flex space-x-2">
+            <div className="mt-4 flex space-x-6 items-center">
                 <button
                     onClick={createAnwer}
                     type="button"
-                    className="bg-sky-950 px-3 rounded text-white"
+                    className="bg-sky-950 px-2 py-2 rounded text-white"
                 >
-                    +
+                    + Add answers
                 </button>
-                <span>{counter}</span>
+                <span className="py-2 px-3 rounded bg-slate-300">
+                    {counter}
+                </span>
             </div>
             <div className="my-4">
                 <h3 className="my-4">List answer</h3>
