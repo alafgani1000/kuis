@@ -285,7 +285,12 @@ export default function Question({
                                                             </ul>
                                                         </td>
                                                         <td className="text-left py-3 px-4">
-                                                            {question.active}
+                                                            {question.active ==
+                                                            1 ? (
+                                                                <i className="bi bi-check2-circle text-teal-600"></i>
+                                                            ) : (
+                                                                <i className="bi bi-x-circle text-rose-600"></i>
+                                                            )}
                                                         </td>
                                                         <td className="content-center">
                                                             <div className="flex flex-wrap items-center justify-center space-x-1">

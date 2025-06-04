@@ -1,6 +1,6 @@
 import QuestionMultipleChoiceEdit from "./QuestionMultipleChoiceEdit";
 import QuestionMultipleResponseEdit from "./QuestionMultipleResponseEdit";
-import QuestionShortAnswer from "./QuestionShortAnswer";
+import QuestionShortAnswerEdit from "./QuestionShortAnswerEdit";
 
 export default function QuestionTypeEdit({
     type = "",
@@ -30,6 +30,13 @@ export default function QuestionTypeEdit({
             />
         );
     } else if (type == "short_answer") {
-        return <QuestionShortAnswer />;
+        return (
+            <QuestionShortAnswerEdit
+                typeId={typeId}
+                data={data}
+                categories={categories}
+                categoryId={categoryId}
+            />
+        );
     }
 }

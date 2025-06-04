@@ -54,6 +54,10 @@ class QuestionController extends Controller
                     $error['answer'.$answer['id']] = 'A answer is required';
                 }
             }
+        } else {
+            if ($question['answer'] == "") {
+                $error['answer'] = 'A answer is required';
+            }
         }
         if (count($error)) {
             return response()->json($error, 422);
@@ -117,38 +121,64 @@ class QuestionController extends Controller
         if ($question['category'] == "") {
             $error['question.category'] = 'A Question Category is required';
         }
-        foreach ($question['answers'] as $answer) {
-            if ($answer['content'] == "") {
-                $error['answer'.$answer['id']] = 'A answer is required';
+        $type = Type::find($request->type);
+        if (!$type) {
+            return response()->json(['message' => 'Type not found'], 404);
+        }
+        if ($type->code != 'short_answer') {
+            foreach ($question['answers'] as $answer) {
+                if ($answer['content'] == "") {
+                    $error['answer'.$answer['id']] = 'A answer is required';
+                }
+            }
+        } else {
+            if ($question['answer'] == "") {
+                $error['answer'] = 'A answer is required';
             }
         }
+
         if (count($error)) {
             return response()->json($error, 422);
         } else {
-            DB::beginTransaction();
-            try {
-                $create = Question::where('id', $id)->update([
+            if ($type->code == 'short_answer') {
+                $update = Question::where('id', $id)->update([
                     'type_id' => $request->type,
                     'category_id' => $question['category'],
                     'question' => $question['content'],
                     'created_by' => Auth::id(),
                     'active' => 1
                 ]);
-                $delete = Answer::where('question_id', $id)->delete();
-                foreach ($question['answers'] as $answer) {
-                    Answer::create([
-                        'question_id' => $id,
-                        'content' => $answer['content'],
-                        'correct' => $answer['correct'],
-                        'active' => '1'
+                $updateAnswer = Answer::where('id', $question['answer_id'])->update([
+                    'content' => strtolower($question['answer']),
+                    'correct' => 1,
+                    'active' => 1
+                ]);
+            } else {
+                DB::beginTransaction();
+                try {
+                    $update = Question::where('id', $id)->update([
+                        'type_id' => $request->type,
+                        'category_id' => $question['category'],
+                        'question' => $question['content'],
+                        'created_by' => Auth::id(),
+                        'active' => 1
                     ]);
-                }
+                    $delete = Answer::where('question_id', $id)->delete();
+                    foreach ($question['answers'] as $answer) {
+                        Answer::create([
+                            'question_id' => $id,
+                            'content' => $answer['content'],
+                            'correct' => $answer['correct'],
+                            'active' => '1'
+                        ]);
+                    }
 
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    throw $e;
+                }
+                DB::commit();
             }
-            DB::commit();
         }
         return 'Update Success';
     }

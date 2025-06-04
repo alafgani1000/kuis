@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
 import Swal from "sweetalert2";
-import Category from "../Category/Category";
 
 export default function QuestionMultipleChoiceEdit({
     className = "",
