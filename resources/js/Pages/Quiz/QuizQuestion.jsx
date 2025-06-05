@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router, useForm } from "@inertiajs/react";
 import parse from "html-react-parser";
@@ -39,6 +39,7 @@ export default function QuizQuestion({
         search: "",
     });
     const [questionPick, setQuestionPick] = useState("");
+    const [questionAnswers, setQuestionAnswers] = useState([]);
     const [processing, setProcessing] = useState(false);
     const [questionsData, setQuestionsData] = useState([]);
 
@@ -100,7 +101,7 @@ export default function QuizQuestion({
     const getQuestions = async () => {
         try {
             const response = await axios.get(
-                route("quiz.question.data", { quiz: quiz.id })
+                route("quiz.question.data", { quiz_id: quiz.id })
             );
             setQuestionsData(response.data);
         } catch (error) {
@@ -112,6 +113,7 @@ export default function QuizQuestion({
         getMasterQuestions();
         getCategories();
         getTypes();
+        getQuestions();
     }, [processing]);
 
     useEffect(() => {
@@ -131,14 +133,27 @@ export default function QuizQuestion({
         setScore("");
     };
 
-    const quizQuestionStore = (e) => {
-        e.preventDefault();
+    const addAnswer = (id, e) => {
+        const answers = questionAnswers;
+        const existingAnswer = answers.find((answer) => answer.id === id);
+        if (existingAnswer) {
+            // If the answer already exists, update its point
+            existingAnswer.point = e.target.value;
+        } else {
+            // If the answer does not exist, add it to the answers array
+            answers.push({ id: id, point: e.target.value });
+        }
+        setQuestionAnswers(answers);
+    };
+
+    const quizQuestionStore = () => {
         if (questionPick === "") {
             alert("Please select a question from the master data.");
             return;
         }
         const data = {
             question: questionPick,
+            answers: questionAnswers,
             score: score,
         };
         setProcessing(true);
@@ -411,7 +426,34 @@ export default function QuizQuestion({
             <Modal show={modalCreate} vcenter="false">
                 <div className="bg-white rounded h-full max-w-full w-full mx-auto">
                     <div className="grid h-full grid-cols-2">
-                        <div className="bg-gray-200"></div>
+                        <div className="bg-white py-4 px-4 mx-4 my-4 border-2 rounded-lg">
+                            <h2 className="text-lg font-semibold text-gray-900">
+                                List of Question
+                            </h2>
+                            <table className="text-sm md:text-base w-full table-auto me-4 mt-4">
+                                <thead className="bg-zinc-100 p-2 border">
+                                    <tr className="p-8">
+                                        <th className="text-left py-4 px-4">
+                                            Question
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {questionsData.map((data, index) => {
+                                        return (
+                                            <tr
+                                                key={index}
+                                                className="border border-dashed"
+                                            >
+                                                <td className="py-2 px-2">
+                                                    {data.question}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                         <div className="h-full">
                             <div className="flex flex-col items-end m-0 p-0">
                                 <button
@@ -422,7 +464,7 @@ export default function QuizQuestion({
                                 </button>
                             </div>
                             <div className="px-6 pb-6">
-                                <h2 className="text-lg font-medium text-gray-900">
+                                <h2 className="text-lg font-semibold text-gray-900">
                                     {formTitle}
                                 </h2>
                                 <div className="grid grid-cols-2 space-x-4">
@@ -564,11 +606,10 @@ export default function QuizQuestion({
                                                                     ))
                                                     )
                                                     .map((question, index) => (
-                                                        <>
-                                                            <tr
-                                                                key={index}
-                                                                className="border-t last:border-b"
-                                                            >
+                                                        <React.Fragment
+                                                            key={index}
+                                                        >
+                                                            <tr className="border-t last:border-b">
                                                                 <td className="text-left py-2 px-4">
                                                                     <input
                                                                         onChange={() => {
@@ -647,6 +688,25 @@ export default function QuizQuestion({
                                                                                                     <span>
                                                                                                         <i className="bi bi-check2-circle text-teal-600"></i>
                                                                                                         <input
+                                                                                                            onChange={(
+                                                                                                                e
+                                                                                                            ) =>
+                                                                                                                addAnswer(
+                                                                                                                    answer.id,
+                                                                                                                    e
+                                                                                                                )
+                                                                                                            }
+                                                                                                            // value={
+                                                                                                            //     questionAnswers.find(
+                                                                                                            //         (
+                                                                                                            //             qa
+                                                                                                            //         ) =>
+                                                                                                            //             qa.answer_id ===
+                                                                                                            //             answer.id
+                                                                                                            //     )
+                                                                                                            //         ?.points ||
+                                                                                                            //     ""
+                                                                                                            // }
                                                                                                             type="text"
                                                                                                             className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
                                                                                                             placeholder="Points"
@@ -663,7 +723,10 @@ export default function QuizQuestion({
                                                                                 </ul>
                                                                                 <div className="grid justify-end mt-4">
                                                                                     <button
-                                                                                        type="submit"
+                                                                                        onClick={() => {
+                                                                                            quizQuestionStore();
+                                                                                        }}
+                                                                                        type="button"
                                                                                         className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
                                                                                     >
                                                                                         Save
@@ -680,7 +743,7 @@ export default function QuizQuestion({
                                                                     </td>
                                                                 </tr>
                                                             )}
-                                                        </>
+                                                        </React.Fragment>
                                                     ))}
                                             </tbody>
                                         </table>

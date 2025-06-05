@@ -134,7 +134,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                 </h2>
             }
         >
-            <Head title="Role" />
+            <Head title="Quiz" />
 
             <div className="py-4 lg:py-12 md:py-12">
                 <div className="max-w-full mx-auto space-y-6">

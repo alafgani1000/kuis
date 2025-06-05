@@ -44,11 +44,11 @@ class QuizQuestionController extends Controller
     {
         $request->validate([
             'question' => 'required',
-            'score' => 'required|numeric'
         ]);
         $question = Question::with('answers')
             ->where('id', $request->question)
             ->first();
+        $answersPoint = collect($request->answers);
         DB::beginTransaction();
         try {
             $create = QuizQuestion::create([
@@ -61,24 +61,21 @@ class QuizQuestionController extends Controller
                 'active' => 1
             ]);
             foreach ($question->answers as $answer) {
-                if ($answer->correct == 1) {
-                    $score = $request->score;
-                } else {
-                    $score = 0;
-                }
+                // Find the corresponding answer in the request
+                $score = $answersPoint->where('id', $answer->id)->first();
                 // Create answers for the quiz question
                 $create->answers()->create([
                     'content' => $answer->content,
                     'correct' => $answer->correct,
                     'active' => '1',
-                    'score' => $score
+                    'score' => is_null($score) ? 0 : $score['point']
                 ]);
             }
+            DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
-        DB::commit();
         return response('Store Success');
     }
 
