@@ -42,6 +42,9 @@ export default function QuizQuestion({
     const [questionAnswers, setQuestionAnswers] = useState([]);
     const [processing, setProcessing] = useState(false);
     const [questionsData, setQuestionsData] = useState([]);
+    const [tabStatusActive, setTabStatusActive] = useState("create");
+    const [tabCreate, setTabCreate] = useState("create");
+    const [tabUpdate, setTabUpdate] = useState("update");
 
     const handleSearch = () => {
         // handle search
@@ -67,6 +70,10 @@ export default function QuizQuestion({
                 preserveState: true,
             }
         );
+    };
+
+    const setActiveTab = (tab) => {
+        setTabStatusActive(tab);
     };
 
     const getMasterQuestions = async () => {
@@ -451,7 +458,7 @@ export default function QuizQuestion({
                                 </tbody>
                             </table>
                         </div>
-                        <div className="h-full">
+                        <div className="bg-white py-4 px-4 mx-4 my-4 border-2 rounded-lg">
                             <div className="flex flex-col items-end m-0 p-0">
                                 <button
                                     onClick={() => closeModalCreate()}
@@ -459,6 +466,28 @@ export default function QuizQuestion({
                                 >
                                     <i className="bi bi-x-lg"></i>
                                 </button>
+                            </div>
+                            <div className="px-6 pb-6 flex -space-x-6">
+                                <div
+                                    onClick={() => setActiveTab("create")}
+                                    className={
+                                        tabStatusActive == "create"
+                                            ? `shadow py-2 ps-6 pe-8 rounded-full bg-slate-700 text-white`
+                                            : `shadow py-2 ps-6 pe-8 rounded-full bg-gray-100`
+                                    }
+                                >
+                                    Create
+                                </div>
+                                <div
+                                    onClick={() => setActiveTab("update")}
+                                    className={
+                                        tabStatusActive == "update"
+                                            ? `shadow py-2 ps-6 pe-8 rounded-full bg-slate-700 text-white`
+                                            : `shadow py-2 ps-6 pe-8 rounded-full bg-gray-100`
+                                    }
+                                >
+                                    Update
+                                </div>
                             </div>
                             <div className="px-6 pb-6">
                                 <h2 className="text-lg font-semibold text-gray-900">
