@@ -282,9 +282,6 @@ export default function QuizQuestion({
                                             <th className="text-left py-4 px-4">
                                                 Answers
                                             </th>
-                                            {/* <th className="text-left py-4 px-4">
-                                                Action
-                                            </th> */}
                                         </tr>
                                     </thead>
                                     <tbody>
