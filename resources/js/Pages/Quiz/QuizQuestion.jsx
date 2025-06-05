@@ -282,9 +282,9 @@ export default function QuizQuestion({
                                             <th className="text-left py-4 px-4">
                                                 Answers
                                             </th>
-                                            <th className="text-left py-4 px-4">
+                                            {/* <th className="text-left py-4 px-4">
                                                 Action
-                                            </th>
+                                            </th> */}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -330,7 +330,7 @@ export default function QuizQuestion({
                                                                 }
                                                             />
                                                         </td>
-                                                        <td className="content-center">
+                                                        {/* <td className="content-center">
                                                             <div className="flex flex-wrap space-x-1">
                                                                 <button className="bg-yellow-500 px-2 py-1 text-white text-sm rounded">
                                                                     <i className="bi bi-pencil-square"></i>
@@ -339,7 +339,7 @@ export default function QuizQuestion({
                                                                     <i className="bi bi-trash3-fill"></i>
                                                                 </button>
                                                             </div>
-                                                        </td>
+                                                        </td> */}
                                                     </tr>
                                                 );
                                             }
@@ -696,17 +696,6 @@ export default function QuizQuestion({
                                                                                                                     e
                                                                                                                 )
                                                                                                             }
-                                                                                                            // value={
-                                                                                                            //     questionAnswers.find(
-                                                                                                            //         (
-                                                                                                            //             qa
-                                                                                                            //         ) =>
-                                                                                                            //             qa.answer_id ===
-                                                                                                            //             answer.id
-                                                                                                            //     )
-                                                                                                            //         ?.points ||
-                                                                                                            //     ""
-                                                                                                            // }
                                                                                                             type="text"
                                                                                                             className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
                                                                                                             placeholder="Points"
