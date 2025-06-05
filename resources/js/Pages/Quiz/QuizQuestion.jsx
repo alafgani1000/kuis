@@ -467,7 +467,7 @@ export default function QuizQuestion({
                                     <i className="bi bi-x-lg"></i>
                                 </button>
                             </div>
-                            <div className="px-6 pb-6 flex -space-x-6">
+                            <div className="px-4 pb-6 flex -space-x-6">
                                 <div
                                     onClick={() => setActiveTab("create")}
                                     className={
@@ -489,282 +489,295 @@ export default function QuizQuestion({
                                     Update
                                 </div>
                             </div>
-                            <div className="px-6 pb-6">
-                                <h2 className="text-lg font-semibold text-gray-900">
-                                    {formTitle}
-                                </h2>
-                                <div className="grid grid-cols-2 space-x-4">
-                                    <div className="grid mt-4">
-                                        <label className="mb-2">Type:</label>
-                                        <select
-                                            value={filter.type}
-                                            onChange={(e) =>
-                                                setFilter({
-                                                    ...filter,
-                                                    type: e.target.value,
-                                                })
-                                            }
-                                            className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                                        >
-                                            <option value="">
-                                                --- Please Select Type ---
-                                            </option>
-                                            <option value="All">All</option>
-                                            {types.map((type, index) => (
-                                                <option
-                                                    key={index}
-                                                    value={type.id}
-                                                >
-                                                    {type.name}
+                            {tabStatusActive == "create" ? (
+                                <div className="px-6 pb-6">
+                                    <h2 className="text-lg font-semibold text-gray-900">
+                                        {formTitle}
+                                    </h2>
+                                    <div className="grid grid-cols-2 space-x-4">
+                                        <div className="grid mt-4">
+                                            <label className="mb-2">
+                                                Type:
+                                            </label>
+                                            <select
+                                                value={filter.type}
+                                                onChange={(e) =>
+                                                    setFilter({
+                                                        ...filter,
+                                                        type: e.target.value,
+                                                    })
+                                                }
+                                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                            >
+                                                <option value="">
+                                                    --- Please Select Type ---
                                                 </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="grid mt-4">
-                                        <label className="mb-2">
-                                            Category:
-                                        </label>
-                                        <select
-                                            value={filter.category}
-                                            onChange={(e) =>
-                                                setFilter({
-                                                    ...filter,
-                                                    category: e.target.value,
-                                                })
-                                            }
-                                            className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                                        >
-                                            <option value="">
-                                                --- Please Select Category ---
-                                            </option>
-                                            <option value="All">All</option>
-                                            {categories.map(
-                                                (category, index) => (
+                                                <option value="All">All</option>
+                                                {types.map((type, index) => (
                                                     <option
                                                         key={index}
-                                                        value={category.id}
+                                                        value={type.id}
                                                     >
-                                                        {category.name}
+                                                        {type.name}
                                                     </option>
-                                                )
-                                            )}
-                                        </select>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="grid mt-4">
+                                            <label className="mb-2">
+                                                Category:
+                                            </label>
+                                            <select
+                                                value={filter.category}
+                                                onChange={(e) =>
+                                                    setFilter({
+                                                        ...filter,
+                                                        category:
+                                                            e.target.value,
+                                                    })
+                                                }
+                                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                            >
+                                                <option value="">
+                                                    --- Please Select Category
+                                                    ---
+                                                </option>
+                                                <option value="All">All</option>
+                                                {categories.map(
+                                                    (category, index) => (
+                                                        <option
+                                                            key={index}
+                                                            value={category.id}
+                                                        >
+                                                            {category.name}
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="grid mt-2 max-h-screen overflow-y-auto">
-                                    <div className="grid mt-4">
-                                        <label className="mb-2">
-                                            Search Question:
-                                        </label>
-                                        <input
-                                            onChange={(e) =>
-                                                setFilter({
-                                                    ...filter,
-                                                    search: e.target.value,
-                                                })
-                                            }
-                                            type="text"
-                                            value={filter.search}
-                                            className="rounded-full  focus:ring-sky-500 focus:border-sky-500"
-                                        />
-                                    </div>
-                                    <div className="grid mt-4">
-                                        <table className="w-full">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th className="text-left py-2 px-4">
-                                                        Question
-                                                    </th>
-                                                    <th className="text-left py-2 px-4">
-                                                        Category
-                                                    </th>
-                                                    <th className="text-left py-2 px-4">
-                                                        Type
-                                                    </th>
-                                                    {/* <th className="text-left py-2 px-4">
+                                    <div className="grid mt-2 max-h-screen overflow-y-auto">
+                                        <div className="grid mt-4">
+                                            <label className="mb-2">
+                                                Search Question:
+                                            </label>
+                                            <input
+                                                onChange={(e) =>
+                                                    setFilter({
+                                                        ...filter,
+                                                        search: e.target.value,
+                                                    })
+                                                }
+                                                type="text"
+                                                value={filter.search}
+                                                className="rounded-full  focus:ring-sky-500 focus:border-sky-500"
+                                            />
+                                        </div>
+                                        <div className="grid mt-4">
+                                            <table className="w-full">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th className="text-left py-2 px-4">
+                                                            Question
+                                                        </th>
+                                                        <th className="text-left py-2 px-4">
+                                                            Category
+                                                        </th>
+                                                        <th className="text-left py-2 px-4">
+                                                            Type
+                                                        </th>
+                                                        {/* <th className="text-left py-2 px-4">
                                                         Answers
                                                     </th> */}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {masterQuestions
-                                                    .filter(
-                                                        (q) =>
-                                                            (filter.type ===
-                                                                "" &&
-                                                                (filter.category ===
-                                                                    "" ||
-                                                                    filter.category ===
-                                                                        "All" ||
-                                                                    q.category_id ==
-                                                                        filter.category) &&
-                                                                q.question
-                                                                    .toLowerCase()
-                                                                    .includes(
-                                                                        filter.search.toLowerCase()
-                                                                    )) ||
-                                                            (filter.type ===
-                                                                "All" &&
-                                                                (filter.category ===
-                                                                    "" ||
-                                                                    filter.category ===
-                                                                        "All" ||
-                                                                    q.category_id ==
-                                                                        filter.category) &&
-                                                                q.question
-                                                                    .toLowerCase()
-                                                                    .includes(
-                                                                        filter.search.toLowerCase()
-                                                                    )) ||
-                                                            (q.type_id ==
-                                                                filter.type &&
-                                                                (filter.category ===
-                                                                    "" ||
-                                                                    filter.category ===
-                                                                        "All" ||
-                                                                    q.category_id ==
-                                                                        filter.category) &&
-                                                                q.question
-                                                                    .toLowerCase()
-                                                                    .includes(
-                                                                        filter.search.toLowerCase()
-                                                                    ))
-                                                    )
-                                                    .map((question, index) => (
-                                                        <React.Fragment
-                                                            key={index}
-                                                        >
-                                                            <tr className="border-t last:border-b">
-                                                                <td className="text-left py-2 px-4">
-                                                                    <input
-                                                                        onChange={() => {
-                                                                            setQuestionPick(
-                                                                                question.id
-                                                                            );
-                                                                        }}
-                                                                        checked={
-                                                                            questionPick ===
-                                                                            question.id
-                                                                        }
-                                                                        type="radio"
-                                                                        name="pick_question"
-                                                                    />
-                                                                </td>
-                                                                <td className="text-left py-2 px-4">
-                                                                    {
-                                                                        question.question
-                                                                    }
-                                                                </td>
-                                                                <td className="text-left py-2 px-4">
-                                                                    {
-                                                                        question
-                                                                            .category
-                                                                            ?.name
-                                                                    }
-                                                                </td>
-                                                                <td className="text-left py-2 px-4">
-                                                                    {
-                                                                        question
-                                                                            .type
-                                                                            ?.name
-                                                                    }
-                                                                </td>
-                                                                {/* <td className="text-left py-2 px-4">
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {masterQuestions
+                                                        .filter(
+                                                            (q) =>
+                                                                (filter.type ===
+                                                                    "" &&
+                                                                    (filter.category ===
+                                                                        "" ||
+                                                                        filter.category ===
+                                                                            "All" ||
+                                                                        q.category_id ==
+                                                                            filter.category) &&
+                                                                    q.question
+                                                                        .toLowerCase()
+                                                                        .includes(
+                                                                            filter.search.toLowerCase()
+                                                                        )) ||
+                                                                (filter.type ===
+                                                                    "All" &&
+                                                                    (filter.category ===
+                                                                        "" ||
+                                                                        filter.category ===
+                                                                            "All" ||
+                                                                        q.category_id ==
+                                                                            filter.category) &&
+                                                                    q.question
+                                                                        .toLowerCase()
+                                                                        .includes(
+                                                                            filter.search.toLowerCase()
+                                                                        )) ||
+                                                                (q.type_id ==
+                                                                    filter.type &&
+                                                                    (filter.category ===
+                                                                        "" ||
+                                                                        filter.category ===
+                                                                            "All" ||
+                                                                        q.category_id ==
+                                                                            filter.category) &&
+                                                                    q.question
+                                                                        .toLowerCase()
+                                                                        .includes(
+                                                                            filter.search.toLowerCase()
+                                                                        ))
+                                                        )
+                                                        .map(
+                                                            (
+                                                                question,
+                                                                index
+                                                            ) => (
+                                                                <React.Fragment
+                                                                    key={index}
+                                                                >
+                                                                    <tr className="border-t last:border-b">
+                                                                        <td className="text-left py-2 px-4">
+                                                                            <input
+                                                                                onChange={() => {
+                                                                                    setQuestionPick(
+                                                                                        question.id
+                                                                                    );
+                                                                                }}
+                                                                                checked={
+                                                                                    questionPick ===
+                                                                                    question.id
+                                                                                }
+                                                                                type="radio"
+                                                                                name="pick_question"
+                                                                            />
+                                                                        </td>
+                                                                        <td className="text-left py-2 px-4">
+                                                                            {
+                                                                                question.question
+                                                                            }
+                                                                        </td>
+                                                                        <td className="text-left py-2 px-4">
+                                                                            {
+                                                                                question
+                                                                                    .category
+                                                                                    ?.name
+                                                                            }
+                                                                        </td>
+                                                                        <td className="text-left py-2 px-4">
+                                                                            {
+                                                                                question
+                                                                                    .type
+                                                                                    ?.name
+                                                                            }
+                                                                        </td>
+                                                                        {/* <td className="text-left py-2 px-4">
                                                                     <QuizQuestionAnswer
                                                                         answers={
                                                                             question.answers
                                                                         }
                                                                     />
                                                                 </td> */}
-                                                            </tr>
-                                                            {questionPick ===
-                                                                question.id && (
-                                                                <tr>
-                                                                    <td
-                                                                        colSpan={
-                                                                            4
-                                                                        }
-                                                                        className="text-left py-2 ps-14"
-                                                                    >
-                                                                        {question
-                                                                            .answers
-                                                                            .length >
-                                                                        0 ? (
-                                                                            <div>
-                                                                                <ul className="list-disc pl-6">
-                                                                                    {question.answers.map(
-                                                                                        (
-                                                                                            answer,
-                                                                                            answerIndex
-                                                                                        ) => (
-                                                                                            <li
-                                                                                                key={
+                                                                    </tr>
+                                                                    {questionPick ===
+                                                                        question.id && (
+                                                                        <tr>
+                                                                            <td
+                                                                                colSpan={
+                                                                                    4
+                                                                                }
+                                                                                className="text-left py-2 ps-14"
+                                                                            >
+                                                                                {question
+                                                                                    .answers
+                                                                                    .length >
+                                                                                0 ? (
+                                                                                    <div>
+                                                                                        <ul className="list-disc pl-6">
+                                                                                            {question.answers.map(
+                                                                                                (
+                                                                                                    answer,
                                                                                                     answerIndex
-                                                                                                }
-                                                                                                className="bg-white rounded px-2 py-1 my-1"
-                                                                                            >
-                                                                                                <span>
-                                                                                                    {
-                                                                                                        answer.content
-                                                                                                    }
-                                                                                                </span>{" "}
-                                                                                                {answer.correct ==
-                                                                                                1 ? (
-                                                                                                    <span>
-                                                                                                        <i className="bi bi-check2-circle text-teal-600"></i>
-                                                                                                        <input
-                                                                                                            onChange={(
-                                                                                                                e
-                                                                                                            ) =>
-                                                                                                                addAnswer(
-                                                                                                                    answer.id,
-                                                                                                                    e
-                                                                                                                )
+                                                                                                ) => (
+                                                                                                    <li
+                                                                                                        key={
+                                                                                                            answerIndex
+                                                                                                        }
+                                                                                                        className="bg-white rounded px-2 py-1 my-1"
+                                                                                                    >
+                                                                                                        <span>
+                                                                                                            {
+                                                                                                                answer.content
                                                                                                             }
-                                                                                                            type="text"
-                                                                                                            className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
-                                                                                                            placeholder="Points"
-                                                                                                        />
-                                                                                                    </span>
-                                                                                                ) : (
-                                                                                                    <>
+                                                                                                        </span>{" "}
+                                                                                                        {answer.correct ==
+                                                                                                        1 ? (
+                                                                                                            <span>
+                                                                                                                <i className="bi bi-check2-circle text-teal-600"></i>
+                                                                                                                <input
+                                                                                                                    onChange={(
+                                                                                                                        e
+                                                                                                                    ) =>
+                                                                                                                        addAnswer(
+                                                                                                                            answer.id,
+                                                                                                                            e
+                                                                                                                        )
+                                                                                                                    }
+                                                                                                                    type="text"
+                                                                                                                    className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
+                                                                                                                    placeholder="Points"
+                                                                                                                />
+                                                                                                            </span>
+                                                                                                        ) : (
+                                                                                                            <>
 
-                                                                                                    </>
-                                                                                                )}
-                                                                                            </li>
-                                                                                        )
-                                                                                    )}
-                                                                                </ul>
-                                                                                <div className="grid justify-end mt-4">
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            quizQuestionStore();
-                                                                                        }}
-                                                                                        type="button"
-                                                                                        className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
-                                                                                    >
-                                                                                        Save
-                                                                                    </button>
-                                                                                </div>
-                                                                            </div>
-                                                                        ) : (
-                                                                            <span className="text-gray-500">
-                                                                                No
-                                                                                answers
-                                                                                available
-                                                                            </span>
-                                                                        )}
-                                                                    </td>
-                                                                </tr>
-                                                            )}
-                                                        </React.Fragment>
-                                                    ))}
-                                            </tbody>
-                                        </table>
+                                                                                                            </>
+                                                                                                        )}
+                                                                                                    </li>
+                                                                                                )
+                                                                                            )}
+                                                                                        </ul>
+                                                                                        <div className="grid justify-end mt-4">
+                                                                                            <button
+                                                                                                onClick={() => {
+                                                                                                    quizQuestionStore();
+                                                                                                }}
+                                                                                                type="button"
+                                                                                                className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
+                                                                                            >
+                                                                                                Save
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <span className="text-gray-500">
+                                                                                        No
+                                                                                        answers
+                                                                                        available
+                                                                                    </span>
+                                                                                )}
+                                                                            </td>
+                                                                        </tr>
+                                                                    )}
+                                                                </React.Fragment>
+                                                            )
+                                                        )}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="px-6 pb-6">update</div>
+                            )}
                         </div>
                     </div>
                 </div>
