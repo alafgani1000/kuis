@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('host_id');
             $table->string('title');
             $table->text('description')->nullable();
+            $table->integer('time_limit');
             $table->integer('published')->nullable();
             $table->integer('published_at')->nullable();
             $table->timestamps();
