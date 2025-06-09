@@ -33,6 +33,8 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
         }
     };
 
+    // console.log(quizzes);
+
     const handleRefresh = () => {
         // handle search
         router.get(
@@ -221,6 +223,9 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                             <th className="text-left py-4 px-4">
                                                 Published
                                             </th>
+                                            <th className="text-center py-4 px-4">
+                                                Question
+                                            </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
                                             </th>
@@ -250,6 +255,9 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                                 Unpublished
                                                             </span>
                                                         )}
+                                                    </td>
+                                                    <td className="text-center py-3 px-4">
+                                                        {quiz.questions_count}
                                                     </td>
                                                     <td className="content-center">
                                                         <div className="flex flex-wrap space-x-1">

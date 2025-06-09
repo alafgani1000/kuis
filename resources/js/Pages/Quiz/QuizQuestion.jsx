@@ -156,6 +156,15 @@ export default function QuizQuestion({
         setQuestionAnswers(answers);
     };
 
+    const updateAnswer = (id, e) => {
+        const updateData = updatePick.answers;
+        const pointData = updateData.find((data) => data.id == id);
+        if (pointData) {
+            pointData.score = e.target.value;
+        }
+        setUpdatePick((prev) => ({ ...prev, pointData }));
+    };
+
     const quizQuestionStore = () => {
         if (questionPick === "") {
             alert("Please select a question from the master data.");
@@ -193,12 +202,33 @@ export default function QuizQuestion({
     const addUpdatePick = (data) => {
         setUpdatePick(data);
         setQuestionAnswers({});
-        data?.answers.forEach((answer) => {
-            setQuestionAnswers([
-                ...questionAnswers,
-                { id: answer.id, point: answer.point },
-            ]);
-        });
+    };
+
+    const updateQuizQuestion = () => {
+        const data = {
+            answers: updatePick.answers,
+        };
+        setProcessing(true);
+        axios
+            .put(route("quiz.question.update", quiz.id), data)
+            .then((response) => {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: "Question added successfully..",
+                });
+                handleRefresh();
+            })
+            .catch((error) => {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to add question.",
+                });
+            })
+            .finally(() => {
+                setProcessing(false);
+            });
     };
 
     return (
@@ -300,6 +330,9 @@ export default function QuizQuestion({
                                             <th className="text-left py-4 px-4">
                                                 Active
                                             </th>
+                                            <th className="text-center py-4 px-4">
+                                                Score / Point
+                                            </th>
                                             <th className="text-left py-4 px-4">
                                                 Answers
                                             </th>
@@ -339,6 +372,16 @@ export default function QuizQuestion({
                                                                 <span className="text-red-600 bg-red-300 px-2 py-1 rounded shadow text-sm font-medium">
                                                                     Inactive
                                                                 </span>
+                                                            )}
+                                                        </td>
+                                                        <td className="text-center py-3 px-4">
+                                                            {question.answers.reduce(
+                                                                (sum, item) =>
+                                                                    sum +
+                                                                    parseFloat(
+                                                                        item.score
+                                                                    ),
+                                                                0
                                                             )}
                                                         </td>
                                                         <td className="text-left py-3 px-4">
@@ -454,6 +497,12 @@ export default function QuizQuestion({
                                         <th className="text-left py-4 px-4">
                                             Question
                                         </th>
+                                        <th className="text-left py-4 px-4">
+                                            Type
+                                        </th>
+                                        <th className="text-left py-4 px-4">
+                                            Score / Point
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -466,8 +515,21 @@ export default function QuizQuestion({
                                                 key={index}
                                                 className="border border-dashed bg-slate-200"
                                             >
-                                                <td className="py-2 px-2">
+                                                <td className="py-2 px-4">
                                                     {data.question}
+                                                </td>
+                                                <td className="py-2 px-4">
+                                                    {data.type.name}
+                                                </td>
+                                                <td className="py-2 px-4 text-center">
+                                                    {data.answers.reduce(
+                                                        (sum, item) =>
+                                                            sum +
+                                                            parseFloat(
+                                                                item.score
+                                                            ),
+                                                        0
+                                                    )}
                                                 </td>
                                             </tr>
                                         ) : (
@@ -478,8 +540,21 @@ export default function QuizQuestion({
                                                 key={index}
                                                 className="border border-dashed"
                                             >
-                                                <td className="py-2 px-2">
+                                                <td className="py-2 px-4">
                                                     {data.question}
+                                                </td>
+                                                <td className="py-2 px-4">
+                                                    {data.type.name}
+                                                </td>
+                                                <td className="py-2 px-4 text-center">
+                                                    {data.answers.reduce(
+                                                        (sum, item) =>
+                                                            sum +
+                                                            parseFloat(
+                                                                item.score
+                                                            ),
+                                                        0
+                                                    )}
                                                 </td>
                                             </tr>
                                         );
@@ -832,7 +907,7 @@ export default function QuizQuestion({
                                                                             onChange={(
                                                                                 e
                                                                             ) =>
-                                                                                addAnswer(
+                                                                                updateAnswer(
                                                                                     answer.id,
                                                                                     e
                                                                                 )
@@ -840,6 +915,9 @@ export default function QuizQuestion({
                                                                             type="text"
                                                                             className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
                                                                             placeholder="Points"
+                                                                            value={
+                                                                                answer.score
+                                                                            }
                                                                         />
                                                                     </span>
                                                                 ) : (
@@ -851,6 +929,9 @@ export default function QuizQuestion({
                                                 )}
                                             </ul>
                                             <button
+                                                onClick={() =>
+                                                    updateQuizQuestion()
+                                                }
                                                 type="button"
                                                 className="py-2 px-4 rounded bg-slate-800 text-white mt-6"
                                             >

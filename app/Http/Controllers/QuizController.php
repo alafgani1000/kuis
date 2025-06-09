@@ -21,11 +21,11 @@ class QuizController extends Controller
         $sort = isset($request->sort) ? $request->sort : 'id';
         $user = Auth::user();
         if ($user->hasRole('admin')) {
-            $quizzes = Quiz::where(function (Builder $query) use($search) {
+            $quizzes = Quiz::withCount('questions')->where(function (Builder $query) use($search) {
                 return $query->where('title', 'like', '%'.$search.'%');
             })->orderBy($sort)->paginate($perPage);
         } else {
-            $quizzes = Quiz::where('host_id', Auth::id())
+            $quizzes = Quiz::withCount('questions')->where('host_id', Auth::id())
             ->where(function (Builder $query) use($search) {
                 return $query->where('title', 'like', '%'.$search.'%');
             })->orderBy($sort)->paginate($perPage);

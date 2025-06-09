@@ -24,7 +24,8 @@ class QuizQuestionController extends Controller
         $search = $request->search;
         $perPage = isset($request->perPage) ? $request->perPage : 10;
         $sort = isset($request->sort) ? $request->sort : 'id';
-        $questions = QuizQuestion::with('type','category','answers')->where('quiz_id', $quizId)
+        $questions = QuizQuestion::with('type','category','answers')
+            ->where('quiz_id', $quizId)
             ->where(function (Builder $query) use ($search) {
                 return $query->where('question', 'like', '%' . $search . '%');
             })
@@ -107,50 +108,20 @@ class QuizQuestionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $error = array();
-        $question = $request->question;
-        if ($question['content'] == "") {
-            $error['qustion.content'] = 'A Question is required';
-        }
-        foreach ($question['answers'] as $answer) {
-            if ($answer['content'] == "") {
-                $error['answer'.$answer['id']] = 'A answer is required';
-            }
-        }
-        if (count($error)) {
-            return response()->json($error, 422);
-        } else {
-            DB::beginTransaction();
-            try {
-                $quizQuestion = QuizQuestion::findOrFail($id);
-                $quizQuestion->update([
-                    'type_id' => $request->type,
-                    'question' => $question['content'],
-                    'active' => 1
+        $answers = $request->answers;
+        DB::beginTransaction();
+        try {
+            foreach ($answers as $answer) {
+                // Create new answer
+                QuizQuestionAnswer::where('id', $answer['id'])->update([
+                   'score' => $answer['score']
                 ]);
-                foreach ($question['answers'] as $answer) {
-                    if (isset($answer['id']) && $answer['id'] != '') {
-                        // Update existing answer
-                        $quizQuestion->answers()->where('id', $answer['id'])->update([
-                            'content' => $answer['content'],
-                            'correct' => $answer['correct'],
-                            'active' => '1'
-                        ]);
-                    } else {
-                        // Create new answer
-                        $quizQuestion->answers()->create([
-                            'content' => $answer['content'],
-                            'correct' => $answer['correct'],
-                            'active' => '1'
-                        ]);
-                    }
-                }
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
             }
-            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
+        DB::commit();
         return response('Update Success');
     }
 
