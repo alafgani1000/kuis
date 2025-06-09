@@ -45,6 +45,7 @@ export default function QuizQuestion({
     const [tabStatusActive, setTabStatusActive] = useState("create");
     const [tabCreate, setTabCreate] = useState("create");
     const [tabUpdate, setTabUpdate] = useState("update");
+    const [updatePick, setUpdatePick] = useState({});
 
     const handleSearch = () => {
         // handle search
@@ -74,6 +75,7 @@ export default function QuizQuestion({
 
     const setActiveTab = (tab) => {
         setTabStatusActive(tab);
+        reset();
     };
 
     const getMasterQuestions = async () => {
@@ -138,6 +140,7 @@ export default function QuizQuestion({
     const reset = () => {
         setQuestionPick("");
         setScore("");
+        setUpdatePick({});
     };
 
     const addAnswer = (id, e) => {
@@ -185,6 +188,17 @@ export default function QuizQuestion({
                 setProcessing(false);
                 reset();
             });
+    };
+
+    const addUpdatePick = (data) => {
+        setUpdatePick(data);
+        setQuestionAnswers({});
+        data?.answers.forEach((answer) => {
+            setQuestionAnswers([
+                ...questionAnswers,
+                { id: answer.id, point: answer.point },
+            ]);
+        });
     };
 
     return (
@@ -444,8 +458,23 @@ export default function QuizQuestion({
                                 </thead>
                                 <tbody>
                                     {questionsData.map((data, index) => {
-                                        return (
+                                        return data.id === updatePick.id ? (
                                             <tr
+                                                onClick={() =>
+                                                    addUpdatePick(data)
+                                                }
+                                                key={index}
+                                                className="border border-dashed bg-slate-200"
+                                            >
+                                                <td className="py-2 px-2">
+                                                    {data.question}
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            <tr
+                                                onClick={() =>
+                                                    addUpdatePick(data)
+                                                }
                                                 key={index}
                                                 className="border border-dashed"
                                             >
@@ -776,7 +805,60 @@ export default function QuizQuestion({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="px-6 pb-6">update</div>
+                                <div className="px-6 pb-6">
+                                    <h2 className="text-lg font-semibold text-gray-900">
+                                        Update Quiz Question
+                                    </h2>
+
+                                    <div className="grid space-x-4 border rounded-md mt-4 py-4 px-4">
+                                        <div>{updatePick.question}</div>
+                                        <div className="mt-2">
+                                            <ul className="list-disc">
+                                                {updatePick.answers?.map(
+                                                    (answer, index) => {
+                                                        return (
+                                                            <li key={index}>
+                                                                {answer.content}
+                                                                <span>
+                                                                    {
+                                                                        answer.content
+                                                                    }
+                                                                </span>{" "}
+                                                                {answer.correct ==
+                                                                1 ? (
+                                                                    <span>
+                                                                        <i className="bi bi-check2-circle text-teal-600"></i>
+                                                                        <input
+                                                                            onChange={(
+                                                                                e
+                                                                            ) =>
+                                                                                addAnswer(
+                                                                                    answer.id,
+                                                                                    e
+                                                                                )
+                                                                            }
+                                                                            type="text"
+                                                                            className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
+                                                                            placeholder="Points"
+                                                                        />
+                                                                    </span>
+                                                                ) : (
+                                                                    <></>
+                                                                )}
+                                                            </li>
+                                                        );
+                                                    }
+                                                )}
+                                            </ul>
+                                            <button
+                                                type="button"
+                                                className="py-2 px-4 rounded bg-slate-800 text-white mt-6"
+                                            >
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
