@@ -1,17 +1,18 @@
 export default function MultipleResponse({ question }) {
     return (
-        <div key={question.id} className="text-xl">
-            <div>{question.question} ?</div>
-            <ul className="list-none mt-4 ms-8">
+        <div key={question.id}>
+            <div className="text-xl font-semibold">{question.question} ?</div>
+            <ul className="list-none mt-8 ms-2 text-base space-y-2">
                 {question.answers.map((answer, ianswer) => {
                     return (
-                        <li key={answer.id}>
+                        <li key={answer.id} className="border flex items-center px-2 py-2 rounded">
                             <input
                                 type="checkbox"
-                                className="me-2"
+                                className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 name={question.id}
+                                id={answer.id}
                             />
-                            {answer.content}
+                            <label htmlFor={answer.id} className="w-full ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">{answer.content}</label>
                         </li>
                     );
                 })}
