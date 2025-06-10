@@ -82,7 +82,7 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
     const deleteType = (e) => {
         e.preventDefault();
         axios
-            .delete(`/type/${idDelete}/delete`)
+            .delete(`/admin/type/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();
@@ -96,7 +96,7 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
         e.preventDefault();
         if (isEdit === false) {
             axios
-                .post("/type", {
+                .post("/admin/type", {
                     name: name,
                 })
                 .then((res) => {
@@ -108,7 +108,7 @@ export default function Type({ auth, types, pgSearch, pgSort, pgPerPage }) {
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/type/${id}/update`, {
+                .put(`/admin/type/${id}/update`, {
                     name: name,
                 })
                 .then((res) => {

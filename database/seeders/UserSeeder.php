@@ -14,12 +14,26 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::create([
-            'name' => 'agan',
-            'email' => 'agan@kuis.test',
-            'password' => Hash::make('agan')
+        $admin = User::create([
+            'name' => 'admin',
+            'email' => 'admin@quiz.test',
+            'password' => Hash::make('admin')
         ]);
+        $admin->assignRole('admin');
 
-        $user->assignRole('admin');
+        $quiz_creator = User::create([
+            'name' => 'quiz creator',
+            'email' => 'creator@quiz.test',
+            'password' => Hash::make('creator')
+        ]);
+        $quiz_creator->assignRole('quiz_creator');
+
+        $participant = User::create([
+            'name' => 'participant',
+            'email' => 'participant@quiz.test',
+            'password' => Hash::make('participant')
+        ]);
+        $participant->assignRole('participant');
+
     }
 }

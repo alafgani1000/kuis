@@ -60,7 +60,7 @@ export default function Question({
 
     const getTypeQuestion = () => {
         axios
-            .get("/type/data")
+            .get("/admin/type/data")
             .then((res) => {
                 setTypeQuestions(res.data);
             })
@@ -100,7 +100,7 @@ export default function Question({
     const deleteQuestion = (e) => {
         e.preventDefault();
         axios
-            .delete(`/question/${idDelete}/delete`)
+            .delete(`/admin/question/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();

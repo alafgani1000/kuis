@@ -60,7 +60,7 @@ export default function QuestionMultipleResponse({
 
     const storeQuestion = () => {
         axios
-            .post("/question", {
+            .post("/admin/question", {
                 question: question,
                 type: typeId,
             })

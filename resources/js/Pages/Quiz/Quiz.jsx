@@ -86,7 +86,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
     const deleteQuiz = (e) => {
         e.preventDefault();
         axios
-            .delete(`/quiz/${idDelete}/delete`)
+            .delete(`/admin/quiz/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();
@@ -100,7 +100,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
         e.preventDefault();
         if (isEdit === false) {
             axios
-                .post("/quiz", {
+                .post("/admin/quiz", {
                     title: title,
                     description: description,
                 })
@@ -113,7 +113,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/quiz/${id}/update`, {
+                .put(`/admin/quiz/${id}/update`, {
                     title: title,
                     description: description,
                 })

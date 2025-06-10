@@ -9,7 +9,7 @@ import Notification from "@/Components/Notification";
 export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-    const { user, role, permission } = auth;
+    const { user, roles, permission } = auth;
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* side bar */}
@@ -39,102 +39,157 @@ export default function Authenticated({ auth, header, children }) {
                             <></>
                         )}
                     </div>
+                    {roles.participant === true ? (
+                        <div>
+                            {/* side bar menu */}
+                            <div className="px-8 text-base">
+                                <NavLink
+                                    className="ms-2"
+                                    href={route("dashboard")}
+                                    active={route().current("dashboard")}
+                                >
+                                    <i className="bi bi-easel2 me-2 text-lg"></i>
+                                    Dashboard
+                                </NavLink>
+                            </div>
+                            <div className="py-4 px-8 text-base grid space-y-4">
+                                <NavLink
+                                    className="ms-2 block"
+                                    href={route("quiz.index")}
+                                    active={route().current("quiz.index")}
+                                >
+                                    <i className="bi bi-question-circle me-4 text-base"></i>
+                                    Quizz
+                                </NavLink>
+                            </div>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+                    {/* for role admin and quiz creator */}
+                    {roles.admin === true || roles.quiz_creator === true ? (
+                        <div>
+                            {/* side bar menu */}
+                            <div className="px-8 text-base">
+                                <NavLink
+                                    className="ms-2"
+                                    href={route("dashboard")}
+                                    active={route().current("dashboard")}
+                                >
+                                    <i className="bi bi-easel2 me-2 text-lg"></i>
+                                    Dashboard
+                                </NavLink>
+                            </div>
+                            <div className="divider px-4 mt-8 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
+                                <i className="bi bi-app-indicator me-2"></i>Main
+                                apps
+                            </div>
+                            <div className="py-4 px-8 text-base grid space-y-4">
+                                <NavLink
+                                    className="ms-2 block"
+                                    href={route("quiz.index")}
+                                    active={route().current("quiz.index")}
+                                >
+                                    <i className="bi bi-question-circle me-4 text-base"></i>
+                                    Quizz
+                                </NavLink>
+                            </div>
+                            <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
+                                <i className="bi bi-app me-2"></i>Master data
+                            </div>
+                            <div className="py-4 px-8 text-base grid space-y-4">
+                                <NavLink
+                                    className="ms-2 block"
+                                    href={route("question.index")}
+                                    active={route().current("question.index")}
+                                >
+                                    <i className="bi bi-clipboard me-4 text-base"></i>
+                                    Question
+                                </NavLink>
+                                {roles.admin === true && (
+                                    <>
+                                        <NavLink
+                                            className="ms-2 block"
+                                            href={route("type.index")}
+                                            active={route().current(
+                                                "type.index"
+                                            )}
+                                        >
+                                            <i className="bi bi-clipboard me-4 text-base"></i>
+                                            Type
+                                        </NavLink>
+                                        <NavLink
+                                            className="ms-2 block"
+                                            href={route("category.index")}
+                                            active={route().current(
+                                                "category.index"
+                                            )}
+                                        >
+                                            <i className="bi bi-clipboard me-4 text-base"></i>
+                                            Category
+                                        </NavLink>
+                                    </>
+                                )}
+                            </div>
 
-                    {/* side bar menu */}
-                    <div className="px-8 text-base">
-                        <NavLink
-                            className="ms-2"
-                            href={route("dashboard")}
-                            active={route().current("dashboard")}
-                        >
-                            <i className="bi bi-easel2 me-2 text-lg"></i>
-                            Dashboard
-                        </NavLink>
-                    </div>
-                    <div className="divider px-4 mt-8 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
-                        <i className="bi bi-app-indicator me-2"></i>Main apps
-                    </div>
-                    <div className="py-4 px-8 text-base grid space-y-4">
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("quiz.index")}
-                            active={route().current("quiz.index")}
-                        >
-                            <i className="bi bi bi-calendar2-week me-4 text-base"></i>
-                            Quizz
-                        </NavLink>
-                    </div>
-                    <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
-                        <i className="bi bi-app me-2"></i>Master data
-                    </div>
-                    <div className="py-4 px-8 text-base grid space-y-4">
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("question.index")}
-                            active={route().current("question.index")}
-                        >
-                            <i className="bi bi-clipboard me-4 text-base"></i>
-                            Question
-                        </NavLink>
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("type.index")}
-                            active={route().current("type.index")}
-                        >
-                            <i className="bi bi-clipboard me-4 text-base"></i>
-                            Type
-                        </NavLink>
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("category.index")}
-                            active={route().current("category.index")}
-                        >
-                            <i className="bi bi-clipboard me-4 text-base"></i>
-                            Category
-                        </NavLink>
-                    </div>
+                            {roles.admin === true && (
+                                <>
+                                    <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
+                                        <i className="bi bi-gear-wide-connected me-2"></i>
+                                        Settings
+                                    </div>
+                                    <div className="py-4 px-8 text-base grid space-y-4">
+                                        <NavLink
+                                            className="ms-2 block"
+                                            href={route("user.index")}
+                                            active={route().current(
+                                                "user.index"
+                                            )}
+                                        >
+                                            <i className="bi bi-person-gear me-4 text-base"></i>
+                                            User
+                                        </NavLink>
 
-                    <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
-                        <i className="bi bi-gear-wide-connected me-2"></i>
-                        Settings
-                    </div>
-                    <div className="py-4 px-8 text-base grid space-y-4">
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("user.index")}
-                            active={route().current("user.index")}
-                        >
-                            <i className="bi bi-person-gear me-4 text-base"></i>
-                            User
-                        </NavLink>
+                                        <NavLink
+                                            className="ms-2 block"
+                                            href={route("role.index")}
+                                            active={route().current(
+                                                "role.index"
+                                            )}
+                                        >
+                                            <i className="bi bi-bookmarks me-4 text-base"></i>
+                                            Role
+                                        </NavLink>
 
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("role.index")}
-                            active={route().current("role.index")}
-                        >
-                            <i className="bi bi-bookmarks me-4 text-base"></i>
-                            Role
-                        </NavLink>
-
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("permission.index")}
-                            active={route().current("permission.index")}
-                        >
-                            <i className="bi bi-clipboard me-4 text-base"></i>
-                            Permission
-                        </NavLink>
-                        <NavLink
-                            className="ms-2 block"
-                            href={route("role-perms.index")}
-                            active={route().current("role-perms.index")}
-                        >
-                            <i className="bi bi-clipboard me-4 text-base"></i>
-                            Permission have roles
-                        </NavLink>
-                    </div>
+                                        <NavLink
+                                            className="ms-2 block"
+                                            href={route("permission.index")}
+                                            active={route().current(
+                                                "permission.index"
+                                            )}
+                                        >
+                                            <i className="bi bi-clipboard me-4 text-base"></i>
+                                            Permission
+                                        </NavLink>
+                                        <NavLink
+                                            className="ms-2 block"
+                                            href={route("role-perms.index")}
+                                            active={route().current(
+                                                "role-perms.index"
+                                            )}
+                                        >
+                                            <i className="bi bi-clipboard me-4 text-base"></i>
+                                            Permission have roles
+                                        </NavLink>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                 </div>
+
                 <div className="absolute bottom-2 my-4 mx-8 px-2 py-2 rounded text-xs font-semibold text-slate-600 bg-gray-300">
                     &copy; Yasunaga Indonesia 2024
                 </div>

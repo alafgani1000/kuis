@@ -72,7 +72,7 @@ export default function QuestionMultipleChoiceEdit({
 
     const storeQuestion = () => {
         axios
-            .put(`/question/${id}/update`, {
+            .put(`/admin/question/${id}/update`, {
                 question: question,
                 type: typeId,
             })

@@ -87,7 +87,7 @@ export default function Index({
     const deletePermission = (e) => {
         e.preventDefault();
         axios
-            .delete(`/permission/${idDelete}/delete`)
+            .delete(`/admin/permission/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();
@@ -101,7 +101,7 @@ export default function Index({
         e.preventDefault();
         if (isEdit === false) {
             axios
-                .post("/permission", {
+                .post("/admin/permission", {
                     name: name,
                 })
                 .then((res) => {
@@ -113,7 +113,7 @@ export default function Index({
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/permission/${id}/update`, {
+                .put(`/admin/permission/${id}/update`, {
                     name: name,
                 })
                 .then((res) => {

@@ -22,7 +22,7 @@ export default function QuestionShortAnswer({
 
     const storeQuestion = () => {
         axios
-            .post("/question", {
+            .post("/admin/question", {
                 question: question,
                 type: typeId,
             })

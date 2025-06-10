@@ -66,7 +66,7 @@ export default function Index({
         e.preventDefault();
         if (isEdit == false) {
             axios
-                .post(`/user`, {
+                .post(`/admin/user`, {
                     username: username,
                     email: email,
                     name: name,
@@ -83,7 +83,7 @@ export default function Index({
                 });
         } else {
             axios
-                .put(`/user/${idEdit}/update`, {
+                .put(`/admin/user/${idEdit}/update`, {
                     username: username,
                     email: email,
                     name: name,
@@ -120,7 +120,7 @@ export default function Index({
     const setUserRole = (e) => {
         e.preventDefault();
         axios
-            .put(`/user/${userSelected.id}/change-role`, {
+            .put(`/admin/user/${userSelected.id}/change-role`, {
                 role: roleSelected,
             })
             .then((res) => {

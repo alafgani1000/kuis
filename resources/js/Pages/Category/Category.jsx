@@ -90,7 +90,7 @@ export default function Category({
     const deleteCategory = (e) => {
         e.preventDefault();
         axios
-            .delete(`/category/${idDelete}/delete`)
+            .delete(`/admin/category/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();
@@ -104,7 +104,7 @@ export default function Category({
         e.preventDefault();
         if (isEdit === false) {
             axios
-                .post("/category", {
+                .post("/admin/category", {
                     name: name,
                     description: description,
                 })
@@ -117,7 +117,7 @@ export default function Category({
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/category/${id}/update`, {
+                .put(`/admin/category/${id}/update`, {
                     name: name,
                     description: description,
                 })

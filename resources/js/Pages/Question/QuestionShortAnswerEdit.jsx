@@ -26,7 +26,7 @@ export default function QuestionShortAnswerEdit({
 
     const storeQuestion = () => {
         axios
-            .put(`/question/${id}/update`, {
+            .put(`/admin/question/${id}/update`, {
                 question: question,
                 type: typeId,
             })
