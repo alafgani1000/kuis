@@ -34,13 +34,17 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->middleware(['verified'])->name('dashboard');
+
         // user
         Route::get('/users', [UserController::class, 'index'])->name('user.index');
         Route::post('/user', [UserController::class, 'store'])->name('user.store');
