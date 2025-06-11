@@ -1,7 +1,12 @@
 import { Link, Head } from "@inertiajs/react";
 import ParticipantLayout from "@/Layouts/ParticipanLayout";
 
-export default function Welcome({ auth, laravelVersion, phpVersion }) {
+export default function Welcome({
+    auth,
+    canLogin,
+    laravelVersion,
+    phpVersion,
+}) {
     return (
         <ParticipantLayout
             auth={auth}

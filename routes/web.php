@@ -10,6 +10,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizQuestionController;
+use App\Http\Controllers\ParticipantQuizController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,23 +26,16 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [ParticipantQuizController::class, 'home'])->name('home');
 
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::middleware('role:participant')->group(function () {
+        Route::get('/dashboard', [ParticipantQuizController::class, 'dashoard'])->name('participant.dashboard');
+    });
 
-    Route::prefix('admin')->group(function () {
-        Route::get('/dashboard', function () {
+    Route::middleware(['role:admin|creator'])->prefix('admin')->group(function () {
+        Route::get('/', function () {
             return Inertia::render('Dashboard');
         })->middleware(['verified'])->name('dashboard');
 
