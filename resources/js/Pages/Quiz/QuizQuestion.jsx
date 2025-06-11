@@ -6,6 +6,7 @@ import Modal from "@/Components/Modal";
 import axios from "axios";
 import QuizQuestionAnswer from "./QuizQuestionAnswer";
 import Swal from "sweetalert2";
+import { getCategories, getTypes } from "@/Components/js/helper";
 
 export default function QuizQuestion({
     auth,
@@ -89,24 +90,6 @@ export default function QuizQuestion({
         }
     };
 
-    const getTypes = async () => {
-        try {
-            const response = await axios.get(route("type.data"));
-            setTypes(response.data);
-        } catch (error) {
-            console.error("Error fetching question types:", error);
-        }
-    };
-
-    const getCategories = async () => {
-        try {
-            const response = await axios.get(route("category.data"));
-            setCategories(response.data);
-        } catch (error) {
-            console.error("Error fetching categories:", error);
-        }
-    };
-
     const getQuestions = async () => {
         try {
             const response = await axios.get(
@@ -118,10 +101,22 @@ export default function QuizQuestion({
         }
     };
 
+    const dataTypes = async () => {
+        const { data } = await getTypes();
+        setTypes(data);
+    };
+
+    const dataQuestionCategories = async () => {
+        const { data } = await getCategories();
+        setCategories(data);
+    };
+
     useEffect(() => {
+        // categories
+        dataQuestionCategories();
+        // end categories
         getMasterQuestions();
-        getCategories();
-        getTypes();
+        dataTypes();
         getQuestions();
     }, [processing]);
 

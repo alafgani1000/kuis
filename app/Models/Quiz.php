@@ -13,6 +13,7 @@ class Quiz extends Model
         'host_id',
         'title',
         'description',
+        'quiz_category_id',
         'published',
         'published_at',
     ];
@@ -25,5 +26,10 @@ class Quiz extends Model
     public function questions()
     {
         return $this->hasMany(QuizQuestion::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(QuizCategory::class, 'quiz_category_id');
     }
 }

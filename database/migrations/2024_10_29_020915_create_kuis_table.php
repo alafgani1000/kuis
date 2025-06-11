@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
             $table->integer('host_id');
+            $table->integer('quiz_category_id');
             $table->string('title');
             $table->text('description')->nullable();
             $table->integer('time_limit');
             $table->integer('published')->nullable();
-            $table->integer('published_at')->nullable();
+            $table->timestamp('published_at')->nullable();
             $table->timestamps();
         });
     }

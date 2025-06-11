@@ -21,11 +21,11 @@ class QuizController extends Controller
         $sort = isset($request->sort) ? $request->sort : 'id';
         $user = Auth::user();
         if ($user->hasRole('admin')) {
-            $quizzes = Quiz::withCount('questions')->where(function (Builder $query) use($search) {
+            $quizzes = Quiz::with('category')->withCount('questions')->where(function (Builder $query) use($search) {
                 return $query->where('title', 'like', '%'.$search.'%');
             })->orderBy($sort)->paginate($perPage);
         } else {
-            $quizzes = Quiz::withCount('questions')->where('host_id', Auth::id())
+            $quizzes = Quiz::with('category')->withCount('questions')->where('host_id', Auth::id())
             ->where(function (Builder $query) use($search) {
                 return $query->where('title', 'like', '%'.$search.'%');
             })->orderBy($sort)->paginate($perPage);
@@ -54,6 +54,7 @@ class QuizController extends Controller
                 $create = Quiz::create([
                     'title' => $request->title,
                     'description' => $request->description,
+                    'quiz_category_id' => $request->category,
                     'host_id' => Auth::id(),
                 ]);
                 DB::commit();
@@ -79,6 +80,7 @@ class QuizController extends Controller
                 $quiz = Quiz::where('id',$id)->update([
                     'title' => $request->title,
                     'description' => $request->description,
+                    'quiz_category_id' => $request->category,
                 ]);
                 DB::commit();
                 return response('Quiz updated successfully',200);
@@ -116,6 +118,15 @@ class QuizController extends Controller
         $quiz->published = true;
         $quiz->published_at = Carbon::now();
         $quiz->save();
-        return response('success', 'Quiz published successfully');
+        return response('Quiz published successfully');
+    }
+
+    public function unpublish($id)
+    {
+        $quiz = Quiz::findOrFail($id);
+        $quiz->published = false;
+        $quiz->published_at = null;
+        $quiz->save();
+        return response('Quiz unpublished successfully');
     }
 }

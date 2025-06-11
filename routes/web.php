@@ -11,6 +11,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizQuestionController;
 use App\Http\Controllers\ParticipantQuizController;
+use App\Http\Controllers\QuizCategoryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +31,11 @@ Route::get('/', [ParticipantQuizController::class, 'home'])->name('home');
 
 
 Route::middleware('auth')->group(function () {
+    // profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
     Route::middleware('role:participant')->group(function () {
         Route::get('/dashboard', [ParticipantQuizController::class, 'dashoard'])->name('participant.dashboard');
     });
@@ -77,6 +83,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/category/{id}/delete', [CategoryController::class, 'delete'])->name('category.delete');
         Route::get('/category/data', [CategoryController::class, 'data'])->name('category.data');
 
+        // Category
+        Route::get('/quiz-categories', [QuizCategoryController::class, 'index'])->name('quizcategory.index');
+        Route::post('/quiz-category', [QuizCategoryController::class, 'store'])->name('quizcategory.store');
+        Route::put('/quiz-category/{id}/update', [QuizCategoryController::class, 'update'])->name('quizcategory.update');
+        Route::delete('/quiz-category/{id}/delete', [QuizCategoryController::class, 'delete'])->name('quizcategory.delete');
+        Route::get('/quiz-category/data', [QuizCategoryController::class, 'data'])->name('quizcategory.data');
+
         // Question
         Route::get('/question', [QuestionController::class, 'index'])->name('question.index');
         Route::post('/question', [QuestionController::class, 'store'])->name('question.store');
@@ -85,11 +98,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/question/data', [QuestionController::class, 'data'])->name('question.data');
         Route::get('/question/datas', [QuestionController::class, 'datas'])->name('question.datas');
 
+        // Quiz
         Route::get('/quiz', [QuizController::class, 'index'])->name('quiz.index');
         Route::post('/quiz', [QuizController::class, 'store'])->name('quiz.store');
         Route::put('/quiz/{id}/update', [QuizController::class, 'update'])->name('quiz.update');
         Route::delete('/quiz/{id}/delete', [QuizController::class, 'destroy'])->name('quiz.delete');
         Route::put('/quiz/{id}/publish', [QuizController::class, 'publish'])->name('quiz.publish');
+         Route::put('/quiz/{id}/unpublish', [QuizController::class, 'unpublish'])->name('quiz.unpublish');
 
         // Quiz question
         Route::get('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'index'])->name('quiz.question.index');
@@ -99,14 +114,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/quiz/question/{id}/delete', [QuizQuestionController::class, 'delete'])->name('quiz.question.delete');
         Route::get('/quiz/{quiz_id}/question-data', [QuizQuestionController::class, 'data'])->name('quiz.question.data');
     });
-
-    // profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Quiz
-
 
 
 });

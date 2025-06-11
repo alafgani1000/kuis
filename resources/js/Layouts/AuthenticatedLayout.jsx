@@ -106,6 +106,16 @@ export default function Authenticated({ auth, header, children }) {
                                     <i className="bi bi-clipboard me-4 text-base"></i>
                                     Question
                                 </NavLink>
+                                <NavLink
+                                    className="ms-2 block"
+                                    href={route("quizcategory.index")}
+                                    active={route().current(
+                                        "quizcategory.index"
+                                    )}
+                                >
+                                    <i className="bi bi-clipboard me-4 text-base"></i>
+                                    Quiz Category
+                                </NavLink>
                                 {roles.admin === true && (
                                     <>
                                         <NavLink
@@ -126,7 +136,7 @@ export default function Authenticated({ auth, header, children }) {
                                             )}
                                         >
                                             <i className="bi bi-clipboard me-4 text-base"></i>
-                                            Category
+                                            Question Category
                                         </NavLink>
                                     </>
                                 )}

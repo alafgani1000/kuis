@@ -6,25 +6,24 @@ import Modal from "@/Components/Modal";
 import axios from "axios";
 import { getQuizCategories } from "@/Components/js/helper";
 
-export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
+export default function Category({
+    auth,
+    categories,
+    pgSearch,
+    pgSort,
+    pgPerPage,
+}) {
     const [search, setSearch] = useState(pgSearch || "");
     const [sort, setSort] = useState(pgSort || "");
     const [perPage, setPerPage] = useState(pgPerPage || 10);
     const [wasSearch, setWasSearch] = useState(false);
     const [modalCreate, setModalCreate] = useState(false);
     const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
-    const [modalConfirmPublish, setModalConfirmPublish] = useState(false);
-    const [modalConfirmUnpublish, setModalConfirmUnpublish] = useState(false);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
+    const [name, setName] = useState("");
     const [id, setId] = useState("");
     const [idDelete, setIdDelete] = useState("");
-    const [idPublish, setIdPublish] = useState("");
-    const [idUnpublish, setIdUnpublish] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [formTitle, setFormTitle] = useState("Create New Quiz");
-    const [categories, setCategories] = useState([]);
-    const [category, setCategory] = useState("");
+    const [formTitle, setFormTitle] = useState("Create Quiz Category");
 
     const handleSearch = () => {
         // handle search
@@ -53,33 +52,23 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
     };
 
     const handleEdit = (data) => {
-        setTitle(data.title);
-        setDescription(data.description);
-        setCategory(data.category?.id);
+        setName(data.name);
         setId(data.id);
         setIsEdit(true);
         setModalCreate(true);
-        setFormTitle("Update Quiz");
-    };
-
-    const dataCategories = async () => {
-        const { data } = await getQuizCategories();
-        setCategories(data);
+        setFormTitle("Update Type");
     };
 
     useEffect(() => {
         handleSearch();
-        dataCategories();
     }, [search, sort, perPage]);
 
     const closeModal = () => {
         setModalCreate(false);
-        setTitle("");
-        setDescription("");
-        setCategory("");
+        setName("");
         setId("");
         setIsEdit(false);
-        setFormTitle("Create New Quiz");
+        setFormTitle("Create Quiz Category");
     };
 
     const closeModalDelete = () => {
@@ -91,35 +80,15 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
         setModalCreate(true);
     };
 
-    const confirmDeleteQuiz = (data) => {
+    const confirmDeleteCategory = (data) => {
         setModalConfirmDelete(true);
         setIdDelete(data.id);
     };
 
-    const confirmPublishQuiz = (data) => {
-        setModalConfirmPublish(true);
-        setIdPublish(data.id);
-    };
-
-    const closeModalPublish = () => {
-        setModalConfirmPublish(false);
-        setIdPublish("");
-    };
-
-    const confirmUnpublishQuiz = (data) => {
-        setModalConfirmUnpublish(true);
-        setIdUnpublish(data.id);
-    };
-
-    const closeModalUnpublish = () => {
-        setModalConfirmUnpublish(false);
-        setIdUnpublish("");
-    };
-
-    const deleteQuiz = (e) => {
+    const deleteCategory = (e) => {
         e.preventDefault();
         axios
-            .delete(`/admin/quiz/${idDelete}/delete`)
+            .delete(`/admin/quiz-category/${idDelete}/delete`)
             .then((res) => {
                 closeModalDelete();
                 handleRefresh();
@@ -129,40 +98,12 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
             });
     };
 
-    const publishQuiz = (e) => {
-        e.preventDefault();
-        axios
-            .put(`/admin/quiz/${idPublish}/publish`)
-            .then((res) => {
-                closeModalPublish();
-                handleRefresh();
-            })
-            .catch((res) => {
-                console.log(res.data);
-            });
-    };
-
-    const unpublishQuiz = (e) => {
-        e.preventDefault();
-        axios
-            .put(`/admin/quiz/${idUnpublish}/unpublish`)
-            .then((res) => {
-                closeModalUnpublish();
-                handleRefresh();
-            })
-            .catch((res) => {
-                console.log(res.data);
-            });
-    };
-
-    const saveQuiz = (e) => {
+    const saveCategory = (e) => {
         e.preventDefault();
         if (isEdit === false) {
             axios
-                .post("/admin/quiz", {
-                    title: title,
-                    description: description,
-                    category: category,
+                .post("/admin/quiz-category", {
+                    name: name,
                 })
                 .then((res) => {
                     handleRefresh();
@@ -173,10 +114,8 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/admin/quiz/${id}/update`, {
-                    title: title,
-                    description: description,
-                    category: category,
+                .put(`/admin/quiz-category/${id}/update`, {
+                    name: name,
                 })
                 .then((res) => {
                     handleRefresh();
@@ -191,30 +130,26 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
     return (
         <AuthenticatedLayout
             auth={auth}
-            header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Quiz
-                </h2>
-            }
+            header={<h2 className="leading-tight">Quiz Category</h2>}
         >
-            <Head title="Quiz" />
+            <Head title="Category Question" />
 
             <div className="py-4 lg:py-12 md:py-12">
                 <div className="max-w-full mx-auto space-y-6">
                     <div className="bg-white rounded-md shadow">
                         <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white py-3 px-6 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
-                                Data Quiz
+                            <div className="bg-white py-3 px-6 mt-0 mb-4 text-gray-700 font-bold border-b border-zinc rounded-t-md text-lg">
+                                Data Quiz Category
                             </div>
                             <div className="flex justify-end mr-8">
                                 <button
                                     onClick={showModalCreate}
-                                    className="border-sky-950 py-2 px-3 bg-sky-950 hover:text-white hover:bg-sky-900 hover:border-sky-900 rounded text-white text-sm"
+                                    className="border-blue-950 py-2 px-2.5 bg-sky-950 hover:text-white hover:bg-sky-900 hover:border-sky-900 rounded text-white text-sm"
                                 >
                                     <span className="text-sm mr-2">
                                         <i className="bi bi-plus-square"></i>
                                     </span>
-                                    New Quiz
+                                    New Category
                                 </button>
                             </div>
                             <div className="lg:mx-8 md:mx-8 mx-0 my-8 border border-zinc-100 md:rounded-lg lg:rounded-lg">
@@ -250,8 +185,8 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                 }}
                                                 className="py-2 bg-white border-none focus:outline-none focus:border-white focus:ring-white block rounded-md text-base focus:ring-0 text-gray-500 w-full"
                                             >
-                                                <option value="title">
-                                                    Title
+                                                <option value="name">
+                                                    Name
                                                 </option>
                                             </select>
                                         </div>
@@ -276,19 +211,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                     <thead className="bg-zinc-100 p-2">
                                         <tr className="p-8">
                                             <th className="text-left py-4 px-4">
-                                                Title
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Description
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Category
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Published
-                                            </th>
-                                            <th className="text-center py-4 px-4">
-                                                Question
+                                                Name
                                             </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
@@ -296,107 +219,50 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {quizzes.data.map((quiz, index) => {
-                                            return (
-                                                <tr
-                                                    className="border-t last:border-b"
-                                                    key={index}
-                                                >
-                                                    <td className="text-left py-3 px-4">
-                                                        {quiz.title}
-                                                    </td>
-                                                    <td className="text-left py-3 px-4">
-                                                        {quiz.description}
-                                                    </td>
-                                                    <td className="text-left py-3 px-4">
-                                                        {quiz.category?.name}
-                                                    </td>
-                                                    <td className="text-left py-3 px-4">
-                                                        {quiz.published ===
-                                                        1 ? (
-                                                            <span className="text-green-600 bg-green-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                Published
-                                                            </span>
-                                                        ) : (
-                                                            <span className="text-red-600 bg-red-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                Unpublished
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                    <td className="text-center py-3 px-4">
-                                                        {quiz.questions_count}
-                                                    </td>
-                                                    <td className="content-center">
-                                                        <div className="flex flex-wrap space-x-1">
-                                                            {quiz.published ===
-                                                            1 ? (
+                                        {categories.data.map(
+                                            (category, index) => {
+                                                return (
+                                                    <tr
+                                                        className="border-t last:border-b"
+                                                        key={index}
+                                                    >
+                                                        <td className="text-left py-3 px-4">
+                                                            {category.name}
+                                                        </td>
+                                                        <td className="content-center">
+                                                            <div className="flex flex-wrap space-x-1">
                                                                 <button
                                                                     onClick={() => {
-                                                                        confirmUnpublishQuiz(
-                                                                            quiz
+                                                                        handleEdit(
+                                                                            category
                                                                         );
                                                                     }}
-                                                                    title="Click to Unpublish"
-                                                                    className="bg-gray-600 px-2 py-1 text-white text-sm rounded"
+                                                                    className="bg-yellow-500 px-2 py-1 text-white text-sm rounded"
                                                                 >
-                                                                    <i className="bi bi-cloud-download"></i>
+                                                                    <i className="bi bi-pencil-square"></i>
                                                                 </button>
-                                                            ) : (
                                                                 <button
                                                                     onClick={() => {
-                                                                        confirmPublishQuiz(
-                                                                            quiz
+                                                                        confirmDeleteCategory(
+                                                                            category
                                                                         );
                                                                     }}
-                                                                    title="Click to Publish"
-                                                                    className="bg-gray-600 px-2 py-1 text-white text-sm rounded"
+                                                                    className="bg-rose-600 px-2 py-1 text-white text-sm rounded"
                                                                 >
-                                                                    <i className="bi bi-cloud-upload"></i>
+                                                                    <i className="bi bi-trash3-fill"></i>
                                                                 </button>
-                                                            )}
-                                                            <button
-                                                                onClick={() => {
-                                                                    handleEdit(
-                                                                        quiz
-                                                                    );
-                                                                }}
-                                                                title="Click to Edit"
-                                                                className="bg-yellow-500 px-2 py-1 text-white text-sm rounded"
-                                                            >
-                                                                <i className="bi bi-pencil-square"></i>
-                                                            </button>
-                                                            <button
-                                                                onClick={() => {
-                                                                    confirmDeleteQuiz(
-                                                                        quiz
-                                                                    );
-                                                                }}
-                                                                title="Click to Delete"
-                                                                className="bg-rose-600 px-2 py-1 text-white text-sm rounded"
-                                                            >
-                                                                <i className="bi bi-trash3-fill"></i>
-                                                            </button>
-                                                            <Link
-                                                                className="bg-blue-400 px-2 py-1 text-white text-sm rounded"
-                                                                title="Click to view detail Quiz"
-                                                                href={route(
-                                                                    "quiz.question.index",
-                                                                    [quiz.id]
-                                                                )}
-                                                            >
-                                                                <i className="bi bi-postcard"></i>
-                                                            </Link>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }
+                                        )}
                                     </tbody>
                                 </table>
                                 {/* pagination */}
                                 <div className="hidden mt-4 mb-4 w-full md:block md:w-auto">
                                     <ul className="flex justify-center items-center -space-x-px text-base h-10">
-                                        {quizzes.links.map((link, index) => {
+                                        {categories.links.map((link, index) => {
                                             return (
                                                 <li
                                                     key={index}
@@ -443,21 +309,20 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                     <div className="grid grid-cols-2 text-sm md:grid-cols-2 lg:grid-cols-2 md:text-base lg:text-base space-x-4 my-4 mx-8">
                                         <div className="flex justify-start text-zinc-600 ">
                                             <span className="py-2 px-2 bg-zinc-100 rounded">
-                                                Page {quizzes.current_page}
-                                                &nbsp; from {
-                                                    quizzes.last_page
-                                                }{" "}
+                                                Page {categories.current_page}
+                                                &nbsp; from{" "}
+                                                {categories.last_page}{" "}
                                             </span>{" "}
                                         </div>
                                         <div className="flex justify-start space-x-4">
                                             <Link
-                                                href={`${quizzes.prev_page_url}&search=${search}&perPage=${perPage}`}
+                                                href={`${categories.prev_page_url}&search=${search}&perPage=${perPage}`}
                                                 className="border py-2 px-4 rounded-md hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                                             >
                                                 Prev
                                             </Link>
                                             <Link
-                                                href={`${quizzes.next_page_url}&search=${search}&perPage=${perPage}`}
+                                                href={`${categories.next_page_url}&search=${search}&perPage=${perPage}`}
                                                 className="border py-2 px-4 rounded-md hover:bg-sky-500 hover:border-sky-500 hover:text-white"
                                             >
                                                 Next
@@ -472,7 +337,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
             </div>
 
             <Modal show={modalCreate}>
-                <div className="bg-white rounded max-w-3xl w-full mx-auto">
+                <div className="bg-white rounded md:w-96 lg:w-96 sm:w-96 w-full mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
                         <button
                             onClick={() => closeModal()}
@@ -481,63 +346,33 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                             <i className="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <form onSubmit={saveQuiz} className="px-6 pb-6">
+                    <form onSubmit={saveCategory} className="px-6 pb-6">
                         <h2 className="text-lg font-medium text-gray-900">
                             {formTitle}
                         </h2>
                         <div className="grid mt-4">
-                            <label className="mb-2">Title:</label>
+                            <label className="mb-2">Name:</label>
                             <input
                                 type="text"
                                 className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
                                 onChange={(e) => {
-                                    setTitle(e.target.value);
+                                    setName(e.target.value);
                                 }}
-                                value={title}
+                                value={name}
                             />
-                        </div>
-                        <div className="grid mt-4">
-                            <label className="mb-2">Category:</label>
-                            <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                            >
-                                {categories?.map((dataCategory, index) => {
-                                    return (
-                                        <option
-                                            key={index}
-                                            value={dataCategory.id}
-                                        >
-                                            {dataCategory.name}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
-                        <div className="grid mt-4">
-                            <label className="mb-2">Description:</label>
-                            <textarea
-                                onChange={(e) => {
-                                    setDescription(e.target.value);
-                                }}
-                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                                value={description}
-                            ></textarea>
                         </div>
                         <div className="grid justify-end mt-4">
                             <button
                                 type="submit"
-                                className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
+                                className="border border-sky-500 py-2 px-4 rounded text-sm bg-sky-500 text-white hover:bg-sky-600"
                             >
-                                {isEdit === true ? "Update" : "Save"}
+                                {isEdit == true ? "Update" : "Save"}
                             </button>
                         </div>
                     </form>
                 </div>
             </Modal>
 
-            {/* modal confirm delete */}
             <Modal show={modalConfirmDelete}>
                 <div className="bg-white rounded max-w-lg mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
@@ -548,10 +383,10 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                             <i className="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <form onSubmit={deleteQuiz} className="px-6 pb-6">
+                    <form onSubmit={deleteCategory} className="px-6 pb-6">
                         <div className="mt-4">
                             <h2 className="text-lg font-medium text-gray-900">
-                                Are you sure you want to delete this quiz?
+                                Are you sure you want to delete this type?
                             </h2>
 
                             <p className="mt-1 text-sm text-gray-600">
@@ -563,64 +398,6 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                     className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
                                 >
                                     Delete
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-
-            {/* modal publish quiz */}
-            <Modal show={modalConfirmPublish}>
-                <div className="bg-white rounded max-w-lg mx-auto">
-                    <div className="flex flex-col items-end m-0 p-0">
-                        <button
-                            onClick={() => closeModalPublish()}
-                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
-                        >
-                            <i className="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    <form onSubmit={publishQuiz} className="px-6 pb-6">
-                        <div className="mt-4">
-                            <h2 className="text-lg font-medium text-gray-900">
-                                Are you sure you want to Publish this quiz?
-                            </h2>
-                            <div className="grid justify-end mt-4">
-                                <button
-                                    type="submit"
-                                    className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
-                                >
-                                    Publish
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </Modal>
-
-            {/* modal unpublish quiz */}
-            <Modal show={modalConfirmUnpublish}>
-                <div className="bg-white rounded max-w-lg mx-auto">
-                    <div className="flex flex-col items-end m-0 p-0">
-                        <button
-                            onClick={() => closeModalUnpublish()}
-                            className="bg-zinc-700 px-3 py-1 text-white hover:bg-black rounded-tr"
-                        >
-                            <i className="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    <form onSubmit={unpublishQuiz} className="px-6 pb-6">
-                        <div className="mt-4">
-                            <h2 className="text-lg font-medium text-gray-900">
-                                Are you sure you want to Unpublish this quiz?
-                            </h2>
-                            <div className="grid justify-end mt-4">
-                                <button
-                                    type="submit"
-                                    className="border border-rose-500 py-2 px-4 rounded text-sm bg-rose-500 text-white hover:bg-rose-600"
-                                >
-                                    Unpublish
                                 </button>
                             </div>
                         </div>

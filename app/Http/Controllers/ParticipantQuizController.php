@@ -12,4 +12,9 @@ class ParticipantQuizController extends Controller
     {
         return Inertia::render('Welcome');
     }
+
+    public function dashboard(): Response
+    {
+        return Inertia::render('Dashboard');
+    }
 }

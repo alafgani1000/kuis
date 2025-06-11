@@ -35,9 +35,11 @@ export default function ParticipantLayout({ auth, header, children }) {
                                 {user !== null &&
                                     (roles.participant === true ? (
                                         <NavLinkFront
-                                            href={route("dashboard")}
+                                            href={route(
+                                                "participant.dashboard"
+                                            )}
                                             active={route().current(
-                                                "dashboard"
+                                                "participant.dashboard"
                                             )}
                                         >
                                             Dashboard
