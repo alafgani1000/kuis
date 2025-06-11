@@ -349,7 +349,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                                         );
                                                                     }}
                                                                     title="Click to Publish"
-                                                                    className="bg-gray-600 px-2 py-1 text-white text-sm rounded"
+                                                                    className="bg-gray-200 px-2 py-1 text-gray-800 text-sm rounded"
                                                                 >
                                                                     <i className="bi bi-cloud-upload"></i>
                                                                 </button>
