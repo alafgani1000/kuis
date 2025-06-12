@@ -11,7 +11,7 @@ export default function Authenticated({ auth, header, children }) {
         useState(false);
     const { user, roles, permission } = auth;
     return (
-        <div className="min-h-screen bg-gray-100 flex">
+        <div className="min-h-screen bg-background bg-cover flex">
             {/* side bar */}
             <div
                 className={
