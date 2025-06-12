@@ -16,10 +16,10 @@ export default function Welcome({
                 </div>
             </div>
 
-            <div className="max-w-screen-lg mx-auto mt-8 text-xl font-semibold grid grid-cols-1 space-x-3 text-gray-800">
+            <div className="max-w-screen-lg mx-auto mt-8 text-xl font-semibold grid grid-cols-1 space-x-3 text-gray-700">
                 New Quiz
             </div>
-            <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 px-6 py-6 bg-stone-100 gap-4 rounded-lg">
+            <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 px-6 py-6 bg-background bg-cover gap-4 rounded-lg">
                 <div className="bg-white px-4 py-4 font-medium text-gray-800 h-48 grid place-items-center rounded-md">
                     <div className="w-full text-center text-2xl text-gray-800">
                         Title quiz 1
@@ -101,10 +101,10 @@ export default function Welcome({
             </div>
 
             {/* category */}
-            <div className="max-w-screen-lg mx-auto mt-8 text-xl font-semibold grid text-gray-800">
+            <div className="max-w-screen-lg mx-auto mt-8 text-xl font-semibold grid text-gray-700">
                 Quiz Categories
             </div>
-            <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-3 bg-stone-100 px-4 py-4 rounded-lg">
+            <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-3 bg-background bg-cover px-4 py-4 rounded-lg ">
                 <div className="bg-white px-4 py-4 font-medium text-gray-800 h-32 grid place-items-center rounded-md">
                     <div className="w-full text-center text-xl text-gray-800">
                         General

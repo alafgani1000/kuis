@@ -28,6 +28,7 @@ export default {
         backgroundImage: {
             landing: "url('/images/bg1.jpg')",
             background: "url('/images/background.svg')",
+            background1: "url('/images/background1.svg')",
         },
     },
 
