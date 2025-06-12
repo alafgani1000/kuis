@@ -15,7 +15,7 @@ export default function Authenticated({ auth, header, children }) {
             {/* side bar */}
             <div
                 className={
-                    "md:flex flex-col w-64 h-screen bg-white sticky top-0 text-gray-700 " +
+                    "md:flex flex-col w-64 h-screen bg-teal-800 sticky top-0 text-gray-700 " +
                     (showingNavigationDropdown === false ? "hidden" : "flex")
                 }
             >
@@ -220,7 +220,7 @@ export default function Authenticated({ auth, header, children }) {
                         </div>
                         <div className="flex ms-4 md:ms-6 items-center">
                             <Link
-                                className="flex me-2 font-medium py-1 px-2 rounded text-sm text-white bg-blue-500"
+                                className="flex me-2 font-medium py-1 px-2 rounded text-sm text-white bg-emerald-600"
                                 href={route("role.index")}
                             >
                                 <i className="bi bi-book me-2 text-white"></i>

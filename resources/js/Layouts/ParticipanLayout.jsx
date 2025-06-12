@@ -10,11 +10,12 @@ export default function ParticipantLayout({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const { user, roles, permission } = auth;
+
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="border-b border-gray-100 bg-emerald-600 fixed w-full z-50 top-0">
+        <div className="min-h-screen bg-background bg-cover">
+            <nav className="max-w-screen-lg mx-auto border-b border-gray-200 bg-emerald-700 sticky top-0 rounded-bl-3xl rounded-br-3xl">
                 {/* <nav className="border-b border-gray-100 bg-indigo-500"> */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 pb-2 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="shrink-0 flex items-center me-12">
@@ -25,7 +26,7 @@ export default function ParticipantLayout({ auth, header, children }) {
                                     Quiz App
                                 </Link>
                             </div>
-                            <div className="hidden space-x-1 sm:-my-px sm:flex">
+                            <div className="hidden space-x-4 sm:-my-px sm:flex">
                                 <NavLinkFront
                                     href={route("home")}
                                     active={route().current("home")}
@@ -199,7 +200,7 @@ export default function ParticipantLayout({ auth, header, children }) {
                 </div>
 
                 {header && (
-                    <div className="bg-white shadow">
+                    <div className="bg-white rounded-full">
                         <div className="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
                             {header}
                         </div>
@@ -207,11 +208,13 @@ export default function ParticipantLayout({ auth, header, children }) {
                 )}
             </nav>
 
-            <main className="mt-32">{children}</main>
+            <main>{children}</main>
 
-            <div className="max-w-7xl mx-auto px-0 md:px-6 lg:px-8 space-y-6">
-                <div className="bg-white overflow-hidden shadow-sm lg:rounded md:rounded py-4 px-4">
-                    <div className="text-gray-400">2024 Free Sorfware</div>
+            <div className="max-w-screen-lg mx-auto px-0 space-y-6">
+                <div className="bg-white overflow-hidden py-4 px-4 rounded-t-full">
+                    <div className="text-gray-400 text-center">
+                        2024 Free Sorfware
+                    </div>
                 </div>
             </div>
         </div>
