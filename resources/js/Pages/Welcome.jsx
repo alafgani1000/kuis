@@ -10,7 +10,7 @@ export default function Welcome({
     return (
         <ParticipantLayout auth={auth}>
             <div className="max-w-screen-lg mx-auto px-0 space-y-6 my-4 mt-8 flex">
-                <div className="bg-white px-8 py-4 font-medium text-gray-800 rounded-t-xl rounded-bl-xl">
+                <div className="bg-white py-4 font-medium text-gray-800 rounded-t-xl rounded-bl-xl">
                     Hi Welcome, <br />
                     Let's start play, learn and explore
                 </div>

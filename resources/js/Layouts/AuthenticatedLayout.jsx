@@ -15,7 +15,7 @@ export default function Authenticated({ auth, header, children }) {
             {/* side bar */}
             <div
                 className={
-                    "md:flex flex-col w-64 h-screen bg-teal-800 sticky top-0 text-gray-700 " +
+                    "md:flex flex-col w-64 h-screen bg-teal-700 sticky top-0 text-gray-700 " +
                     (showingNavigationDropdown === false ? "hidden" : "flex")
                 }
             >

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('time_limit');
             $table->integer('published')->nullable();
             $table->timestamp('published_at')->nullable();
+            $table->text('thumbnail')->nullable();
             $table->timestamps();
         });
     }
