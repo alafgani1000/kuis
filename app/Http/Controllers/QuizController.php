@@ -21,14 +21,14 @@ class QuizController extends Controller
         $sort = isset($request->sort) ? $request->sort : 'id';
         $user = Auth::user();
         if ($user->hasRole('admin')) {
-            $quizzes = Quiz::with('category')->withCount('questions')->where(function (Builder $query) use($search) {
-                return $query->where('title', 'like', '%'.$search.'%');
+            $quizzes = Quiz::with('category')->withCount('questions')->where(function (Builder $query) use ($search) {
+                return $query->where('title', 'like', '%' . $search . '%');
             })->orderBy($sort)->paginate($perPage);
         } else {
             $quizzes = Quiz::with('category')->withCount('questions')->where('host_id', Auth::id())
-            ->where(function (Builder $query) use($search) {
-                return $query->where('title', 'like', '%'.$search.'%');
-            })->orderBy($sort)->paginate($perPage);
+                ->where(function (Builder $query) use ($search) {
+                    return $query->where('title', 'like', '%' . $search . '%');
+                })->orderBy($sort)->paginate($perPage);
         }
         return Inertia::render('Quiz/Quiz', [
             'quizzes' => $quizzes,
@@ -40,12 +40,17 @@ class QuizController extends Controller
 
     public function store(Request $request)
     {
-
         $error = array();
         $quiz = $request->quiz;
         if ($request->title == "") {
             $error['title'] = 'A Quiz title is required';
         }
+        $image = $request->file('image');
+        $file_name = $image->hashName();
+        $name = $image->getClientOriginalName();
+        $extension = $image->getClientOriginalExtension();
+        $size = $image->getSize();
+        $path = $image->store('quiz_images' . $file_name);
         if (count($error)) {
             return response()->json($error, 422);
         } else {
@@ -77,13 +82,13 @@ class QuizController extends Controller
         } else {
             DB::beginTransaction();
             try {
-                $quiz = Quiz::where('id',$id)->update([
+                $quiz = Quiz::where('id', $id)->update([
                     'title' => $request->title,
                     'description' => $request->description,
                     'quiz_category_id' => $request->category,
                 ]);
                 DB::commit();
-                return response('Quiz updated successfully',200);
+                return response('Quiz updated successfully', 200);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['error' => 'Failed to update quiz'], 500);
@@ -102,7 +107,7 @@ class QuizController extends Controller
             $quiz = Quiz::findOrFail($id);
             $quiz->delete();
             DB::commit();
-            return response('Quiz deleted successfully',200);
+            return response('Quiz deleted successfully', 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Failed to delete quiz'], 500);
