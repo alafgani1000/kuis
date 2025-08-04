@@ -23,7 +23,11 @@ class ParticipantQuizController extends Controller
 
     public function newQuiz()
     {
-        $quiz = Quiz::orderBy('created_at', 'desc')->take(8)->get();
+        $quiz = Quiz::with('category', 'questions')
+            ->withCount('category', 'questions')
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
         return $quiz;
     }
 
@@ -31,8 +35,11 @@ class ParticipantQuizController extends Controller
     {
         $quiz = QuizCategory::with(
             ['quizzes' => function (Builder $query) {
-            $query->take(8);
-        }])->get();
+                $query->take(8);
+            }]
+        )
+            ->withCount('quizzes')
+            ->get();
         return $quiz;
     }
 }

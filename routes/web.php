@@ -29,6 +29,10 @@ use Inertia\Inertia;
 
 Route::get('/', [ParticipantQuizController::class, 'home'])->name('home');
 
+// get category quizes
+Route::get('/quiz/category', [ParticipantQuizController::class, 'byCategoryQuiz'])->name('participant.by_category_quiz');
+// get new quiz
+Route::get('/quiz/new', [ParticipantQuizController::class, 'newQuiz'])->name('participant.new_quiz');
 
 Route::middleware('auth')->group(function () {
     // profile
@@ -38,8 +42,6 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:participant')->group(function () {
         Route::get('/dashboard', [ParticipantQuizController::class, 'dashoard'])->name('participant.dashboard');
-        Route::get('/quiz/new', [ParticipantQuizController::class, 'newQuiz'])->name('participant.new_quiz');
-        Route::get('/quiz/category', [ParticipantQuizController::class, 'byCategoryQuiz'])->name('participant.by_category_quiz');
     });
 
     Route::middleware(['role:admin|creator'])->prefix('admin')->group(function () {
@@ -106,7 +108,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/quiz/{id}/update', [QuizController::class, 'update'])->name('quiz.update');
         Route::delete('/quiz/{id}/delete', [QuizController::class, 'destroy'])->name('quiz.delete');
         Route::put('/quiz/{id}/publish', [QuizController::class, 'publish'])->name('quiz.publish');
-         Route::put('/quiz/{id}/unpublish', [QuizController::class, 'unpublish'])->name('quiz.unpublish');
+        Route::put('/quiz/{id}/unpublish', [QuizController::class, 'unpublish'])->name('quiz.unpublish');
 
         // Quiz question
         Route::get('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'index'])->name('quiz.question.index');
@@ -116,8 +118,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('/quiz/question/{id}/delete', [QuizQuestionController::class, 'delete'])->name('quiz.question.delete');
         Route::get('/quiz/{quiz_id}/question-data', [QuizQuestionController::class, 'data'])->name('quiz.question.data');
     });
-
-
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

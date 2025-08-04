@@ -13,7 +13,7 @@ export default function ParticipantLayout({ auth, header, children }) {
 
     return (
         <div className="min-h-screen  bg-cover">
-            <nav className="max-w-full mx-auto border-b border-gray-200 bg-emerald-700 sticky top-0 rounded-bl-3xl rounded-br-3xl">
+            <nav className="max-w-full mx-auto border-b border-gray-200 bg-emerald-600 sticky top-0 rounded-bl-3xl rounded-br-3xl">
                 {/* <nav className="border-b border-gray-100 bg-indigo-500"> */}
                 <div className="max-w-7xl mx-auto px-4 pb-2 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -211,7 +211,7 @@ export default function ParticipantLayout({ auth, header, children }) {
             <main>{children}</main>
 
             <div className="max-w-screen-lg mx-auto px-0 space-y-6">
-                <div className="bg-emerald-700 overflow-hidden py-4 px-4 rounded-t-2xl">
+                <div className="bg-emerald-600 overflow-hidden py-4 px-4 rounded-t-2xl">
                     <div className="text-white text-center">
                         2024 Free Sorfware
                     </div>
