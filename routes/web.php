@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:participant')->group(function () {
         Route::get('/dashboard', [ParticipantQuizController::class, 'dashoard'])->name('participant.dashboard');
+        Route::get('/quiz/{id}/start', [ParticipantQuizController::class, 'quiz'])->name('participant.quiz');
     });
 
     Route::middleware(['role:admin|creator'])->prefix('admin')->group(function () {

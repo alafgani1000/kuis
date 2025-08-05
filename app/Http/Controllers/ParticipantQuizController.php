@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Quiz;
 use App\Models\QuizCategory;
+use App\Models\QuizQuestion;
 
 class ParticipantQuizController extends Controller
 {
@@ -41,5 +42,16 @@ class ParticipantQuizController extends Controller
             ->withCount('quizzes')
             ->get();
         return $quiz;
+    }
+
+    public function quiz($id)
+    {
+        $quiz = Quiz::with(
+            'questions',
+            'questions.answers',
+            'questions.type',
+            'category'
+        )->first();
+        return Inertia::render('Quiz', compact('quiz'));
     }
 }
