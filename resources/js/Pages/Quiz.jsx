@@ -51,12 +51,12 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                                 key={currentQuestion.id}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? (
+                          "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
                             />
-                        ) : currentQuestion?.type?.code === "short_answer" ? (
+                        ) : currentQuestion?.type?.code === "short_answer" ? ( // short answer
                             <ShortAnswer
                                 question={currentQuestion}
                                 key={currentQuestion.id}
