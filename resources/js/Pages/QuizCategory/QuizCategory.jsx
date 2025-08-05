@@ -24,6 +24,7 @@ export default function Category({
     const [idDelete, setIdDelete] = useState("");
     const [isEdit, setIsEdit] = useState(false);
     const [formTitle, setFormTitle] = useState("Create Quiz Category");
+    const [fileData, setFileData] = useState(null);
 
     const handleSearch = () => {
         // handle search
@@ -85,6 +86,13 @@ export default function Category({
         setIdDelete(data.id);
     };
 
+    const handleFileUpload = (e) => {
+        if (e.target.files) {
+            const files = e.target.files[0];
+            setFileData(files);
+        }
+    };
+
     const deleteCategory = (e) => {
         e.preventDefault();
         axios
@@ -100,10 +108,15 @@ export default function Category({
 
     const saveCategory = (e) => {
         e.preventDefault();
+        let formData = new FormData();
+        formData.append("name", name);
+        formData.append("image", fileData);
         if (isEdit === false) {
             axios
-                .post("/admin/quiz-category", {
-                    name: name,
+                .post("/admin/quiz-category", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 })
                 .then((res) => {
                     handleRefresh();
@@ -114,8 +127,10 @@ export default function Category({
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/admin/quiz-category/${id}/update`, {
-                    name: name,
+                .post(`/admin/quiz-category/${id}/update`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 })
                 .then((res) => {
                     handleRefresh();
@@ -213,6 +228,9 @@ export default function Category({
                                             <th className="text-left py-4 px-4">
                                                 Name
                                             </th>
+                                            <th className="text-left py-4 px-5">
+                                                Image
+                                            </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
                                             </th>
@@ -228,6 +246,12 @@ export default function Category({
                                                     >
                                                         <td className="text-left py-3 px-4">
                                                             {category.name}
+                                                        </td>
+                                                        <td className="text-left py-3 px-4">
+                                                            <img
+                                                                src={`/storage/${category.thumbnail}`}
+                                                                width={"80px"}
+                                                            />
                                                         </td>
                                                         <td className="content-center">
                                                             <div className="flex flex-wrap space-x-1">
@@ -359,6 +383,18 @@ export default function Category({
                                     setName(e.target.value);
                                 }}
                                 value={name}
+                            />
+                        </div>
+                        <div className="grid mt-4">
+                            <label className="mb-2">Image:</label>
+                            <input
+                                type="file"
+                                className="file:mr-4 file:py-2 file:px-4
+                                        file:rounded-full file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-zinc-200 file:text-gray-500
+                                        hover:file:bg-violet-100"
+                                onChange={handleFileUpload}
                             />
                         </div>
                         <div className="grid justify-end mt-4">

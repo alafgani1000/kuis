@@ -11,7 +11,7 @@ class QuizCategory extends Model
 
     protected $table = 'quiz_categories';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'thumbnail'];
 
     public function quizzes()
     {

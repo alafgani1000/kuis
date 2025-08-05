@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
         // Category
         Route::get('/quiz-categories', [QuizCategoryController::class, 'index'])->name('quizcategory.index');
         Route::post('/quiz-category', [QuizCategoryController::class, 'store'])->name('quizcategory.store');
-        Route::put('/quiz-category/{id}/update', [QuizCategoryController::class, 'update'])->name('quizcategory.update');
+        Route::post('/quiz-category/{id}/update', [QuizCategoryController::class, 'update'])->name('quizcategory.update');
         Route::delete('/quiz-category/{id}/delete', [QuizCategoryController::class, 'delete'])->name('quizcategory.delete');
         Route::get('/quiz-category/data', [QuizCategoryController::class, 'data'])->name('quizcategory.data');
 
