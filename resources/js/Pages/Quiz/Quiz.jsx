@@ -17,6 +17,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
     const [modalConfirmUnpublish, setModalConfirmUnpublish] = useState(false);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [timeLimit, setTimeLimit] = useState("");
     const [id, setId] = useState("");
     const [idDelete, setIdDelete] = useState("");
     const [idPublish, setIdPublish] = useState("");
@@ -58,6 +59,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
         setDescription(data.description);
         setCategory(data.category?.id);
         setId(data.id);
+        setTimeLimit(data.time_limit);
         setIsEdit(true);
         setModalCreate(true);
         setFormTitle("Update Quiz");
@@ -169,6 +171,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
         formData.append("title", title);
         formData.append("description", description);
         formData.append("category", category);
+        formData.append("time_limit", timeLimit);
         formData.append("image", fileData);
         if (isEdit === false) {
             axios
@@ -518,26 +521,43 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                 value={title}
                             />
                         </div>
-                        <div className="grid mt-4">
-                            <label className="mb-2">Category:</label>
-                            <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
-                                required
-                            >
-                                <option value="">Select Category</option>
-                                {categories?.map((dataCategory, index) => {
-                                    return (
-                                        <option
-                                            key={index}
-                                            value={dataCategory.id}
-                                        >
-                                            {dataCategory.name}
-                                        </option>
-                                    );
-                                })}
-                            </select>
+                        <div className="grid grid-cols-2 gap-2 mt-4">
+                            <div className="grid">
+                                <label className="mb-2">Category:</label>
+                                <select
+                                    value={category}
+                                    onChange={(e) =>
+                                        setCategory(e.target.value)
+                                    }
+                                    className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                    required
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories?.map((dataCategory, index) => {
+                                        return (
+                                            <option
+                                                key={index}
+                                                value={dataCategory.id}
+                                            >
+                                                {dataCategory.name}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                            <div className="grid">
+                                <label className="mb-2">
+                                    Time Limit: (in Minutes)
+                                </label>
+                                <input
+                                    type="text"
+                                    className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                    onChange={(e) => {
+                                        setTimeLimit(e.target.value);
+                                    }}
+                                    value={timeLimit}
+                                />
+                            </div>
                         </div>
                         <div className="grid mt-4">
                             <label className="mb-2">Description:</label>

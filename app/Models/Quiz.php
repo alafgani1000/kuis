@@ -17,6 +17,7 @@ class Quiz extends Model
         'published',
         'published_at',
         'thumbnail',
+        'time_limit'
     ];
 
     public function host()

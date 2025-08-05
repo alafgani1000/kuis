@@ -61,6 +61,7 @@ class QuizController extends Controller
                     'description' => $request->description,
                     'quiz_category_id' => $request->category,
                     'host_id' => Auth::id(),
+                    'time_limit' => $request->time_limit,
                     'thumbnail' => $path,
                 ]);
                 DB::commit();
@@ -99,11 +100,12 @@ class QuizController extends Controller
                     $extension = $image->getClientOriginalExtension();
                     $size = $image->getSize();
                     $path = $image->store('quiz_images', 'public');
+                    $quiz->thumbnail = $path;
                 }
                 $quiz->title = $request->title;
                 $quiz->description = $request->description;
                 $quiz->quiz_category_id = $request->category;
-                $quiz->thumbnail = $path;
+                $quiz->time_limit = $request->time_limit;
                 $quiz->save();
                 DB::commit();
                 return response('Quiz updated successfully', 200);

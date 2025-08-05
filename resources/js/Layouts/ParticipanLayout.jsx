@@ -59,7 +59,7 @@ export default function ParticipantLayout({ auth, header, children }) {
                         </div>
 
                         <div className="hidden space-x-3 sm:-my-px sm:ms-10 sm:flex">
-                            {user !== null && (
+                            {user !== null ? (
                                 <div className="hidden sm:flex sm:items-center sm:ms-6">
                                     <div className="ms-3 relative">
                                         <Dropdown>
@@ -104,6 +104,11 @@ export default function ParticipantLayout({ auth, header, children }) {
                                         </Dropdown>
                                     </div>
                                 </div>
+                            ) : (
+                                <NavLinkFront href={route("login")}>
+                                    {" "}
+                                    Login{" "}
+                                </NavLinkFront>
                             )}
                         </div>
 

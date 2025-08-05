@@ -44,7 +44,13 @@ export default function Welcome({
                 <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 px-8 py-8 bg-background bg-cover gap-6 rounded-lg">
                     {quizes.map((quiz, index) => {
                         return (
-                            <div className="bg-white px-4 py-4 font-medium text-gray-800 h-48 grid place-items-center rounded-md">
+                            <div
+                                key={index}
+                                className="bg-white px-4 py-4 font-medium text-gray-800 h-48 grid place-items-center rounded-md"
+                                style={{
+                                    backgroundImage: `url(/storage/${quiz.thumbnail})`,
+                                }}
+                            >
                                 <div className="w-full text-center text-xl text-gray-800">
                                     {quiz.title}
                                     <div className="flex items-center justify-center space-x-1 mt-4">
@@ -68,7 +74,13 @@ export default function Welcome({
                 <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-4 bg-background bg-cover px-6 py-6 rounded-lg ">
                     {categories.map((category, index) => {
                         return (
-                            <div className="bg-white px-4 py-4 font-medium text-gray-800 h-32 grid place-items-center rounded-md">
+                            <div
+                                className="bg-white px-4 py-4 font-medium text-gray-800 h-32 grid place-items-center rounded-md"
+                                style={{
+                                    backgroundImage: `url(/storage/${category.thumbnail})`,
+                                }}
+                                key={index}
+                            >
                                 <div className="w-full text-center text-xl text-gray-800">
                                     {category.name}
                                     <div className="flex items-center justify-center space-x-1 mt-4">
