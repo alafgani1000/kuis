@@ -309,6 +309,9 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                             <th className="text-center py-4 px-4">
                                                 Image
                                             </th>
+                                            <th className="text-center py-4 px-4">
+                                                Time Limit
+                                            </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
                                             </th>
@@ -350,6 +353,10 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                             src={`/storage/${quiz.thumbnail}`}
                                                             width={"80px"}
                                                         />
+                                                    </td>
+                                                    <td className="text-center py-3 px-4">
+                                                        {quiz.time_limit}{" "}
+                                                        minutes
                                                     </td>
                                                     <td className="content-center">
                                                         <div className="flex flex-wrap space-x-1">
