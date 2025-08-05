@@ -16,6 +16,7 @@ class Quiz extends Model
         'quiz_category_id',
         'published',
         'published_at',
+        'thumbnail',
     ];
 
     public function host()

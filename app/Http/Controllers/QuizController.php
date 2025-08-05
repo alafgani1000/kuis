@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Quiz;
+use Illuminate\Support\Facades\Storage;
 
 class QuizController extends Controller
 {
@@ -41,7 +42,6 @@ class QuizController extends Controller
     public function store(Request $request)
     {
         $error = array();
-        $quiz = $request->quiz;
         if ($request->title == "") {
             $error['title'] = 'A Quiz title is required';
         }
@@ -50,7 +50,7 @@ class QuizController extends Controller
         $name = $image->getClientOriginalName();
         $extension = $image->getClientOriginalExtension();
         $size = $image->getSize();
-        $path = $image->store('quiz_images' . $file_name);
+        $path = $image->store('quiz_images', 'public');
         if (count($error)) {
             return response()->json($error, 422);
         } else {
@@ -61,6 +61,7 @@ class QuizController extends Controller
                     'description' => $request->description,
                     'quiz_category_id' => $request->category,
                     'host_id' => Auth::id(),
+                    'thumbnail' => $path,
                 ]);
                 DB::commit();
                 return response('Quiz created successfully');
@@ -77,16 +78,33 @@ class QuizController extends Controller
         if ($request->title == "") {
             $error['title'] = 'A Quiz title is required';
         }
+        $image = $request->file('image');
+        $path = null;
         if (count($error)) {
             return response()->json($error, 422);
         } else {
             DB::beginTransaction();
             try {
-                $quiz = Quiz::where('id', $id)->update([
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'quiz_category_id' => $request->category,
-                ]);
+                $quiz = Quiz::findOrFail($id);
+                // delete thumbnail
+                if (!is_null($image)) {
+                    if (!is_null($quiz)) {
+                        if (Storage::exists('public/' . $quiz->thumbnail)) {
+                            Storage::delete('public/' . $quiz->thumbnail);
+                        }
+                    }
+
+                    $file_name = $image->hashName();
+                    $name = $image->getClientOriginalName();
+                    $extension = $image->getClientOriginalExtension();
+                    $size = $image->getSize();
+                    $path = $image->store('quiz_images', 'public');
+                }
+                $quiz->title = $request->title;
+                $quiz->description = $request->description;
+                $quiz->quiz_category_id = $request->category;
+                $quiz->thumbnail = $path;
+                $quiz->save();
                 DB::commit();
                 return response('Quiz updated successfully', 200);
             } catch (\Exception $e) {
@@ -105,6 +123,11 @@ class QuizController extends Controller
         DB::beginTransaction();
         try {
             $quiz = Quiz::findOrFail($id);
+            if (!is_null($quiz)) {
+                if (Storage::exists('public/' . $quiz->thumbnail)) {
+                    Storage::delete('public/' . $quiz->thumbnail);
+                }
+            }
             $quiz->delete();
             DB::commit();
             return response('Quiz deleted successfully', 200);

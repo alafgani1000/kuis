@@ -25,6 +25,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
     const [formTitle, setFormTitle] = useState("Create New Quiz");
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState("");
+    const [fileData, setFileData] = useState(null);
 
     const handleSearch = () => {
         // handle search
@@ -155,14 +156,26 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
             });
     };
 
+    const handleFileUpload = (e) => {
+        if (e.target.files) {
+            const files = e.target.files[0];
+            setFileData(files);
+        }
+    };
+
     const saveQuiz = (e) => {
         e.preventDefault();
+        let formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("category", category);
+        formData.append("image", fileData);
         if (isEdit === false) {
             axios
-                .post("/admin/quiz", {
-                    title: title,
-                    description: description,
-                    category: category,
+                .post("/admin/quiz", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 })
                 .then((res) => {
                     handleRefresh();
@@ -173,10 +186,10 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                 });
         } else if (isEdit === true) {
             axios
-                .put(`/admin/quiz/${id}/update`, {
-                    title: title,
-                    description: description,
-                    category: category,
+                .post(`/admin/quiz/${id}/update`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 })
                 .then((res) => {
                     handleRefresh();
@@ -290,6 +303,9 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                             <th className="text-center py-4 px-4">
                                                 Question
                                             </th>
+                                            <th className="text-center py-4 px-4">
+                                                Image
+                                            </th>
                                             <th className="text-left py-4 px-4">
                                                 Action
                                             </th>
@@ -325,6 +341,12 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                                     </td>
                                                     <td className="text-center py-3 px-4">
                                                         {quiz.questions_count}
+                                                    </td>
+                                                    <td className="text-center py-3 px-4">
+                                                        <img
+                                                            src={`/storage/${quiz.thumbnail}`}
+                                                            width={"80px"}
+                                                        />
                                                     </td>
                                                     <td className="content-center">
                                                         <div className="flex flex-wrap space-x-1">
@@ -502,7 +524,9 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
                                 className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                required
                             >
+                                <option value="">Select Category</option>
                                 {categories?.map((dataCategory, index) => {
                                     return (
                                         <option
@@ -524,6 +548,18 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                 className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
                                 value={description}
                             ></textarea>
+                        </div>
+                        <div className="grid mt-4">
+                            <label className="mb-2">Image:</label>
+                            <input
+                                type="file"
+                                className="file:mr-4 file:py-2 file:px-4
+                                        file:rounded-full file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-zinc-200 file:text-gray-500
+                                        hover:file:bg-violet-100"
+                                onChange={handleFileUpload}
+                            />
                         </div>
                         <div className="grid justify-end mt-4">
                             <button
