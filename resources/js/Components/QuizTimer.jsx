@@ -20,7 +20,7 @@ const QuizTimer = ({ durationInSeconds }) => {
     }, [durationInSeconds]);
 
     return (
-        <div>
+        <div className="text-center text-sm sm:text-start font-semibold">
             <h2>Waktu tersisa: {timeLeft} detik</h2>
         </div>
     );

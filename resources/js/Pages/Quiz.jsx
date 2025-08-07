@@ -5,25 +5,34 @@ import { questions } from "@/Components/js/questions_example";
 import ShortAnswer from "./QuestionTypes/ShortAnswer";
 import { useEffect, useState } from "react";
 import MultipleChoice from "./QuestionTypes/MultipleChoice";
+import QuizTimer from "@/Components/QuizTimer";
 
 export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [questions, setQuestions] = useState(quiz.questions);
     const [currentQuestion, setCurrentQuestion] = useState({});
+    const [countQuestion, setCountQuestion] = useState(0);
+    const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
         setCurrentQuestion(questions[index]);
+        setCountQuestion(quiz.questions.length);
     }, [index]);
 
     const nextQuestion = () => {
         let newIndex = index + 1;
+        let newCurrentQuestionNumber = currentQuestionNumber + 1;
+        setCurrentQuestionNumber(newCurrentQuestionNumber);
         setIndex(newIndex);
     };
 
     const prevQuestion = () => {
         let newIndex = index - 1;
+        let newCurrentQuestionNumber = currentQuestionNumber - 1;
+        setCurrentQuestionNumber(newCurrentQuestionNumber);
         setIndex(newIndex);
     };
+
     return (
         <>
             <Head title="Welcome" />
@@ -37,11 +46,9 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 <div className="xl:w-3/5 lg:w-full md:w-full w-full md:mx-4 mx-4 border shadow rounded-lg py-5 h-3/5">
                     <div className="flex px-6 justify-between">
                         <div className="text-center text-sm sm:text-start font-semibold">
-                            1 from 50
+                            {currentQuestionNumber} from {countQuestion}
                         </div>
-                        <div className="text-center text-sm sm:text-start font-semibold">
-                            Timeleft: 50 minute
-                        </div>
+                        <QuizTimer durationInSeconds={50} />
                     </div>
                     <div className="flex justify-center mt-8 p-6 lg:p-8">
                         {/* multiple choice */}

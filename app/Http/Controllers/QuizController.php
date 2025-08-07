@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class QuizController extends Controller
 {
@@ -31,11 +32,15 @@ class QuizController extends Controller
                     return $query->where('title', 'like', '%' . $search . '%');
                 })->orderBy($sort)->paginate($perPage);
         }
+        Cache::put('user_quiz', 'Agan', 120);
+        $value = Cache::get('user_quiz');
+
         return Inertia::render('Quiz/Quiz', [
             'quizzes' => $quizzes,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
-            'pgSort' => $sort
+            'pgSort' => $sort,
+            'value' => $value
         ]);
     }
 

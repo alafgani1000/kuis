@@ -6,7 +6,14 @@ import Modal from "@/Components/Modal";
 import axios from "axios";
 import { getQuizCategories } from "@/Components/js/helper";
 
-export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
+export default function Quiz({
+    auth,
+    quizzes,
+    pgSearch,
+    pgSort,
+    pgPerPage,
+    value,
+}) {
     const [search, setSearch] = useState(pgSearch || "");
     const [sort, setSort] = useState(pgSort || "");
     const [perPage, setPerPage] = useState(pgPerPage || 10);
@@ -230,7 +237,7 @@ export default function Quiz({ auth, quizzes, pgSearch, pgSort, pgPerPage }) {
                                     <span className="text-sm mr-2">
                                         <i className="bi bi-plus-square"></i>
                                     </span>
-                                    New Quiz
+                                    New Quiz {value}
                                 </button>
                             </div>
                             <div className="lg:mx-8 md:mx-8 mx-0 my-8 border border-zinc-100 md:rounded-lg lg:rounded-lg">
