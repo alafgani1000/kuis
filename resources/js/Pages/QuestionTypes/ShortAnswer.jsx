@@ -1,4 +1,4 @@
-export default function ShortAnswer({ question }) {
+export default function ShortAnswer({ question, onAnswering }) {
     return (
         <div key={question.id} className="">
             <div className="text-xl font-semibold">{question.question}</div>
