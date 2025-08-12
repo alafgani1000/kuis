@@ -32,15 +32,12 @@ class QuizController extends Controller
                     return $query->where('title', 'like', '%' . $search . '%');
                 })->orderBy($sort)->paginate($perPage);
         }
-        Cache::put('user_quiz', 'Agan', 120);
-        $value = Cache::get('user_quiz');
 
         return Inertia::render('Quiz/Quiz', [
             'quizzes' => $quizzes,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
             'pgSort' => $sort,
-            'value' => $value
         ]);
     }
 

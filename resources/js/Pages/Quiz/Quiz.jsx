@@ -237,7 +237,7 @@ export default function Quiz({
                                     <span className="text-sm mr-2">
                                         <i className="bi bi-plus-square"></i>
                                     </span>
-                                    New Quiz {value}
+                                    New Quiz
                                 </button>
                             </div>
                             <div className="lg:mx-8 md:mx-8 mx-0 my-8 border border-zinc-100 md:rounded-lg lg:rounded-lg">

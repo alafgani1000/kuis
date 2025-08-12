@@ -16,8 +16,9 @@ return new class extends Migration
             $table->integer('user_id');
             $table->integer('quiz_id');
             $table->integer('score')->default(0);
-            $table->dateTime('started_at');
-            $table->dateTime('finished_at');
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('finished_at')->nullable();
+            $table->text('log_description')->nullable();
             $table->timestamps();
         });
     }

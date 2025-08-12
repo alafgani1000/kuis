@@ -1,4 +1,8 @@
-export default function MultipleResponse({ question }) {
+export default function MultipleResponse({ question, onAnswering }) {
+    const handleAnswer = (question, answerId) => {
+        onAnswering(question, answerId);
+    };
+
     return (
         <div key={question.id}>
             <div className="text-xl font-semibold">{question.question} </div>
@@ -10,6 +14,9 @@ export default function MultipleResponse({ question }) {
                             className="border flex items-center px-2 py-2 rounded-md hover:bg-slate-100"
                         >
                             <input
+                                onClick={() =>
+                                    handleAnswer(question, answer.id)
+                                }
                                 type="checkbox"
                                 className="text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                                 name={question.id}

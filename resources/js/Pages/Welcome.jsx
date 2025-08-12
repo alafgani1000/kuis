@@ -45,7 +45,7 @@ export default function Welcome({
                     {quizes.map((quiz, index) => {
                         return (
                             <Link
-                                href={route("participant.quiz", quiz.id)}
+                                href={route("participant.take_quiz", quiz.id)}
                                 className="bg-white "
                                 key={index}
                             >

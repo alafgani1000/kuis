@@ -9,6 +9,9 @@ use Inertia\Response;
 use App\Models\Quiz;
 use App\Models\QuizCategory;
 use App\Models\QuizQuestion;
+use App\Models\Take;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ParticipantQuizController extends Controller
 {
@@ -44,14 +47,25 @@ class ParticipantQuizController extends Controller
         return $quiz;
     }
 
-    public function quiz($id)
+    public function takeQuiz($id)
     {
+        $userId = Auth::user()->id;
+        $startTed = Carbon::now();
+
+        $takeQuiz = new Take();
+        $takeQuiz->user_id = $userId;
+        $takeQuiz->quiz_id = $id;
+        $takeQuiz->started_at = $startTed;
+        $takeQuiz->save();
+
         $quiz = Quiz::with(
             'questions',
             'questions.answers',
             'questions.type',
             'category'
-        )->first();
+        )
+            ->where('id', $id)
+            ->first();
         return Inertia::render('Quiz', compact('quiz'));
     }
 }

@@ -19,9 +19,10 @@ class QuizQuestionAnswer extends Model
         'score',
     ];
 
+    protected $hidden = ['score'];
+
     public function quizQuestion()
     {
         return $this->belongsTo(QuizQuestion::class, 'quiz_question_id');
     }
-
 }
