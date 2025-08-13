@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import MultipleChoice from "./QuestionTypes/MultipleChoice";
 import QuizTimer from "@/Components/QuizTimer";
 import Modal from "@/Components/Modal";
+import axios from "axios";
 
 export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [questions, setQuestions] = useState(quiz.questions);
@@ -15,6 +16,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
     const [modalQuizEnd, setModalQuizEnd] = useState(false);
     const [index, setIndex] = useState(0);
+    const [quizLastTimeChoice, setQuizLastTimeChoice] = useState(null);
 
     const [timeLimit, setTimeLimit] = useState(null);
 
@@ -30,6 +32,16 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         setCurrentQuestion(questions[index]);
         setCountQuestion(quiz.questions.length);
     }, [index]);
+
+    useEffect(() => {
+        const syncInterval = setInterval(() => {
+            axios.post("/quiz/sync-answers", {
+                quiz_id: quiz.id,
+                questions: questions,
+            });
+        }, 15000);
+        return () => clearInterval(syncInterval);
+    }, [questions]);
 
     const nextQuestion = () => {
         let newIndex = index + 1;
@@ -53,6 +65,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             return question;
         });
         setQuestions(questionsMap);
+        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questionsMap));
+        localStorage.setItem(
+            "quizLastTimeChoice" + quiz.id,
+            JSON.stringify(new Date())
+        );
     };
 
     const multiResponsePick = (questionPick, answer) => {
@@ -72,6 +89,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             return question;
         });
         setQuestions(questionsMap);
+        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questionsMap));
+        localStorage.setItem(
+            "quizLastTimeChoice" + quiz.id,
+            JSON.stringify(new Date())
+        );
     };
 
     const shortAnswerPick = (questionPick, answer) => {
@@ -83,9 +105,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         });
     };
 
-    const handleSubmit = () => {
-        console.log(questions);
-    };
+    const handleSubmit = () => {};
 
     return (
         <>

@@ -15,6 +15,8 @@ class TakeAnswer extends Model
         'take_id',
         'quiz_question_id',
         'quiz_answer_id',
+        'content',
+        'correct',
     ];
 
     public function take()
