@@ -8,6 +8,7 @@ import MultipleChoice from "./QuestionTypes/MultipleChoice";
 import QuizTimer from "@/Components/QuizTimer";
 import Modal from "@/Components/Modal";
 import axios from "axios";
+import Alert from "@/Components/Alert";
 
 export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [questions, setQuestions] = useState(quiz.questions);
@@ -15,8 +16,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [countQuestion, setCountQuestion] = useState(0);
     const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
     const [modalQuizEnd, setModalQuizEnd] = useState(false);
+    const [questionSkip, setQuestionSkip] = useState([]);
     const [index, setIndex] = useState(0);
     const [quizLastTimeChoice, setQuizLastTimeChoice] = useState(null);
+    const [pleasePick, setPleasePick] = useState("");
 
     const [timeLimit, setTimeLimit] = useState(null);
 
@@ -44,15 +47,22 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     }, [questions]);
 
     const nextQuestion = () => {
-        let newIndex = index + 1;
-        let newCurrentQuestionNumber = currentQuestionNumber + 1;
-        setCurrentQuestionNumber(newCurrentQuestionNumber);
-        setIndex(newIndex);
+        if (currentQuestion.pick_answers === undefined) {
+            setPleasePick("Please pick an answer or skip");
+        } else {
+            let newIndex = index + 1;
+            let newCurrentQuestionNumber = currentQuestionNumber + 1;
+            setCurrentQuestionNumber(newCurrentQuestionNumber);
+            setIndex(newIndex);
+        }
+
+        console.log(currentQuestion.pick_answers);
     };
 
-    const prevQuestion = () => {
-        let newIndex = index - 1;
-        let newCurrentQuestionNumber = currentQuestionNumber - 1;
+    const skipQuestion = (index) => {
+        setQuestionSkip((prev) => [...prev, index]);
+        let newIndex = index + 1;
+        let newCurrentQuestionNumber = currentQuestionNumber + 1;
         setCurrentQuestionNumber(newCurrentQuestionNumber);
         setIndex(newIndex);
     };
@@ -110,13 +120,13 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     return (
         <>
             <Head title="Welcome" />
-            <div className="flex justify-center mt-8 p-6 lg:p-8">
-                {/* multiple choice */}
-                {questions.map((question, index) => {
+            {/* <div className="flex justify-center mt-8 p-6 lg:p-8"> */}
+            {/* multiple choice */}
+            {/* {questions.map((question, index) => {
                     return <span key={index}>{index + 1}</span>;
-                })}
-            </div>
-            <div className="flex items-center justify-center h-screen bg-white dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+                })} */}
+            {/* </div> */}
+            <div className="flex items-center justify-center h-screen bg-white dark:bg-dots-lighter dark:bg-gray-50 selection:bg-red-500 selection:text-white">
                 <div className="xl:w-3/5 lg:w-full md:w-full w-full md:mx-4 mx-4 border shadow rounded-lg py-5 h-3/5">
                     <div className="flex px-6 justify-between">
                         <div className="text-center text-sm sm:text-start font-semibold">
@@ -127,7 +137,15 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                             onTimeUpdate={handleTimeUpdate}
                         />
                     </div>
-                    <div className="flex justify-center mt-8 p-6 lg:p-8">
+
+                    {/* alert please pick */}
+                    <Alert
+                        message={pleasePick}
+                        className="flex justify-center bg-red-600 w-80 mt-8"
+                    />
+
+                    {/* show question */}
+                    <div className="flex justify-center p-6 lg:p-8">
                         {/* multiple choice */}
                         {currentQuestion?.type?.code === "multiple_choice" ? (
                             <MultipleChoice
@@ -152,12 +170,13 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                         )}
                     </div>
 
+                    {/* skip and next question */}
                     <div className="flex justify-center mt-8 px-6 space-x-8">
                         <div
-                            onClick={(e) => prevQuestion()}
-                            className="text-center text-sm sm:text-start bg-emerald-600 px-8 py-2 text-white rounded-full cursor-pointer"
+                            onClick={(e) => skipQuestion(index)}
+                            className="text-center text-sm sm:text-start bg-gray-400 px-8 py-2 text-white rounded-full cursor-pointer"
                         >
-                            Prev
+                            Skip
                         </div>
                         <div
                             onClick={(e) => nextQuestion()}

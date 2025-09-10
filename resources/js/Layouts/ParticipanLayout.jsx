@@ -13,7 +13,7 @@ export default function ParticipantLayout({ auth, header, children }) {
 
     return (
         <div className="min-h-screen  bg-cover">
-            <nav className="max-w-full mx-auto border-b border-gray-200 bg-emerald-600 sticky top-0 rounded-bl-3xl rounded-br-3xl">
+            <nav className="max-w-full mx-auto border-b border-gray-200 bg-emerald-600 sticky top-0">
                 {/* <nav className="border-b border-gray-100 bg-indigo-500"> */}
                 <div className="max-w-7xl mx-auto px-4 pb-2 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
