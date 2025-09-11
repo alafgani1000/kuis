@@ -113,7 +113,7 @@ class QuizController extends Controller
                 return response('Quiz updated successfully', 200);
             } catch (\Exception $e) {
                 DB::rollBack();
-                return response()->json(['error' => 'Failed to update quiz'], 500);
+                return response()->json(['error' => $e], 500);
             }
         }
     }
