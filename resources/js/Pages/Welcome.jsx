@@ -85,7 +85,7 @@ export default function Welcome({
                     {categories.map((category, index) => {
                         return (
                             <div
-                                className="bg-white px-4 py-4 font-medium text-gray-800 h-32 grid place-items-center rounded-md"
+                                className="bg-white px-4 py-4 font-medium text-gray-800 h-32 grid place-items-center rounded-md bg-cover bg-no-repeat bg-center"
                                 style={{
                                     backgroundImage: `url(/storage/${category.thumbnail})`,
                                 }}

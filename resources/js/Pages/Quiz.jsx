@@ -113,9 +113,15 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             }
             return question;
         });
+        setQuestions(questionsMap);
+        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questionsMap));
+        localStorage.setItem(
+            "quizLastTimeChoice" + quiz.id,
+            JSON.stringify(new Date())
+        );
     };
 
-    const handleSubmit = () => {};
+    const handleSubmit = () => { };
 
     return (
         <>
@@ -126,7 +132,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                     return <span key={index}>{index + 1}</span>;
                 })} */}
             {/* </div> */}
-            <div className="flex items-center justify-center h-screen bg-white dark:bg-dots-lighter dark:bg-gray-50 selection:bg-red-500 selection:text-white">
+            <div className="flex items-center justify-center mt-8 bg-white dark:bg-dots-lighter dark:bg-gray-50 selection:bg-red-500 selection:text-white">
                 <div className="xl:w-3/5 lg:w-full md:w-full w-full md:mx-4 mx-4 border shadow rounded-lg py-5 h-3/5">
                     <div className="flex px-6 justify-between">
                         <div className="text-center text-sm sm:text-start font-semibold">
@@ -139,10 +145,12 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                     </div>
 
                     {/* alert please pick */}
-                    <Alert
-                        message={pleasePick}
-                        className="flex justify-center bg-red-600 w-80 mt-8"
-                    />
+                    <div className="flex justify-center p-6 lg:p-8">
+                        <Alert
+                            message={pleasePick}
+                            className="bg-red-600 text-white py-2 px-3 rounded-md"
+                        />
+                    </div>
 
                     {/* show question */}
                     <div className="flex justify-center p-6 lg:p-8">
@@ -154,7 +162,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? ( // multiple response
+                            "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
@@ -164,6 +172,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                             <ShortAnswer
                                 question={currentQuestion}
                                 key={currentQuestion.id}
+                                onAnswering={shortAnswerPick}
                             />
                         ) : (
                             <></>
@@ -186,7 +195,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
             <Modal show={modalQuizEnd}>
                 <div className="bg-white rounded w-full md:w-full lg:w-4/5 sm:w-full mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
