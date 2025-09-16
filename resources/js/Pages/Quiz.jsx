@@ -52,7 +52,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         return () => clearInterval(syncInterval);
     }, [questions]);
 
-    const evaluateQuiz = () => {};
+    const evaluateQuiz = () => { };
 
     const nextQuestion = () => {
         if (currentQuestion.pick_answers === undefined) {
@@ -66,11 +66,14 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 countQuestionChosed + questionSkip.length
             ) {
                 // check if question skip
+
                 if (questionSkip.length > 0) {
-                    setIndex(0);
+                    let newIndex = questionSkip[0];
+                    console.log(newIndex);
                     let newQuestionSkip = questionSkip.filter(
-                        (item, index) => item !== index
+                        (item, index) => item !== newIndex
                     );
+                    setIndex(newIndex);
                     setQuestionSkip(newQuestionSkip);
                 } else {
                     setModalQuizEnd(true);
@@ -84,13 +87,12 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     };
 
     const skipQuestion = (index) => {
-        setQuestionSkip((prev) => [...prev, index]);
-        let newIndex = index + 1;
-
         if (questions.length === countQuestionChosed + questionSkip.length) {
             if (questionSkip.length <= 1) {
                 setPleasePick("This is the last question");
             } else {
+                setQuestionSkip((prev) => [...prev, index]);
+                let newIndex = index + 1;
                 if (questions[newIndex] !== undefined) {
                     let newIndex = index + 1;
                     setIndex(newIndex);
@@ -99,7 +101,9 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 }
             }
         } else {
+            let newIndex = index + 1;
             setIndex(newIndex);
+            setQuestionSkip((prev) => [...prev, index]);
         }
     };
 
@@ -157,7 +161,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         );
     };
 
-    const handleSubmit = () => {};
+    const handleSubmit = () => { };
 
     return (
         <>
@@ -192,7 +196,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? ( // multiple response
+                            "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
