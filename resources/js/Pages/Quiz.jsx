@@ -68,8 +68,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 // check if question skip
                 if (questionSkip.length > 0) {
                     setIndex(0);
-                    let currentQuestionSkipIndex = questionSkip[index];
-                    setCurrentQuestionNumber(currentQuestionSkipIndex);
                     let newQuestionSkip = questionSkip.filter(
                         (item, index) => item !== index
                     );
@@ -80,21 +78,29 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             } else {
                 // next question
                 let newIndex = index + 1;
-                let newCurrentQuestionNumber = currentQuestionNumber + 1;
-                setCurrentQuestionNumber(newCurrentQuestionNumber);
                 setIndex(newIndex);
             }
         }
-
-        console.log(currentQuestion.pick_answers);
     };
 
     const skipQuestion = (index) => {
         setQuestionSkip((prev) => [...prev, index]);
         let newIndex = index + 1;
-        let newCurrentQuestionNumber = currentQuestionNumber + 1;
-        setCurrentQuestionNumber(newCurrentQuestionNumber);
-        setIndex(newIndex);
+
+        if (questions.length === countQuestionChosed + questionSkip.length) {
+            if (questionSkip.length <= 1) {
+                setPleasePick("This is the last question");
+            } else {
+                if (questions[newIndex] !== undefined) {
+                    let newIndex = index + 1;
+                    setIndex(newIndex);
+                } else {
+                    setIndex(0);
+                }
+            }
+        } else {
+            setIndex(newIndex);
+        }
     };
 
     const multiChoicePick = (questionPick, answer) => {
