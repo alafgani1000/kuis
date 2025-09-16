@@ -82,4 +82,9 @@ class ParticipantQuizController extends Controller
         Redis::expire('quiz-answers:{$userId}:{quizId}', 3600);
         return response()->json(['status' => 'synced']);
     }
+
+    public function evaluateQuiz(Request $request)
+    {
+
+    }
 }

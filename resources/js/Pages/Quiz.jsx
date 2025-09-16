@@ -1,5 +1,4 @@
 import { Link, Head } from "@inertiajs/react";
-import MultipeChoice from "./QuestionTypes/MultipleChoice";
 import MultipleResponse from "./QuestionTypes/MultipleResponse";
 import { questions } from "@/Components/js/questions_example";
 import ShortAnswer from "./QuestionTypes/ShortAnswer";
@@ -20,6 +19,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [index, setIndex] = useState(0);
     const [quizLastTimeChoice, setQuizLastTimeChoice] = useState(null);
     const [pleasePick, setPleasePick] = useState("");
+    const [countQuestionChosed, setCountQuestionChosed] = useState(0);
 
     const [timeLimit, setTimeLimit] = useState(null);
 
@@ -34,6 +34,12 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     useEffect(() => {
         setCurrentQuestion(questions[index]);
         setCountQuestion(quiz.questions.length);
+
+        let countQuestionChosed = questions.filter(
+            (item) => item.pick_answers !== undefined
+        ).length;
+
+        setCountQuestionChosed(countQuestionChosed + 1);
     }, [index]);
 
     useEffect(() => {
@@ -46,14 +52,38 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         return () => clearInterval(syncInterval);
     }, [questions]);
 
+    const evaluateQuiz = () => {};
+
     const nextQuestion = () => {
         if (currentQuestion.pick_answers === undefined) {
-            setPleasePick("Please pick an answer or skip");
+            // check if question not answered
+            setPleasePick("Please choose an answer or skip");
         } else {
-            let newIndex = index + 1;
-            let newCurrentQuestionNumber = currentQuestionNumber + 1;
-            setCurrentQuestionNumber(newCurrentQuestionNumber);
-            setIndex(newIndex);
+            // check if the last question
+            // next answer, new index set
+            if (
+                questions.length ===
+                countQuestionChosed + questionSkip.length
+            ) {
+                // check if question skip
+                if (questionSkip.length > 0) {
+                    setIndex(0);
+                    let currentQuestionSkipIndex = questionSkip[index];
+                    setCurrentQuestionNumber(currentQuestionSkipIndex);
+                    let newQuestionSkip = questionSkip.filter(
+                        (item, index) => item !== index
+                    );
+                    setQuestionSkip(newQuestionSkip);
+                } else {
+                    setModalQuizEnd(true);
+                }
+            } else {
+                // next question
+                let newIndex = index + 1;
+                let newCurrentQuestionNumber = currentQuestionNumber + 1;
+                setCurrentQuestionNumber(newCurrentQuestionNumber);
+                setIndex(newIndex);
+            }
         }
 
         console.log(currentQuestion.pick_answers);
@@ -121,22 +151,16 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         );
     };
 
-    const handleSubmit = () => { };
+    const handleSubmit = () => {};
 
     return (
         <>
             <Head title="Welcome" />
-            {/* <div className="flex justify-center mt-8 p-6 lg:p-8"> */}
-            {/* multiple choice */}
-            {/* {questions.map((question, index) => {
-                    return <span key={index}>{index + 1}</span>;
-                })} */}
-            {/* </div> */}
             <div className="flex items-center justify-center mt-8 bg-white dark:bg-dots-lighter dark:bg-gray-50 selection:bg-red-500 selection:text-white">
                 <div className="xl:w-3/5 lg:w-full md:w-full w-full md:mx-4 mx-4 border shadow rounded-lg py-5 h-3/5">
                     <div className="flex px-6 justify-between">
                         <div className="text-center text-sm sm:text-start font-semibold">
-                            {currentQuestionNumber} from {countQuestion}
+                            {countQuestionChosed} from {countQuestion}
                         </div>
                         <QuizTimer
                             durationInMinutes={quiz.time_limit}
@@ -162,7 +186,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                            "multiple_response" ? ( // multiple response
+                          "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
@@ -195,7 +219,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
             <Modal show={modalQuizEnd}>
                 <div className="bg-white rounded w-full md:w-full lg:w-4/5 sm:w-full mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
