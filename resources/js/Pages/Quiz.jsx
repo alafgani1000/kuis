@@ -8,6 +8,7 @@ import QuizTimer from "@/Components/QuizTimer";
 import Modal from "@/Components/Modal";
 import axios from "axios";
 import Alert from "@/Components/Alert";
+import { data } from "autoprefixer";
 
 export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [questions, setQuestions] = useState(quiz.questions);
@@ -69,7 +70,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 if (questionSkip.length > 0) {
                     setIndex(0);
                     let newQuestionSkip = questionSkip.filter(
-                        (item, index) => item !== index
+                        (item, index) => index !== 0
                     );
                     setQuestionSkip(newQuestionSkip);
                 } else {
@@ -84,21 +85,25 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     };
 
     const skipQuestion = (index) => {
-        setQuestionSkip((prev) => [...prev, index]);
-        let newIndex = index + 1;
-
         if (questions.length === countQuestionChosed + questionSkip.length) {
-            if (questionSkip.length <= 1) {
+            if (questionSkip.length === 0) {
                 setPleasePick("This is the last question");
             } else {
-                if (questions[newIndex] !== undefined) {
-                    let newIndex = index + 1;
-                    setIndex(newIndex);
-                } else {
-                    setIndex(0);
-                }
+                let dataSkip = questionSkip;
+                let newIndex = 0;
+                let itemSkip = dataSkip[newIndex];
+                dataSkip.push(index);
+                let filterDataSkip = dataSkip.filter(
+                    (item, index) => index !== index
+                );
+
+                setQuestionSkip(filterDataSkip);
+
+                setIndex(itemSkip);
             }
         } else {
+            let newIndex = index + 1;
+            setQuestionSkip((prev) => [...prev, index]);
             setIndex(newIndex);
         }
     };
