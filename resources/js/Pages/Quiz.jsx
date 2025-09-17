@@ -94,7 +94,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 let itemSkip = dataSkip[newIndex];
                 dataSkip.push(index);
                 let filterDataSkip = dataSkip.filter(
-                    (item, index) => index !== index
+                    (item, i) => i !== newIndex
                 );
 
                 setQuestionSkip(filterDataSkip);
