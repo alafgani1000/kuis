@@ -32,6 +32,17 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
 
+    const saveTolocalStorage = () => {
+        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questions));
+        localStorage.setItem("quiz" + quiz.id + "_index", index);
+        localStorage.setItem("quiz" + quiz.id + "_skip", questionSkip);
+        localStorage.setItem("quiz" + quiz.id + "_current", currentQuestion);
+        localStorage.setItem(
+            "quiz" + quiz.id + "_count_choosed",
+            countQuestionChosed
+        );
+    };
+
     useEffect(() => {
         setCurrentQuestion(questions[index]);
         setCountQuestion(quiz.questions.length);
@@ -41,13 +52,21 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         ).length;
 
         setCountQuestionChosed(countQuestionChosed + 1);
+
+        saveTolocalStorage();
     }, [index]);
 
     useEffect(() => {
         const syncInterval = setInterval(() => {
             axios.post("/quiz/sync-answers", {
                 quiz_id: quiz.id,
-                questions: questions,
+                quiz_data: {
+                    questions: questions,
+                    index: index,
+                    questionSkip: questionSkip,
+                    currentQuestion: currentQuestion,
+                    countQuestionChosed: countQuestionChosed,
+                },
             });
         }, 15000);
         return () => clearInterval(syncInterval);
@@ -116,7 +135,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             return question;
         });
         setQuestions(questionsMap);
-        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questionsMap));
         localStorage.setItem(
             "quizLastTimeChoice" + quiz.id,
             JSON.stringify(new Date())
@@ -140,7 +158,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             return question;
         });
         setQuestions(questionsMap);
-        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questionsMap));
         localStorage.setItem(
             "quizLastTimeChoice" + quiz.id,
             JSON.stringify(new Date())
@@ -155,7 +172,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             return question;
         });
         setQuestions(questionsMap);
-        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questionsMap));
         localStorage.setItem(
             "quizLastTimeChoice" + quiz.id,
             JSON.stringify(new Date())
