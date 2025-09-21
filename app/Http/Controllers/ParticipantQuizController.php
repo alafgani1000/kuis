@@ -78,9 +78,40 @@ class ParticipantQuizController extends Controller
         $userId = Auth::user()->id;
         $quizId = $request->quiz_id;
         $questions = $request->questions;
-        Redis::hset('quiz-answers:{$userId}:{$quizId}', $quizId, json_encode($questions));
-        Redis::expire('quiz-answers:{$userId}:{quizId}', 3600);
+        $key = "quiz-answers:{$userId}:{$quizId}";
+        Redis::hset($key, 'quiz', json_encode($questions));
+        $ttl = Redis::ttl($key);
+        if ($ttl === -1) {
+            Redis::expire($key, 3600);
+        }
         return response()->json(['status' => 'synced']);
+    }
+
+    public function syncTimeTaken(Request $request)
+    {
+        $userId = Auth::user()->id;
+        $quizId = $request->quiz_id;
+        $timeTaken = $request->time_taken;
+        // get data from redis
+        $key = "quiz-time-taken:{$userId}:{$quizId}";
+        Redis::hset($key, 'time_taken', $timeTaken);
+        if (Redis::ttl($key) === -1) {
+            Redis::expire($key, $request->time);
+        }
+        return response()->json(['status' => 'time taken synced']);
+    }
+
+    public function getSyncTimeTaken($id)
+    {
+        $userId = Auth::user()->id;
+        $timeTaken = Redis::hget("quiz-time-taken:{$userId}:{$id}", 'time_taken');
+        return response()->json(['time_taken' => $timeTaken]);
+    }
+
+    public function getSyncAnswers(Request $request)
+    {
+        $userId = Auth::user()->id;
+        
     }
 
     public function evaluateQuiz(Request $request)

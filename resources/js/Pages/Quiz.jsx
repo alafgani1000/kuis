@@ -21,27 +21,31 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     const [quizLastTimeChoice, setQuizLastTimeChoice] = useState(null);
     const [pleasePick, setPleasePick] = useState("");
     const [countQuestionChosed, setCountQuestionChosed] = useState(0);
+    const [startQuiz, setStartQuiz] = useState(false);
+    const [counterStart, setCounterStart] = useState(0);
 
     const [timeLimit, setTimeLimit] = useState(null);
 
+
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
-        if (timeLeft === 0) {
+        if (timeLeft === 0 && startQuiz === true) {
             setModalQuizEnd(true);
         }
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
 
-    const saveTolocalStorage = () => {
-        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questions));
-        localStorage.setItem("quiz" + quiz.id + "_index", index);
-        localStorage.setItem("quiz" + quiz.id + "_skip", questionSkip);
-        localStorage.setItem("quiz" + quiz.id + "_current", currentQuestion);
-        localStorage.setItem(
-            "quiz" + quiz.id + "_count_choosed",
-            countQuestionChosed
-        );
-    };
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (localStorage.getItem("quizStartTime" + quiz.id) != null) {
+                setStartQuiz(true);
+                clearInterval(intervalId);
+            } else {
+                setCounterStart(counterStart + 1)
+            }
+        }, 1000);
+        console.log(startQuiz);
+    }, [counterStart])
 
     useEffect(() => {
         setCurrentQuestion(questions[index]);
@@ -72,7 +76,18 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         return () => clearInterval(syncInterval);
     }, [questions]);
 
-    const evaluateQuiz = () => {};
+    const saveTolocalStorage = () => {
+        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questions));
+        localStorage.setItem("quiz" + quiz.id + "_index", index);
+        localStorage.setItem("quiz" + quiz.id + "_skip", questionSkip);
+        localStorage.setItem("quiz" + quiz.id + "_current", currentQuestion);
+        localStorage.setItem(
+            "quiz" + quiz.id + "_count_choosed",
+            countQuestionChosed
+        );
+    };
+
+    const evaluateQuiz = () => { };
 
     const nextQuestion = () => {
         if (currentQuestion.pick_answers === undefined) {
@@ -178,7 +193,8 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         );
     };
 
-    const handleSubmit = () => {};
+    const handleSubmit = () => { };
+
 
     return (
         <>
@@ -192,6 +208,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                         <QuizTimer
                             durationInMinutes={quiz.time_limit}
                             onTimeUpdate={handleTimeUpdate}
+                            quizId={quiz.id}
                         />
                     </div>
 
@@ -213,7 +230,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? ( // multiple response
+                            "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
@@ -267,4 +284,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             </Modal>
         </>
     );
+
+
 }
