@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [ParticipantQuizController::class, 'dashoard'])->name('participant.dashboard');
         Route::get('/quiz/{id}/start', [ParticipantQuizController::class, 'takeQuiz'])->name('participant.take_quiz');
         Route::post('/quiz/sync-answers', [ParticipantQuizController::class, 'syncAnswers'])->name('participant.sync_answers');
+        Route::get('/quiz/{id}/sync-answers', [ParticipantQuizController::class, 'getSyncAnswers'])->name('participant.get_sync_answers');
         Route::post('/quiz/sync-time-taken', [ParticipantQuizController::class, 'syncTimeTaken'])->name('participant.sync_time_taken');
         Route::get('/quiz/{id}/sync-time-taken', [ParticipantQuizController::class, 'getSyncTimeTaken'])->name('participant.get_sync_time_taken');
         Route::put('/quiz/{id}/evaluate', [ParticipantQuizController::class, 'evaluateQuiz'])->name('participant.evaluate_quiz');

@@ -52,22 +52,39 @@ class ParticipantQuizController extends Controller
     {
         $userId = Auth::user()->id;
         $startTed = Carbon::now();
+        // cek sedang ambil quiz ini atau tidak
+        $cek = Redis::hget("quiz-answers:{$userId}:{$id}", "quiz");
+        if ($cek != null) {
+             $quiz = Quiz::with(
+                'questions',
+                'questions.answers',
+                'questions.type',
+                'category'
+            )
+                ->where('id', $id)
+                ->first();
+            $take = json_decode($cek);
+            return Inertia::render('Quiz', compact('quiz', 'take'));
+        } else {
+            // insert new take
+            $takeQuiz = new Take();
+            $takeQuiz->user_id = $userId;
+            $takeQuiz->quiz_id = $id;
+            $takeQuiz->started_at = $startTed;
+            $takeQuiz->save();
+            // get quiz
+            $quiz = Quiz::with(
+                'questions',
+                'questions.answers',
+                'questions.type',
+                'category'
+            )
+                ->where('id', $id)
+                ->first();
+            // return
+            return Inertia::render('Quiz', compact('quiz'));
+        }
 
-        $takeQuiz = new Take();
-        $takeQuiz->user_id = $userId;
-        $takeQuiz->quiz_id = $id;
-        $takeQuiz->started_at = $startTed;
-        $takeQuiz->save();
-
-        $quiz = Quiz::with(
-            'questions',
-            'questions.answers',
-            'questions.type',
-            'category'
-        )
-            ->where('id', $id)
-            ->first();
-        return Inertia::render('Quiz', compact('quiz'));
     }
 
     public function syncAnswers(Request $request)
@@ -75,7 +92,6 @@ class ParticipantQuizController extends Controller
         // redis save quiz answer
         // Redis::hset('quiz-answers:{$userId}:{quizId}', $questionId, $quiz);
         // Redis::hgetall('quiz-answers:{$userId}:{quizId}');
-        dd($request->all());
         $userId = Auth::user()->id;
         $quizId = $request->quiz_id;
         $questions = $request->quiz_data;
@@ -109,10 +125,11 @@ class ParticipantQuizController extends Controller
         return response()->json(['time_taken' => $timeTaken]);
     }
 
-    public function getSyncAnswers(Request $request)
+    public function getSyncAnswers($id)
     {
         $userId = Auth::user()->id;
-
+        $data = Redis::hget("quiz-answers:{$userId}:{$id}", 'quiz');
+        return json_decode($data);
     }
 
     public function evaluateQuiz(Request $request, $id)

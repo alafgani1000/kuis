@@ -10,26 +10,37 @@ import axios from "axios";
 import Alert from "@/Components/Alert";
 import { data } from "autoprefixer";
 
-export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
-    const [questions, setQuestions] = useState(quiz.questions);
-    const [currentQuestion, setCurrentQuestion] = useState({});
+export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
+    const [questions, setQuestions] = useState(
+        take == null ? quiz.questions : take.questions
+    );
+    const [currentQuestion, setCurrentQuestion] = useState(
+        take == null ? {} : take.currentQuestion
+    );
     const [countQuestion, setCountQuestion] = useState(0);
     const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
     const [modalQuizEnd, setModalQuizEnd] = useState(false);
-    const [questionSkip, setQuestionSkip] = useState([]);
-    const [index, setIndex] = useState(0);
+    const [questionSkip, setQuestionSkip] = useState(
+        take == null ? [] : take.questionSkip
+    );
+    const [index, setIndex] = useState(take == null ? 0 : take.index);
     const [quizLastTimeChoice, setQuizLastTimeChoice] = useState(null);
     const [pleasePick, setPleasePick] = useState("");
-    const [countQuestionChosed, setCountQuestionChosed] = useState(0);
+    const [countQuestionChosed, setCountQuestionChosed] = useState(
+        take == null ? 0 : take.countQuestionChosed
+    );
     const [startQuiz, setStartQuiz] = useState(false);
     const [counterStart, setCounterStart] = useState(0);
-
     const [timeLimit, setTimeLimit] = useState(null);
+    const [lastActivity, setLastActivity] = useState(Date.now());
+
+    console.log(take);
 
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
         if (timeLeft === 0 && startQuiz === true) {
-            // evaluateQuiz();
+            syncAnswers();
+            evaluateQuiz();
             setModalQuizEnd(true);
         }
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
@@ -59,19 +70,25 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         saveTolocalStorage();
     }, [index]);
 
+    const syncAnswers = () => {
+        axios.post("/quiz/sync-answers", {
+            quiz_id: quiz.id,
+            quiz_data: {
+                questions: questions,
+                index: index,
+                questionSkip: questionSkip,
+                currentQuestion: currentQuestion,
+                countQuestionChosed: countQuestionChosed,
+            },
+        });
+    };
+
     useEffect(() => {
         const syncInterval = setInterval(() => {
-            axios.post("/quiz/sync-answers", {
-                quiz_id: quiz.id,
-                quiz_data: {
-                    questions: questions,
-                    index: index,
-                    questionSkip: questionSkip,
-                    currentQuestion: currentQuestion,
-                    countQuestionChosed: countQuestionChosed,
-                },
-            });
-        }, 15000);
+            if (Date.now() - lastActivity < 10000) {
+                syncAnswers();
+            }
+        }, 1000);
         return () => clearInterval(syncInterval);
     }, [questions]);
 
@@ -87,6 +104,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     };
 
     const nextQuestion = () => {
+        setLastActivity(Date.now());
         if (currentQuestion.pick_answers === undefined) {
             // check if question not answered
             setPleasePick("Please choose an answer or skip");
@@ -116,6 +134,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     };
 
     const skipQuestion = (index) => {
+        setLastActivity(Date.now());
         if (questions.length === countQuestionChosed + questionSkip.length) {
             if (questionSkip.length === 0) {
                 setPleasePick("This is the last question");
@@ -191,9 +210,13 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
     };
 
     const evaluateQuiz = () => {
-        axios.put("/quiz/" + quiz.id + "/evaluate", {
-            quiz: questions,
-        });
+        axios
+            .put("/quiz/" + quiz.id + "/evaluate", {
+                quiz: questions,
+            })
+            .then((res) => {
+                console.log(res);
+            });
     };
 
     return (
