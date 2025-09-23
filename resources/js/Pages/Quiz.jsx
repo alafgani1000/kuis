@@ -46,6 +46,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
 
+    /**
+     * start quiz
+     * check if quiz start time is exist in local storage
+     */
     useEffect(() => {
         const intervalId = setInterval(() => {
             if (localStorage.getItem("quizStartTime" + quiz.id) != null) {
@@ -57,6 +61,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         }, 1000);
     }, [counterStart]);
 
+    /**
+     * if index changed, set current question, question choosed cound , and count question
+     * call saveTolocalStorage
+     */
     useEffect(() => {
         setCurrentQuestion(questions[index]);
         setCountQuestion(quiz.questions.length);
@@ -70,6 +78,37 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         saveTolocalStorage();
     }, [index]);
 
+    /**
+     * sync answers every seconds
+     * break if last activity is less than 10 seconds
+     */
+    useEffect(() => {
+        const syncInterval = setInterval(() => {
+            if (Date.now() - lastActivity < 10000) {
+                syncAnswers();
+            }
+        }, 1000);
+        return () => clearInterval(syncInterval);
+    }, [questions]);
+
+    /**
+     * save data to local storage
+     */
+    const saveTolocalStorage = () => {
+        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questions));
+        localStorage.setItem("quiz" + quiz.id + "_index", index);
+        localStorage.setItem("quiz" + quiz.id + "_skip", questionSkip);
+        localStorage.setItem("quiz" + quiz.id + "_current", currentQuestion);
+        localStorage.setItem(
+            "quiz" + quiz.id + "_count_choosed",
+            countQuestionChosed
+        );
+    };
+
+    /**
+     * sync answers
+     * this prevent if local storage is empty
+     */
     const syncAnswers = () => {
         axios.post("/quiz/sync-answers", {
             quiz_id: quiz.id,
@@ -81,26 +120,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                 countQuestionChosed: countQuestionChosed,
             },
         });
-    };
-
-    useEffect(() => {
-        const syncInterval = setInterval(() => {
-            if (Date.now() - lastActivity < 10000) {
-                syncAnswers();
-            }
-        }, 1000);
-        return () => clearInterval(syncInterval);
-    }, [questions]);
-
-    const saveTolocalStorage = () => {
-        localStorage.setItem("quiz" + quiz.id, JSON.stringify(questions));
-        localStorage.setItem("quiz" + quiz.id + "_index", index);
-        localStorage.setItem("quiz" + quiz.id + "_skip", questionSkip);
-        localStorage.setItem("quiz" + quiz.id + "_current", currentQuestion);
-        localStorage.setItem(
-            "quiz" + quiz.id + "_count_choosed",
-            countQuestionChosed
-        );
     };
 
     const nextQuestion = () => {
