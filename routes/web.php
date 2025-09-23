@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/quiz/sync-answers', [ParticipantQuizController::class, 'syncAnswers'])->name('participant.sync_answers');
         Route::post('/quiz/sync-time-taken', [ParticipantQuizController::class, 'syncTimeTaken'])->name('participant.sync_time_taken');
         Route::get('/quiz/{id}/sync-time-taken', [ParticipantQuizController::class, 'getSyncTimeTaken'])->name('participant.get_sync_time_taken');
+        Route::put('/quiz/{id}/evaluate', [ParticipantQuizController::class, 'evaluateQuiz'])->name('participant.evaluate_quiz');
     });
 
     Route::middleware(['role:admin|creator'])->prefix('admin')->group(function () {

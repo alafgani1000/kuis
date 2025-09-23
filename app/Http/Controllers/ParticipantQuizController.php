@@ -75,9 +75,10 @@ class ParticipantQuizController extends Controller
         // redis save quiz answer
         // Redis::hset('quiz-answers:{$userId}:{quizId}', $questionId, $quiz);
         // Redis::hgetall('quiz-answers:{$userId}:{quizId}');
+        dd($request->all());
         $userId = Auth::user()->id;
         $quizId = $request->quiz_id;
-        $questions = $request->questions;
+        $questions = $request->quiz_data;
         $key = "quiz-answers:{$userId}:{$quizId}";
         Redis::hset($key, 'quiz', json_encode($questions));
         $ttl = Redis::ttl($key);
@@ -111,11 +112,11 @@ class ParticipantQuizController extends Controller
     public function getSyncAnswers(Request $request)
     {
         $userId = Auth::user()->id;
-        
+
     }
 
-    public function evaluateQuiz(Request $request)
+    public function evaluateQuiz(Request $request, $id)
     {
-
+        dd($request->all());
     }
 }

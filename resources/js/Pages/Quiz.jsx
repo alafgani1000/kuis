@@ -26,10 +26,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
 
     const [timeLimit, setTimeLimit] = useState(null);
 
-
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
         if (timeLeft === 0 && startQuiz === true) {
+            // evaluateQuiz();
             setModalQuizEnd(true);
         }
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
@@ -41,11 +41,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                 setStartQuiz(true);
                 clearInterval(intervalId);
             } else {
-                setCounterStart(counterStart + 1)
+                setCounterStart(counterStart + 1);
             }
         }, 1000);
-        console.log(startQuiz);
-    }, [counterStart])
+    }, [counterStart]);
 
     useEffect(() => {
         setCurrentQuestion(questions[index]);
@@ -86,8 +85,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             countQuestionChosed
         );
     };
-
-    const evaluateQuiz = () => { };
 
     const nextQuestion = () => {
         if (currentQuestion.pick_answers === undefined) {
@@ -193,8 +190,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
         );
     };
 
-    const handleSubmit = () => { };
-
+    const evaluateQuiz = () => {
+        axios.put("/quiz/" + quiz.id + "/evaluate", {
+            quiz: questions,
+        });
+    };
 
     return (
         <>
@@ -230,7 +230,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                            "multiple_response" ? ( // multiple response
+                          "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
@@ -284,6 +284,4 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion }) {
             </Modal>
         </>
     );
-
-
 }
