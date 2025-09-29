@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+USE Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Quiz;
 use App\Models\QuizCategory;
 use App\Models\QuizQuestion;
+use App\Models\QuizQuestionAnswer;
 use App\Models\Take;
+use App\Models\TakeAnswer;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redis;
 
 class ParticipantQuizController extends Controller
 {
@@ -132,8 +135,126 @@ class ParticipantQuizController extends Controller
         return json_decode($data);
     }
 
+    public function resetQuiz($id)
+    {
+        $userId = Auth::user()->id;
+        Redis::del("quiz-answers:{$userId}:{$id}");
+        Redis::del("quiz-time-taken:{$userId}:{$id}");
+        return response()->json(['status' => 'reset']);
+    }
+
+    /**
+     * evaluate quiz
+     * @param Request $request
+     * @param $id
+     * @return Response
+     *
+     */
     public function evaluateQuiz(Request $request, $id)
     {
-        dd($request->all());
+        DB::beginTransaction();
+        try {
+            $userId = Auth::user()->id;
+            if (Redis::exists("quiz-answers:{$userId}:{$id}")) {
+                // get take quiz
+                $take = Take::where('quiz_id', $id)
+                    ->where('user_id', $userId)
+                    ->whereNull("finished_at")
+                    ->first();
+                // get quiz data answers
+                $data = json_decode(Redis::hget("quiz-answers:{$userId}:{$id}", 'quiz'));
+                $questions = collect($data->questions);
+                $totalScore = 0;
+                foreach ($questions as $question) {
+                    $answers = collect($question->answers);
+                    if (is_array($question->pick_answers)) {
+                        foreach ($question->pick_answers as $pick) {
+                            $answer = QuizQuestionAnswer::where('id',$pick)->first();
+                            $totalScore += $answer->score ?? 0;
+                            $takeAnswer = TakeAnswer::create([
+                                'take_id' => $take->id,
+                                'quiz_question_id' => $question->id,
+                                'quiz_question_answer_id' => $answer->id,
+                                'content' => $answer->content,
+                                'correct' => $answer->correct,
+                                'score' => $answer->score,
+                            ]);
+                        }
+                    } else {
+                        $answer = QuizQuestionAnswer::where('id',$question->pick_answers)->first();
+                        if (is_null($answer)) {
+                            $answer = QuizQuestionAnswer::where('content','like','%'.$question->pick_answers.'%')->first();
+                            $totalScore += $answer->score ?? 0;
+                            if (is_null($answer)) {
+                                $takeAnswer = TakeAnswer::create([
+                                    'take_id' => $take->id,
+                                    'quiz_question_id' => $question->id,
+                                    'quiz_question_answer_id' => $answer->id ?? null,
+                                    'content' => $answer->content ?? null,
+                                    'correct' => 0,
+                                    'score' => $answer->score ?? 0,
+                                ]);
+                            } else {
+                                $takeAnswer = TakeAnswer::create([
+                                    'take_id' => $take->id,
+                                    'quiz_question_id' => $question->id,
+                                    'quiz_question_answer_id' => $answer->id,
+                                    'content' => $answer->content,
+                                    'correct' => $answer->correct,
+                                    'score' => $answer->score,
+                                ]);
+                            }
+
+                        } else {
+                            $totalScore += $answer->score ?? 0;
+                            $takeAnswer = TakeAnswer::create([
+                                'take_id' => $take->id,
+                                'quiz_question_id' => $question->id,
+                                'quiz_question_answer_id' => $answer->id,
+                                'content' => $answer->content,
+                                'correct' => $answer->correct,
+                                'score' => $answer->score,
+                            ]);
+                        }
+                    }
+                }
+                $take->score = $totalScore;
+                $take->finished_at = Carbon::now();
+                $take->save();
+                DB::commit();
+
+                $this->resetQuiz($id);
+
+            } else {
+                $take = Take::where('quiz_id', $id)
+                        ->where('user_id', $userId)
+                        ->whereNull("finished_at")
+                        ->first();
+                if (!is_null($take)) {
+                    $take->score = 0;
+                    $take->finished_at = Carbon::now();
+                    $take->save();
+                } else {
+                     return response()->json([
+                        'status'    => 'not_found',
+                        'message'   => 'Quiz not found',
+                    ]);
+                }
+
+            }
+            return response()->json([
+                'status'    => 'evaluated',
+                'message'   => 'Quiz evaluated successfully',
+                'data'      => $take
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error'     => 'Failed to evaluate quiz',
+                'message'   => $e->getMessage()],
+            500);
+        }
+
+        // dd($request->all());
     }
 }

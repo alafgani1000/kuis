@@ -14,9 +14,10 @@ class TakeAnswer extends Model
     protected $fillable = [
         'take_id',
         'quiz_question_id',
-        'quiz_answer_id',
+        'quiz_question_answer_id',
         'content',
         'correct',
+        'score'
     ];
 
     public function take()

@@ -19,7 +19,7 @@ class QuizQuestionAnswer extends Model
         'score',
     ];
 
-    protected $hidden = ['score'];
+    protected $hidden = ['score', 'correct'];
 
     public function quizQuestion()
     {

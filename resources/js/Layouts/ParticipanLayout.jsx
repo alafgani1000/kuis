@@ -23,7 +23,7 @@ export default function ParticipantLayout({ auth, header, children }) {
                                     href="/"
                                     className="font-bold text-white text-xl"
                                 >
-                                    Quiz App
+                                    {/* Quiz App */}\ Test App
                                 </Link>
                             </div>
                             <div className="hidden space-x-4 sm:-my-px sm:flex">

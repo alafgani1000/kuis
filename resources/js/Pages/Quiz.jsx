@@ -33,15 +33,15 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const [counterStart, setCounterStart] = useState(0);
     const [timeLimit, setTimeLimit] = useState(null);
     const [lastActivity, setLastActivity] = useState(Date.now());
+    const [quizResults, setQuizResults] = useState();
 
-    console.log(take);
+    // console.log(take);
 
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
         if (timeLeft === 0 && startQuiz === true) {
             syncAnswers();
             evaluateQuiz();
-            setModalQuizEnd(true);
         }
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
@@ -122,6 +122,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         });
     };
 
+    /**
+     * next question
+     * check if question not answered
+     *
+     */
     const nextQuestion = () => {
         setLastActivity(Date.now());
         if (currentQuestion.pick_answers === undefined) {
@@ -142,7 +147,8 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                     );
                     setQuestionSkip(newQuestionSkip);
                 } else {
-                    setModalQuizEnd(true);
+                    syncAnswers();
+                    evaluateQuiz();
                 }
             } else {
                 // next question
@@ -152,6 +158,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         }
     };
 
+    /**
+     * skip question
+     * @param {*} index
+     */
     const skipQuestion = (index) => {
         setLastActivity(Date.now());
         if (questions.length === countQuestionChosed + questionSkip.length) {
@@ -235,6 +245,10 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
             })
             .then((res) => {
                 console.log(res);
+                setModalQuizEnd(true);
+            })
+            .catch((err) => {
+                console.log(err);
             });
     };
 

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('take_id');
             $table->integer('quiz_question_id');
-            $table->integer('quiz_question_answer_id');
+            $table->integer('quiz_question_answer_id')->nullable();
             $table->string('content');
             $table->integer('correct');
             $table->timestamps();
