@@ -399,6 +399,7 @@ export default function Question({
                 </div>
             </div>
 
+            {/*  modal create */}
             <Modal show={modalCreate} vcenter="items-start">
                 <div className="bg-white rounded max-w-4xl mx-auto pb-4">
                     <div className="flex flex-col items-end m-0 p-0">
@@ -441,7 +442,7 @@ export default function Question({
                                     })}
                                 </select>
                             </div>
-
+                            {/* question type */}
                             <div className="max-w-full">
                                 <QuestionType
                                     type={questionType.code}
@@ -455,6 +456,7 @@ export default function Question({
                 </div>
             </Modal>
 
+            {/* modal edit */}
             <Modal show={modalEdit} vcenter="items-start">
                 <div className="bg-white rounded max-w-4xl mx-auto pb-4">
                     <div className="flex flex-col items-end m-0 p-0">
@@ -514,6 +516,7 @@ export default function Question({
                 </div>
             </Modal>
 
+            {/* modal delete */}
             <Modal show={modalConfirmDelete}>
                 <div className="bg-white rounded max-w-lg mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
