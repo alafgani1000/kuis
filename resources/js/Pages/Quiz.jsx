@@ -106,6 +106,20 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     };
 
     /**
+     * delete local storage data
+     *
+     */
+    const deleteLocalStorageData = () => {
+        localStorage.removeItem("quiz" + quiz.id);
+        localStorage.removeItem("quiz" + quiz.id + "_index");
+        localStorage.removeItem("quiz" + quiz.id + "_skip");
+        localStorage.removeItem("quiz" + quiz.id + "_current");
+        localStorage.removeItem("quiz" + quiz.id + "_count_choosed");
+        localStorage.removeItem("quizLastTimeChoice" + quiz.id);
+        localStorage.removeItem("quizStartTime" + quiz.id);
+    };
+
+    /**
      * sync answers
      * this prevent if local storage is empty
      */
@@ -321,7 +335,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                 </div>
             </div>
             <Modal show={modalQuizEnd}>
-                <div className="bg-white rounded w-full md:w-full lg:w-4/5 sm:w-full mx-auto">
+                <div className="bg-white rounded w-full md:w-full lg:w-3/5 sm:w-full mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
                         <button
                             onClick={() => setModalQuizEnd(false)}
@@ -334,6 +348,9 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                         <h2 className="text-lg font-medium text-gray-900">
                             Quiz Ended
                         </h2>
+                        <h4>Congrulations, you have finished the quiz.</h4>
+
+                        <h6>Your Score</h6>
                         <div className="grid mt-4"></div>
                     </form>
                 </div>
