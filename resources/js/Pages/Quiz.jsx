@@ -201,6 +201,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         }
     };
 
+    /**
+     * multiple choice pick
+     * @param {*} questionPick
+     * @param {*} answer
+     */
     const multiChoicePick = (questionPick, answer) => {
         let questionsMap = questions.map((question) => {
             if (question.id === questionPick.id) {
@@ -215,6 +220,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         );
     };
 
+    /**
+     * multiple response pick
+     * @param {*} questionPick 
+     * @param {*} answer 
+     */
     const multiResponsePick = (questionPick, answer) => {
         let questionsMap = questions.map((question) => {
             if (question.id === questionPick.id) {
@@ -238,6 +248,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         );
     };
 
+    /**
+     * shoart answer pick
+     * @param {*} questionPick 
+     * @param {*} answer 
+     */
     const shortAnswerPick = (questionPick, answer) => {
         let questionsMap = questions.map((question) => {
             if (question.id === questionPick.id) {
@@ -260,6 +275,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
             .then((res) => {
                 console.log(res);
                 setModalQuizEnd(true);
+                deleteLocalStorageData();
             })
             .catch((err) => {
                 console.log(err);
@@ -300,7 +316,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? ( // multiple response
+                            "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
