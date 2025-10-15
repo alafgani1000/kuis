@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-USE Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
@@ -58,7 +58,7 @@ class ParticipantQuizController extends Controller
         // cek sedang ambil quiz ini atau tidak
         $cek = Redis::hget("quiz-answers:{$userId}:{$id}", "quiz");
         if ($cek != null) {
-             $quiz = Quiz::with(
+            $quiz = Quiz::with(
                 'questions',
                 'questions.answers',
                 'questions.type',
@@ -87,7 +87,6 @@ class ParticipantQuizController extends Controller
             // return
             return Inertia::render('Quiz', compact('quiz'));
         }
-
     }
 
     public function syncAnswers(Request $request)
@@ -138,8 +137,8 @@ class ParticipantQuizController extends Controller
     public function resetQuiz($id)
     {
         $userId = Auth::user()->id;
-        Redis::del("quiz-answers:{$userId}:{$id}");
-        Redis::del("quiz-time-taken:{$userId}:{$id}");
+        Redis::del("quiz-answers:{$userId}:{$id}", "quiz");
+        Redis::del("quiz-time-taken:{$userId}:{$id}", "time_taken");
         return response()->json(['status' => 'reset']);
     }
 
@@ -169,7 +168,7 @@ class ParticipantQuizController extends Controller
                     $answers = collect($question->answers);
                     if (is_array($question->pick_answers)) {
                         foreach ($question->pick_answers as $pick) {
-                            $answer = QuizQuestionAnswer::where('id',$pick)->first();
+                            $answer = QuizQuestionAnswer::where('id', $pick)->first();
                             $totalScore += $answer->score ?? 0;
                             $takeAnswer = TakeAnswer::create([
                                 'take_id' => $take->id,
@@ -181,9 +180,9 @@ class ParticipantQuizController extends Controller
                             ]);
                         }
                     } else {
-                        $answer = QuizQuestionAnswer::where('id',$question->pick_answers)->first();
+                        $answer = QuizQuestionAnswer::where('id', $question->pick_answers)->first();
                         if (is_null($answer)) {
-                            $answer = QuizQuestionAnswer::where('content','like','%'.$question->pick_answers.'%')->first();
+                            $answer = QuizQuestionAnswer::where('content', 'like', '%' . $question->pick_answers . '%')->first();
                             $totalScore += $answer->score ?? 0;
                             if (is_null($answer)) {
                                 $takeAnswer = TakeAnswer::create([
@@ -204,7 +203,6 @@ class ParticipantQuizController extends Controller
                                     'score' => $answer->score,
                                 ]);
                             }
-
                         } else {
                             $totalScore += $answer->score ?? 0;
                             $takeAnswer = TakeAnswer::create([
@@ -224,23 +222,21 @@ class ParticipantQuizController extends Controller
                 DB::commit();
 
                 $this->resetQuiz($id);
-
             } else {
                 $take = Take::where('quiz_id', $id)
-                        ->where('user_id', $userId)
-                        ->whereNull("finished_at")
-                        ->first();
+                    ->where('user_id', $userId)
+                    ->whereNull("finished_at")
+                    ->first();
                 if (!is_null($take)) {
                     $take->score = 0;
                     $take->finished_at = Carbon::now();
                     $take->save();
                 } else {
-                     return response()->json([
+                    return response()->json([
                         'status'    => 'not_found',
                         'message'   => 'Quiz not found',
                     ]);
                 }
-
             }
             return response()->json([
                 'status'    => 'evaluated',
@@ -249,12 +245,30 @@ class ParticipantQuizController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'error'     => 'Failed to evaluate quiz',
-                'message'   => $e->getMessage()],
-            500);
+            return response()->json(
+                [
+                    'error'     => 'Failed to evaluate quiz',
+                    'message'   => $e
+                ],
+                500
+            );
         }
 
         // dd($request->all());
+    }
+
+    /**
+     * show score
+     *
+     */
+    public function showScore($id)
+    {
+        $take = Take::where('id', $id)
+            ->first();
+        if ($take->user_id == Auth::user()->id) {
+            return Inertia::render('Score', compact('take'));
+        } else {
+            return response(404);
+        }
     }
 }

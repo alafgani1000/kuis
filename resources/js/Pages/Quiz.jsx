@@ -1,4 +1,4 @@
-import { Link, Head } from "@inertiajs/react";
+import { Link, Head, router } from "@inertiajs/react";
 import MultipleResponse from "./QuestionTypes/MultipleResponse";
 import { questions } from "@/Components/js/questions_example";
 import ShortAnswer from "./QuestionTypes/ShortAnswer";
@@ -34,6 +34,8 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const [timeLimit, setTimeLimit] = useState(null);
     const [lastActivity, setLastActivity] = useState(Date.now());
     const [quizResults, setQuizResults] = useState();
+    const [result, setResult] = useState();
+    const [quizEnd, setQuizEnd] = useState(false);
 
     // console.log(take);
 
@@ -78,17 +80,33 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         saveTolocalStorage();
     }, [index]);
 
+    useEffect(() => {
+        if (result) {
+            router.visit(`/quiz/${result.data.id}/score`, {
+                preserveScroll: true,
+                replace: true,
+            });
+        }
+    }, [result]);
+
     /**
      * sync answers every seconds
      * break if last activity is less than 10 seconds
      */
     useEffect(() => {
-        const syncInterval = setInterval(() => {
-            if (Date.now() - lastActivity < 10000) {
-                syncAnswers();
-            }
-        }, 1000);
-        return () => clearInterval(syncInterval);
+        if (quizEnd === false) {
+            const syncInterval = setInterval(() => {
+                if (Date.now() - lastActivity < 10000) {
+                    syncAnswers();
+                }
+            }, 1000);
+            return () => clearInterval(syncInterval);
+        } else {
+            router.visit(`/quiz/${result.id}/score`, {
+                preserveScroll: true,
+                replace: true,
+            });
+        }
     }, [questions]);
 
     /**
@@ -103,20 +121,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
             "quiz" + quiz.id + "_count_choosed",
             countQuestionChosed
         );
-    };
-
-    /**
-     * delete local storage data
-     *
-     */
-    const deleteLocalStorageData = () => {
-        localStorage.removeItem("quiz" + quiz.id);
-        localStorage.removeItem("quiz" + quiz.id + "_index");
-        localStorage.removeItem("quiz" + quiz.id + "_skip");
-        localStorage.removeItem("quiz" + quiz.id + "_current");
-        localStorage.removeItem("quiz" + quiz.id + "_count_choosed");
-        localStorage.removeItem("quizLastTimeChoice" + quiz.id);
-        localStorage.removeItem("quizStartTime" + quiz.id);
     };
 
     /**
@@ -161,7 +165,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                     );
                     setQuestionSkip(newQuestionSkip);
                 } else {
-                    syncAnswers();
                     evaluateQuiz();
                 }
             } else {
@@ -222,8 +225,8 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
 
     /**
      * multiple response pick
-     * @param {*} questionPick 
-     * @param {*} answer 
+     * @param {*} questionPick
+     * @param {*} answer
      */
     const multiResponsePick = (questionPick, answer) => {
         let questionsMap = questions.map((question) => {
@@ -250,8 +253,8 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
 
     /**
      * shoart answer pick
-     * @param {*} questionPick 
-     * @param {*} answer 
+     * @param {*} questionPick
+     * @param {*} answer
      */
     const shortAnswerPick = (questionPick, answer) => {
         let questionsMap = questions.map((question) => {
@@ -267,15 +270,26 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         );
     };
 
+    /**
+     * evaluate quiz and show score modal
+     */
     const evaluateQuiz = () => {
+        axios.post("/quiz/sync-answers", {
+            quiz_id: quiz.id,
+            quiz_data: {
+                questions: questions,
+                index: index,
+                questionSkip: questionSkip,
+                currentQuestion: currentQuestion,
+                countQuestionChosed: countQuestionChosed,
+            },
+        });
         axios
             .put("/quiz/" + quiz.id + "/evaluate", {
                 quiz: questions,
             })
             .then((res) => {
-                console.log(res);
-                setModalQuizEnd(true);
-                deleteLocalStorageData();
+                setResult(res.data);
             })
             .catch((err) => {
                 console.log(err);
@@ -316,7 +330,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                            "multiple_response" ? ( // multiple response
+                          "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
@@ -351,7 +365,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                 </div>
             </div>
             <Modal show={modalQuizEnd}>
-                <div className="bg-white rounded w-full md:w-full lg:w-3/5 sm:w-full mx-auto">
+                <div className="bg-white rounded w-full md:w-3/5 lg:w-2/5 sm:w-full mx-auto">
                     <div className="flex flex-col items-end m-0 p-0">
                         <button
                             onClick={() => setModalQuizEnd(false)}
@@ -360,14 +374,15 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                             <i className="bi bi-x-lg"></i>
                         </button>
                     </div>
-                    <form className="px-6 pb-6">
+                    <form className="px-6 pb-6 text-center">
                         <h2 className="text-lg font-medium text-gray-900">
-                            Quiz Ended
+                            Quiz Result
                         </h2>
                         <h4>Congrulations, you have finished the quiz.</h4>
 
-                        <h6>Your Score</h6>
                         <div className="grid mt-4"></div>
+                        <h6>Your Score</h6>
+                        <h4>{result?.score}</h4>
                     </form>
                 </div>
             </Modal>
