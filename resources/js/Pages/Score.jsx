@@ -1,4 +1,7 @@
+import { useEffect } from "react";
+
 export default function Score() {
+
     /**
      * delete local storage data
      *
@@ -12,6 +15,10 @@ export default function Score() {
         localStorage.removeItem("quizLastTimeChoice" + quiz.id);
         localStorage.removeItem("quizStartTime" + quiz.id);
     };
+
+    useEffect(() => {
+        deleteLocalStorageData()
+    }, [])
 
     return <div>score</div>;
 }
