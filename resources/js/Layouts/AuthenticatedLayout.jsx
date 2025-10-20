@@ -15,7 +15,7 @@ export default function Authenticated({ auth, header, children }) {
             {/* side bar */}
             <div
                 className={
-                    "md:flex flex-col w-64 h-screen bg-teal-700 sticky top-0 text-gray-700 " +
+                    "md:flex flex-col w-64 h-screen bg-emerald-700 sticky top-0 text-gray-700 " +
                     (showingNavigationDropdown === false ? "hidden" : "flex")
                 }
             >
@@ -23,8 +23,10 @@ export default function Authenticated({ auth, header, children }) {
                     <div className="flex w-full justify-between px-6 py-5">
                         {/* <h2 className="text-2xl">Regrinding </h2> */}
                         <Link className="mx-4 flex" href="/">
-                            <ApplicationLogo className="block h-12 w-auto fill-current text-gray-800" />
-                            {/* <div>Q</div> */}
+                            {/* <ApplicationLogo className="block h-12 w-auto fill-current text-gray-800" /> */}
+                            <div className="text-2xl font-bold text-white text-center">
+                                Quiz App
+                            </div>
                         </Link>
 
                         {showingNavigationDropdown === true ? (
@@ -103,7 +105,7 @@ export default function Authenticated({ auth, header, children }) {
                                     href={route("question.index")}
                                     active={route().current("question.index")}
                                 >
-                                    <i className="bi bi-clipboard me-4 text-base"></i>
+                                    <i class="bi bi-patch-question me-4 text-base"></i>
                                     Question
                                 </NavLink>
                                 <NavLink
@@ -113,7 +115,7 @@ export default function Authenticated({ auth, header, children }) {
                                         "quizcategory.index"
                                     )}
                                 >
-                                    <i className="bi bi-clipboard me-4 text-base"></i>
+                                    <i class="bi bi-boxes me-4 text-base"></i>
                                     Quiz Category
                                 </NavLink>
                                 {roles.admin === true && (
@@ -125,7 +127,7 @@ export default function Authenticated({ auth, header, children }) {
                                                 "type.index"
                                             )}
                                         >
-                                            <i className="bi bi-clipboard me-4 text-base"></i>
+                                            <i class="bi bi-card-list me-4 text-base"></i>
                                             Type
                                         </NavLink>
                                         <NavLink
