@@ -216,7 +216,7 @@ export default function ParticipantLayout({ auth, header, children }) {
             <main>{children}</main>
 
             <div className="max-w-screen-lg mx-auto px-0 space-y-6">
-                <div className="bg-emerald-600 overflow-hidden py-4 px-4 rounded-t-2xl">
+                <div className="bg-emerald-600 overflow-hidden py-4 px-4 rounded-lg">
                     <div className="text-white text-center">
                         2024 Free Sorfware
                     </div>

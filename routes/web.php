@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/quiz/{id}/sync-time-taken', [ParticipantQuizController::class, 'getSyncTimeTaken'])->name('participant.get_sync_time_taken');
         Route::put('/quiz/{id}/evaluate', [ParticipantQuizController::class, 'evaluateQuiz'])->name('participant.evaluate_quiz');
         Route::get('/quiz/{id}/score', [ParticipantQuizController::class, 'showScore'])->name('participant.show_score');
+        Route::get('/dashboard', [ParticipantQuizController::class, 'participantDashboard'])->name('participant.dashboard');
     });
 
     Route::middleware(['role:admin|creator'])->prefix('admin')->group(function () {

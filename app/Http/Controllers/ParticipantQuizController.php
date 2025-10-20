@@ -259,16 +259,35 @@ class ParticipantQuizController extends Controller
 
     /**
      * show score
-     *
+     * @param $id
+     * @return Response Inertia
      */
     public function showScore($id)
     {
+        // get data take
         $take = Take::where('id', $id)
             ->first();
+        // delete cache data
+        $this->resetQuiz($take->quiz_id);
+        // return
         if ($take->user_id == Auth::user()->id) {
             return Inertia::render('Score', compact('take'));
         } else {
             return response(404);
         }
+    }
+
+    /**
+     * participant dashboard
+     * @return Response Inertia
+     */
+    public function participantDashboard()
+    {
+        // get take quiz data
+        $takes = Take::with('quiz')
+            ->where('user_id', Auth::user()->id)
+            ->where('finished_at', '!=', null)
+            ->get();
+        return Inertia::render('ParticipantDashboard', compact('takes'));
     }
 }
