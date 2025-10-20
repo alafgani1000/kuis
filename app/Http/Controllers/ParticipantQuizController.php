@@ -31,7 +31,8 @@ class ParticipantQuizController extends Controller
 
     public function newQuiz()
     {
-        $quiz = Quiz::with('category', 'questions')
+        $quiz = Quiz::has('questions')
+            ->with('category', 'questions')
             ->withCount('category', 'questions')
             ->orderBy('created_at', 'desc')
             ->take(8)
