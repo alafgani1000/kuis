@@ -20,9 +20,7 @@ export default function Login({ status, canResetPassword }) {
         min = Math.ceil(min);
         max = Math.floor(max);
 
-        return `bg-[url('images/bg${
-            Math.floor(Math.random() * (max - min)) + min
-        }.jpg')]`;
+        return `bg-[url('images/background.jpg')]`;
     };
 
     useState(() => {
@@ -48,8 +46,8 @@ export default function Login({ status, canResetPassword }) {
                 <div
                     className={`w-full col-span-1 bg-slate-100 content-center justify-items-center ${randomBg} bg-cover`}
                 >
-                    <div className="font-pacifico lg:text-4xl md:text-4xl sm:text-2xl text-4xl text-gray-800 py-4 px-2 text-center">
-                        Planning Regrinding
+                    <div className="lg:text-4xl md:text-4xl sm:text-2xl text-4xl font-bold text-gray-800 py-4 px-2 text-center">
+                        Quiz Application
                     </div>
                     <div className="sm:max-w-md w-full bg-white p-4 mt-4 rounded-lg">
                         {status && (
