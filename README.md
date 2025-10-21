@@ -57,5 +57,3 @@ Admins can customize:
 -   Result export formats (CSV, JSON, API) -->
 
 ---
-
-Let me know if you'd like this tailored for a README, API documentation, or onboarding guide. I can also help map out the database schema or workflow diagrams if needed.
