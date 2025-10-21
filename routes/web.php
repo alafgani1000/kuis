@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [ParticipantQuizController::class, 'participantDashboard'])->name('participant.dashboard');
     });
 
-    Route::middleware(['role:admin|creator'])->prefix('admin')->group(function () {
+    Route::middleware(['role:admin|quiz_creator'])->prefix('admin')->group(function () {
         Route::get('/', function () {
             return Inertia::render('Dashboard');
         })->middleware(['verified'])->name('dashboard');

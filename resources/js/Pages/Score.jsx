@@ -22,19 +22,21 @@ export default function Score({ auth, take }) {
 
     return (
         <ParticipantLayout auth={auth}>
-            <div className="max-w-screen-lg mx-auto mt-10 mb-4 text-xl font-semibold grid grid-cols-1 space-x-3 text-gray-700 py-4 px-4">
+            <div className="max-w-screen-lg mx-auto mt-10 mb-4 text-xl font-semibold grid grid-cols-1 space-x-3 bg-background text-gray-700 py-4 px-4">
                 <div className="mx-auto py-4 px-4">
                     <h2 className="text-gray-900">Quiz Result</h2>
-                    <h4>Congrulations, you have finished the quiz.</h4>
-                    <div className="text-center mt-8 px-4 py-4 bg-emerald-600 rounded text-white">
-                        <div className="pb-4">
+                    <h4>Congratulations, you have finished the quiz.</h4>
+                    <div className="text-center mt-8 px-4 py-4 shadow bg-white rounded-xl text-black">
+                        <div className="pb-2">
                             Your Score
                             <br />
                             <br />
-                            <span className="text-black text-4xl bg-white py-4 px-4 rounded-xl">
-                                {take?.score}
-                            </span>
                         </div>
+                        <span className="text-black text-5xl bg-white py-2 px-2  rounded-xl">
+                            {take?.score}
+                        </span>
+                        <br />
+                        <br />
                     </div>
                 </div>
             </div>

@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        if ($user->hasRole('admin') or $user->hasRole('creator')) {
+        if ($user->hasRole('admin') or $user->hasRole('quiz_creator')) {
             return redirect()->intended('/admin');
         } else {
             return redirect()->intended('/');
