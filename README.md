@@ -1,66 +1,61 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
+<!-- <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+</p> -->
 
-## About Laravel
+## About Quiz App
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Quiz App is a modular platform for end-to-end quiz management, enabling administrators to create, configure, and deploy quizzes seamlessly for user access and tracking.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Berikut versi yang disesuaikan untuk dokumentasi teknis:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+### 📘 Overview: Quiz App
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Quiz App** is a modular application designed to streamline the end-to-end management of quizzes. It enables administrators to create, configure, and publish quizzes efficiently, supporting both internal workflows and public-facing delivery.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🔧 Core Features
 
-## Laravel Sponsors
+-   **Question Builder**: Create and organize multiple-choice, multiple-response and short-answer questions.
+-   **Quiz Configuration**: Define quiz metadata, time limits, scoring.
+<!-- - **Publishing Workflow**: Seamlessly publish quizzes to designated audiences with scheduling and visibility controls. -->
+-   **User Access**: Supports authenticated and anonymous participation, with tracking for completion and performance.
+<!-- -   **Analytics Module** _(optional)_: Monitor engagement, score distribution, and question-level insights. -->
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+### 🧩 Modular Architecture
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+The system is built with scalability and configurability in mind:
 
-## Contributing
+| Module              | Description                                                 |
+| ------------------- | ----------------------------------------------------------- |
+| Question Management | Handles creation, editing, and categorization of questions  |
+| Quiz Engine         | Manages quiz lifecycle, rules, and delivery                 |
+| User Interface      | Provides responsive UI for both admin and participant views |
+| Result Tracking     | Logs user responses, calculates scores, and stores history  |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<!-- | Notification Layer | Optional integration for reminders, updates, and result delivery | -->
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+<!-- ### ⚙️ Admin Configurability
 
-## Security Vulnerabilities
+Admins can customize:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   Question pools and tagging systems
+-   Quiz visibility (public/private)
+-   Access roles and permissions
+-   Notification channels (email, push, in-app)
+-   Result export formats (CSV, JSON, API) -->
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Let me know if you'd like this tailored for a README, API documentation, or onboarding guide. I can also help map out the database schema or workflow diagrams if needed.
