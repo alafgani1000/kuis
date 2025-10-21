@@ -38,33 +38,41 @@ export default function Welcome({
                     </div>
                 </div>
 
-                <div className="max-w-screen-lg mx-auto mt-10 text-xl font-semibold grid grid-cols-1 space-x-3 text-gray-700">
+                <div className="max-w-screen-lg mx-auto mt-4 text-xl font-semibold grid grid-cols-1 space-x-3 text-gray-700">
                     New Quiz
                 </div>
-                <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 px-8 py-8 bg-background bg-cover gap-6 rounded-lg">
+                <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 py-8 bg-cover gap-6 rounded-lg">
                     {quizes.map((quiz, index) => {
                         return (
-                            <div
-                                className="bg-white group"
-                                key={index}
-                            >
+                            <div className="bg-white shadow group" key={index}>
                                 <div className="bg-white">
                                     <div
-                                        className="h-48 px-4 py-4 font-medium text-gray-800 grid place-items-center rounded-md bg-cover bg-center"
+                                        className="h-36 px-4 py-4 font-medium text-gray-800 grid place-items-center rounded-md bg-cover bg-center"
                                         style={{
                                             backgroundImage: `url(/storage/${quiz.thumbnail})`,
                                         }}
                                     >
-                                        <Link href={route("participant.take_quiz", quiz.id)} className="hidden justify-start space-x-1 mt-4 group-hover:flex bg-black text-white py-2 px-2 rounded-full">
+                                        <Link
+                                            href={route(
+                                                "participant.take_quiz",
+                                                quiz.id
+                                            )}
+                                            className="hidden justify-start space-x-1 mt-4 group-hover:flex bg-black text-white py-2 px-2 rounded-full"
+                                        >
                                             Take Quiz
                                         </Link>
                                     </div>
-                                    <div className="w-full text-xl text-gray-800 px-4">
+                                    <div className="w-full text-md font-medium text-gray-800 px-4">
                                         <div className="mt-4">{quiz.title}</div>
                                         <div className="flex justify-between space-x-1 py-4 b">
                                             <div className="flex gap-2">
-                                                <div className="bg-amber-400 text-white font-medium rounded-md px-2 py-1 text-xs">{quiz.category?.name}</div>
-                                                <div className="bg-amber-400 text-white font-medium rounded-md px-2 py-1 text-xs">{quiz.questions_count} Question</div>
+                                                <div className="bg-amber-400 text-white font-medium rounded-md px-2 py-1 text-xs">
+                                                    {quiz.category?.name}
+                                                </div>
+                                                <div className="bg-amber-400 text-white font-medium rounded-md px-2 py-1 text-xs">
+                                                    {quiz.questions_count}{" "}
+                                                    Question
+                                                </div>
                                             </div>
                                             <div className="bg-amber-400 text-white font-medium rounded-md px-2 py-1 text-xs">
                                                 {quiz.time_limit}m
@@ -78,10 +86,10 @@ export default function Welcome({
                 </div>
 
                 {/* category */}
-                <div className="max-w-screen-lg mx-auto mt-10 text-xl font-semibold grid text-gray-700">
+                <div className="max-w-screen-lg mx-auto mt-4 text-xl font-semibold grid text-gray-700">
                     Quiz Categories
                 </div>
-                <div className="max-w-screen-lg mx-auto my-4 grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-4 bg-background bg-cover px-6 py-6 rounded-lg ">
+                <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-4 py-6 rounded-lg ">
                     {categories.map((category, index) => {
                         return (
                             <div
@@ -104,6 +112,6 @@ export default function Welcome({
                     })}
                 </div>
             </div>
-        </ParticipantLayout >
+        </ParticipantLayout>
     );
 }
