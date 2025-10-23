@@ -11,8 +11,6 @@
 
 Quiz App is a modular platform for end-to-end quiz management, enabling administrators to create, configure, and deploy quizzes seamlessly for user access and tracking.
 
-Berikut versi yang disesuaikan untuk dokumentasi teknis:
-
 ---
 
 ### 📘 Overview: Quiz App
