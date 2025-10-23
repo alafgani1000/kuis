@@ -58,7 +58,7 @@ composer install
 
 3. Create a database and configure the database connection in the `.env` file.
 
-4. Create a new user and set the password in the `.env` file.
+4. Create a new user and set the password in the `.env` file. for more details see the env.example file
 
 5. Run the migrations:
 
