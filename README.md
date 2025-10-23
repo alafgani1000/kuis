@@ -29,31 +29,60 @@ Berikut versi yang disesuaikan untuk dokumentasi teknis:
 -   **User Access**: Supports authenticated and anonymous participation, with tracking for completion and performance.
 <!-- -   **Analytics Module** _(optional)_: Monitor engagement, score distribution, and question-level insights. -->
 
----
+## Installation
 
-### 🧩 Modular Architecture
+### Requirements
 
-The system is built with scalability and configurability in mind:
+    - PHP ^8.1
+    - Composer 2
+    - Node.js 20+
+    - NPM 10+
+    - Mysql
+    - Redis Server
+    - Web Server (Apache, Nginx, etc.)
 
-| Module              | Description                                                 |
-| ------------------- | ----------------------------------------------------------- |
-| Question Management | Handles creation, editing, and categorization of questions  |
-| Quiz Engine         | Manages quiz lifecycle, rules, and delivery                 |
-| User Interface      | Provides responsive UI for both admin and participant views |
-| Result Tracking     | Logs user responses, calculates scores, and stores history  |
+### Installation Steps
 
-<!-- | Notification Layer | Optional integration for reminders, updates, and result delivery | -->
+1. Clone the repository:
 
----
+```bash
+git clone https://github.com/kuis-tech/quiz-app.git
+```
 
-<!-- ### ⚙️ Admin Configurability
+2. Install dependencies:
 
-Admins can customize:
+```bash
+cd quiz-app
+composer install
+```
 
--   Question pools and tagging systems
--   Quiz visibility (public/private)
--   Access roles and permissions
--   Notification channels (email, push, in-app)
--   Result export formats (CSV, JSON, API) -->
+3. Create a database and configure the database connection in the `.env` file.
 
----
+4. Create a new user and set the password in the `.env` file.
+
+5. Run the migrations:
+
+```bash
+php artisan migrate
+```
+
+6. Seed the database with sample data:
+
+```bash
+php artisan db:seed
+```
+
+7. Start the application server:
+
+```bash
+php artisan serve
+```
+
+8. Open your web browser and navigate to `http://localhost:8000`.
+
+9. You can now access the Quiz App dashboard and start creating quizzes.
+10. Enjoy your quiz-building experience!
+
+## Contributing
+
+We welcome contributions from the community to help improve and expand the functionality of Quiz App.
