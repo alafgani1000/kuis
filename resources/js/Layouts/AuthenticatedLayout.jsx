@@ -105,7 +105,7 @@ export default function Authenticated({ auth, header, children }) {
                                     href={route("question.index")}
                                     active={route().current("question.index")}
                                 >
-                                    <i class="bi bi-patch-question me-4 text-base"></i>
+                                    <i className="bi bi-patch-question me-4 text-base"></i>
                                     Question
                                 </NavLink>
                                 <NavLink
@@ -115,7 +115,7 @@ export default function Authenticated({ auth, header, children }) {
                                         "quizcategory.index"
                                     )}
                                 >
-                                    <i class="bi bi-boxes me-4 text-base"></i>
+                                    <i className="bi bi-boxes me-4 text-base"></i>
                                     Quiz Category
                                 </NavLink>
                                 {roles.admin === true && (
@@ -127,7 +127,7 @@ export default function Authenticated({ auth, header, children }) {
                                                 "type.index"
                                             )}
                                         >
-                                            <i class="bi bi-card-list me-4 text-base"></i>
+                                            <i className="bi bi-card-list me-4 text-base"></i>
                                             Type
                                         </NavLink>
                                         <NavLink

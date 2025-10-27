@@ -359,7 +359,7 @@ export default function QuizQuestion({
                                                         </td>
                                                         <td className="text-left py-3 px-4">
                                                             {question.active ===
-                                                            1 ? (
+                                                                1 ? (
                                                                 <span className="text-green-600 bg-green-300 px-2 py-1 rounded shadow text-sm font-medium">
                                                                     Active
                                                                 </span>
@@ -372,10 +372,7 @@ export default function QuizQuestion({
                                                         <td className="text-center py-3 px-4">
                                                             {question.answers.reduce(
                                                                 (sum, item) =>
-                                                                    sum +
-                                                                    parseFloat(
-                                                                        item.score
-                                                                    ),
+                                                                    sum + (parseFloat(item.score) || 0),
                                                                 0
                                                             )}
                                                         </td>
@@ -700,9 +697,9 @@ export default function QuizQuestion({
                                                                     (filter.category ===
                                                                         "" ||
                                                                         filter.category ===
-                                                                            "All" ||
+                                                                        "All" ||
                                                                         q.category_id ==
-                                                                            filter.category) &&
+                                                                        filter.category) &&
                                                                     q.question
                                                                         .toLowerCase()
                                                                         .includes(
@@ -713,9 +710,9 @@ export default function QuizQuestion({
                                                                     (filter.category ===
                                                                         "" ||
                                                                         filter.category ===
-                                                                            "All" ||
+                                                                        "All" ||
                                                                         q.category_id ==
-                                                                            filter.category) &&
+                                                                        filter.category) &&
                                                                     q.question
                                                                         .toLowerCase()
                                                                         .includes(
@@ -726,9 +723,9 @@ export default function QuizQuestion({
                                                                     (filter.category ===
                                                                         "" ||
                                                                         filter.category ===
-                                                                            "All" ||
+                                                                        "All" ||
                                                                         q.category_id ==
-                                                                            filter.category) &&
+                                                                        filter.category) &&
                                                                     q.question
                                                                         .toLowerCase()
                                                                         .includes(
@@ -788,84 +785,84 @@ export default function QuizQuestion({
                                                                     </tr>
                                                                     {questionPick ===
                                                                         question.id && (
-                                                                        <tr>
-                                                                            <td
-                                                                                colSpan={
-                                                                                    4
-                                                                                }
-                                                                                className="text-left py-2 ps-14"
-                                                                            >
-                                                                                {question
-                                                                                    .answers
-                                                                                    .length >
-                                                                                0 ? (
-                                                                                    <div>
-                                                                                        <ul className="list-disc pl-6">
-                                                                                            {question.answers.map(
-                                                                                                (
-                                                                                                    answer,
-                                                                                                    answerIndex
-                                                                                                ) => (
-                                                                                                    <li
-                                                                                                        key={
-                                                                                                            answerIndex
-                                                                                                        }
-                                                                                                        className="bg-white rounded px-2 py-1 my-1"
-                                                                                                    >
-                                                                                                        <span>
-                                                                                                            {
-                                                                                                                answer.content
+                                                                            <tr>
+                                                                                <td
+                                                                                    colSpan={
+                                                                                        4
+                                                                                    }
+                                                                                    className="text-left py-2 ps-14"
+                                                                                >
+                                                                                    {question
+                                                                                        .answers
+                                                                                        .length >
+                                                                                        0 ? (
+                                                                                        <div>
+                                                                                            <ul className="list-disc pl-6">
+                                                                                                {question.answers.map(
+                                                                                                    (
+                                                                                                        answer,
+                                                                                                        answerIndex
+                                                                                                    ) => (
+                                                                                                        <li
+                                                                                                            key={
+                                                                                                                answerIndex
                                                                                                             }
-                                                                                                        </span>{" "}
-                                                                                                        {answer.correct ==
-                                                                                                        1 ? (
+                                                                                                            className="bg-white rounded px-2 py-1 my-1"
+                                                                                                        >
                                                                                                             <span>
-                                                                                                                <i className="bi bi-check2-circle text-teal-600"></i>
-                                                                                                                <input
-                                                                                                                    onChange={(
-                                                                                                                        e
-                                                                                                                    ) =>
-                                                                                                                        addAnswer(
-                                                                                                                            answer.id,
+                                                                                                                {
+                                                                                                                    answer.content
+                                                                                                                }
+                                                                                                            </span>{" "}
+                                                                                                            {answer.correct ==
+                                                                                                                1 ? (
+                                                                                                                <span>
+                                                                                                                    <i className="bi bi-check2-circle text-teal-600"></i>
+                                                                                                                    <input
+                                                                                                                        onChange={(
                                                                                                                             e
-                                                                                                                        )
-                                                                                                                    }
-                                                                                                                    type="text"
-                                                                                                                    className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
-                                                                                                                    placeholder="Points"
-                                                                                                                />
-                                                                                                            </span>
-                                                                                                        ) : (
-                                                                                                            <>
+                                                                                                                        ) =>
+                                                                                                                            addAnswer(
+                                                                                                                                answer.id,
+                                                                                                                                e
+                                                                                                                            )
+                                                                                                                        }
+                                                                                                                        type="text"
+                                                                                                                        className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
+                                                                                                                        placeholder="Points"
+                                                                                                                    />
+                                                                                                                </span>
+                                                                                                            ) : (
+                                                                                                                <>
 
-                                                                                                            </>
-                                                                                                        )}
-                                                                                                    </li>
-                                                                                                )
-                                                                                            )}
-                                                                                        </ul>
-                                                                                        <div className="grid justify-end mt-4">
-                                                                                            <button
-                                                                                                onClick={() => {
-                                                                                                    quizQuestionStore();
-                                                                                                }}
-                                                                                                type="button"
-                                                                                                className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
-                                                                                            >
-                                                                                                Save
-                                                                                            </button>
+                                                                                                                </>
+                                                                                                            )}
+                                                                                                        </li>
+                                                                                                    )
+                                                                                                )}
+                                                                                            </ul>
+                                                                                            <div className="grid justify-end mt-4">
+                                                                                                <button
+                                                                                                    onClick={() => {
+                                                                                                        quizQuestionStore();
+                                                                                                    }}
+                                                                                                    type="button"
+                                                                                                    className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
+                                                                                                >
+                                                                                                    Save
+                                                                                                </button>
+                                                                                            </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                ) : (
-                                                                                    <span className="text-gray-500">
-                                                                                        No
-                                                                                        answers
-                                                                                        available
-                                                                                    </span>
-                                                                                )}
-                                                                            </td>
-                                                                        </tr>
-                                                                    )}
+                                                                                    ) : (
+                                                                                        <span className="text-gray-500">
+                                                                                            No
+                                                                                            answers
+                                                                                            available
+                                                                                        </span>
+                                                                                    )}
+                                                                                </td>
+                                                                            </tr>
+                                                                        )}
                                                                 </React.Fragment>
                                                             )
                                                         )}
@@ -895,7 +892,7 @@ export default function QuizQuestion({
                                                                     }
                                                                 </span>{" "}
                                                                 {answer.correct ==
-                                                                1 ? (
+                                                                    1 ? (
                                                                     <span>
                                                                         <i className="bi bi-check2-circle text-teal-600"></i>
                                                                         <input

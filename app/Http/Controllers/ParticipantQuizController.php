@@ -59,12 +59,12 @@ class ParticipantQuizController extends Controller
         // cek sedang ambil quiz ini atau tidak
         $cek = Redis::hget("quiz-answers:{$userId}:{$id}", "quiz");
         if ($cek != null) {
-            $quiz = Quiz::with(
+            $quiz = Quiz::with([
                 'questions',
-                'questions.answers',
+                'questions.answers:id,quiz_question_id,content,active',
                 'questions.type',
                 'category'
-            )
+            ])
                 ->where('id', $id)
                 ->first();
             $take = json_decode($cek);
@@ -79,7 +79,7 @@ class ParticipantQuizController extends Controller
             // get quiz
             $quiz = Quiz::with(
                 'questions',
-                'questions.answers',
+                'questions.answers:id,quiz_question_id,content,active',
                 'questions.type',
                 'category'
             )

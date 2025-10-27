@@ -41,13 +41,13 @@ export default function Welcome({
                 <div className="max-w-screen-lg mx-auto mt-4 text-xl font-semibold grid grid-cols-1 space-x-3 text-gray-700">
                     New Quiz
                 </div>
-                <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 py-8 bg-cover gap-6 rounded-lg">
+                <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 py-8 bg-cover gap-6">
                     {quizes.map((quiz, index) => {
                         return (
                             <div className="bg-white shadow group" key={index}>
                                 <div className="bg-white">
                                     <div
-                                        className="h-36 px-4 py-4 font-medium text-gray-800 grid place-items-center rounded-md bg-cover bg-center"
+                                        className="h-60 px-4 py-4 font-medium text-gray-800 grid place-items-center bg-cover bg-center"
                                         style={{
                                             backgroundImage: `url(/storage/${quiz.thumbnail})`,
                                         }}
@@ -89,11 +89,11 @@ export default function Welcome({
                 <div className="max-w-screen-lg mx-auto mt-4 text-xl font-semibold grid text-gray-700">
                     Quiz Categories
                 </div>
-                <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-4 py-6 rounded-lg ">
+                <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4 py-6 rounded-lg ">
                     {categories.map((category, index) => {
                         return (
                             <div
-                                className="bg-white px-4 py-4 font-medium text-gray-800 h-32 grid place-items-center rounded-md bg-cover bg-no-repeat bg-center"
+                                className="bg-white px-4 py-4 font-medium text-gray-800 h-56 grid place-items-center rounded-md bg-cover bg-no-repeat bg-center"
                                 style={{
                                     backgroundImage: `url(/storage/${category.thumbnail})`,
                                 }}
