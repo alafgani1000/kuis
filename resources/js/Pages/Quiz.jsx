@@ -33,7 +33,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const [counterStart, setCounterStart] = useState(0);
     const [timeLimit, setTimeLimit] = useState(null);
     const [lastActivity, setLastActivity] = useState(Date.now());
-    const [quizResults, setQuizResults] = useState();
     const [result, setResult] = useState();
     const [quizEnd, setQuizEnd] = useState(false);
 
@@ -42,7 +41,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
         if (timeLeft === 0 && startQuiz === true) {
-            syncAnswers();
             evaluateQuiz();
         }
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
