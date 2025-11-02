@@ -40,9 +40,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
 
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
-        if (timeLeft === 0 && startQuiz === true) {
-            evaluateQuiz();
-        }
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
 
@@ -79,6 +76,24 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     }, [index]);
 
     useEffect(() => {
+        if (startQuiz === true) {
+
+            let startTime = localStorage.getItem("quizStartTime" + quiz.id);
+            const elapsedTime = Math.floor(
+                (Date.now() - startTime) / (1000 * 60)
+            );
+            const remainingTime = elapsedTime - quiz.time_limit;
+            if (setQuizEnd === false) {
+                if (remainingTime >= 0) {
+                    setQuizEnd(true);
+                }
+            } else {
+                evaluateQuiz();
+            }
+        }
+    }, [timeLimit, startQuiz])
+
+    useEffect(() => {
         if (result) {
             router.visit(`/quiz/${result.data.id}/score`, {
                 preserveScroll: true,
@@ -100,10 +115,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
             }, 1000);
             return () => clearInterval(syncInterval);
         } else {
-            router.visit(`/quiz/${result.id}/score`, {
-                preserveScroll: true,
-                replace: true,
-            });
+            // router.visit(`/quiz/${result.id}/score`, {
+            //     preserveScroll: true,
+            //     replace: true,
+            // });
+            console.log("quiz end");
         }
     }, [questions]);
 
@@ -163,7 +179,11 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                     );
                     setQuestionSkip(newQuestionSkip);
                 } else {
-                    evaluateQuiz();
+                    setQuizEnd(true);
+                    setTimeout(() => {
+                        evaluateQuiz();
+                    }, 2000)
+
                 }
             } else {
                 // next question
@@ -328,7 +348,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? ( // multiple response
+                            "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}

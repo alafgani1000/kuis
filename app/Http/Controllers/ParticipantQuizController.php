@@ -153,7 +153,7 @@ class ParticipantQuizController extends Controller
     public function evaluateQuiz(Request $request, $id)
     {
         DB::beginTransaction();
-        try {
+        // try {
             $userId = Auth::user()->id;
             if (Redis::exists("quiz-answers:{$userId}:{$id}")) {
                 // get take quiz
@@ -167,34 +167,11 @@ class ParticipantQuizController extends Controller
                 $totalScore = 0;
                 foreach ($questions as $question) {
                     $answers = collect($question->answers);
-                    if (is_array($question->pick_answers)) {
-                        foreach ($question->pick_answers as $pick) {
-                            $answer = QuizQuestionAnswer::where('id', $pick)->first();
-                            $totalScore += $answer->score ?? 0;
-                            $takeAnswer = TakeAnswer::create([
-                                'take_id' => $take->id,
-                                'quiz_question_id' => $question->id,
-                                'quiz_question_answer_id' => $answer->id,
-                                'content' => $answer->content,
-                                'correct' => $answer->correct,
-                                'score' => $answer->score,
-                            ]);
-                        }
-                    } else {
-                        $answer = QuizQuestionAnswer::where('id', $question->pick_answers)->first();
-                        if (is_null($answer)) {
-                            $answer = QuizQuestionAnswer::where('content', 'like', '%' . $question->pick_answers . '%')->first();
-                            $totalScore += $answer->score ?? 0;
-                            if (is_null($answer)) {
-                                $takeAnswer = TakeAnswer::create([
-                                    'take_id' => $take->id,
-                                    'quiz_question_id' => $question->id,
-                                    'quiz_question_answer_id' => $answer->id ?? null,
-                                    'content' => $answer->content ?? null,
-                                    'correct' => 0,
-                                    'score' => $answer->score ?? 0,
-                                ]);
-                            } else {
+                    if (isset($question->pick_answers)) {
+                        if (is_array($question->pick_answers)) {
+                            foreach ($question->pick_answers as $pick) {
+                                $answer = QuizQuestionAnswer::where('id', $pick)->first();
+                                $totalScore += $answer->score ?? 0;
                                 $takeAnswer = TakeAnswer::create([
                                     'take_id' => $take->id,
                                     'quiz_question_id' => $question->id,
@@ -205,17 +182,51 @@ class ParticipantQuizController extends Controller
                                 ]);
                             }
                         } else {
-                            $totalScore += $answer->score ?? 0;
-                            $takeAnswer = TakeAnswer::create([
-                                'take_id' => $take->id,
-                                'quiz_question_id' => $question->id,
-                                'quiz_question_answer_id' => $answer->id,
-                                'content' => $answer->content,
-                                'correct' => $answer->correct,
-                                'score' => $answer->score,
-                            ]);
+                            $answer = QuizQuestionAnswer::where('id', $question->pick_answers)->first();
+                            if (is_null($answer)) {
+                                $answer = QuizQuestionAnswer::where('content', 'like', '%' . $question->pick_answers . '%')->first();
+                                $totalScore += $answer->score ?? 0;
+                                if (is_null($answer)) {
+                                    $takeAnswer = TakeAnswer::create([
+                                        'take_id' => $take->id,
+                                        'quiz_question_id' => $question->id,
+                                        'quiz_question_answer_id' => $answer->id ?? null,
+                                        'content' => $answer->content ?? null,
+                                        'correct' => 0,
+                                        'score' => $answer->score ?? 0,
+                                    ]);
+                                } else {
+                                    $takeAnswer = TakeAnswer::create([
+                                        'take_id' => $take->id,
+                                        'quiz_question_id' => $question->id,
+                                        'quiz_question_answer_id' => $answer->id,
+                                        'content' => $answer->content,
+                                        'correct' => $answer->correct,
+                                        'score' => $answer->score,
+                                    ]);
+                                }
+                            } else {
+                                $totalScore += $answer->score ?? 0;
+                                $takeAnswer = TakeAnswer::create([
+                                    'take_id' => $take->id,
+                                    'quiz_question_id' => $question->id,
+                                    'quiz_question_answer_id' => $answer->id,
+                                    'content' => $answer->content,
+                                    'correct' => $answer->correct,
+                                    'score' => $answer->score,
+                                ]);
+                            }
                         }
+                    } else {
+                         $takeAnswer = TakeAnswer::create([
+                            'take_id' => $take->id,
+                            'quiz_question_id' => $question->id,
+                            'quiz_question_answer_id' => NULL,
+                            'content' => NULL,
+                            'correct' => NULL,
+                        ]);
                     }
+                    
                 }
                 $take->score = $totalScore;
                 $take->finished_at = Carbon::now();
@@ -244,16 +255,17 @@ class ParticipantQuizController extends Controller
                 'message'   => 'Quiz evaluated successfully',
                 'data'      => $take
             ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(
-                [
-                    'error'     => 'Failed to evaluate quiz',
-                    'message'   => $e
-                ],
-                500
-            );
-        }
+             DB::rollBack();
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return response()->json(
+        //         [
+        //             'error'     => 'Failed to evaluate quiz',
+        //             'message'   => $e->getMessage()
+        //         ],
+        //         500
+        //     );
+        // }
 
         // dd($request->all());
     }
