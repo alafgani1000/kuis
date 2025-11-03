@@ -95,16 +95,22 @@ class ParticipantQuizController extends Controller
         // redis save quiz answer
         // Redis::hset('quiz-answers:{$userId}:{quizId}', $questionId, $quiz);
         // Redis::hgetall('quiz-answers:{$userId}:{quizId}');
-        $userId = Auth::user()->id;
-        $quizId = $request->quiz_id;
-        $questions = $request->quiz_data;
-        $key = "quiz-answers:{$userId}:{$quizId}";
-        Redis::hset($key, 'quiz', json_encode($questions));
-        $ttl = Redis::ttl($key);
-        if ($ttl === -1) {
-            Redis::expire($key, 3600);
+        if (isset($request->quiz_end)) {
+            if ($request->quiz_end == false) {
+                $userId = Auth::user()->id;
+                $quizId = $request->quiz_id;
+                $questions = $request->quiz_data;
+                $key = "quiz-answers:{$userId}:{$quizId}";
+                Redis::hset($key, 'quiz', json_encode($questions));
+                $ttl = Redis::ttl($key);
+                if ($ttl === -1) {
+                    Redis::expire($key, 3600);
+                }
+                return response()->json(['status' => 'synced']);
+            }
+        } else {
+            return response()->json(['status' => 'not_synced']);
         }
-        return response()->json(['status' => 'synced']);
     }
 
     public function syncTimeTaken(Request $request)

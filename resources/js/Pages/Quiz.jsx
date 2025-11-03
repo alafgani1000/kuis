@@ -154,7 +154,9 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                 questionSkip: questionSkip,
                 currentQuestion: currentQuestion,
                 countQuestionChosed: countQuestionChosed,
+
             },
+            quiz_end: quizEnd,
         });
     };
 
@@ -184,9 +186,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                     setQuestionSkip(newQuestionSkip);
                 } else {
                     setQuizEnd(true);
-                    setTimeout(() => {
-                        evaluateQuiz();
-                    }, 2000);
                 }
             } else {
                 // next question
@@ -351,7 +350,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                          "multiple_response" ? ( // multiple response
+                            "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
