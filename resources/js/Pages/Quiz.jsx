@@ -36,10 +36,9 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const [result, setResult] = useState();
     const [quizEnd, setQuizEnd] = useState(false);
 
-    // console.log(take);
-
     const handleTimeUpdate = (timeLeft) => {
         setTimeLimit(timeLeft);
+
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
 
@@ -77,22 +76,20 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
 
     useEffect(() => {
         if (startQuiz === true) {
-
             let startTime = localStorage.getItem("quizStartTime" + quiz.id);
             const elapsedTime = Math.floor(
                 (Date.now() - startTime) / (1000 * 60)
             );
             const remainingTime = elapsedTime - quiz.time_limit;
-            if (setQuizEnd === false) {
+            if (quizEnd === false) {
                 if (remainingTime >= 0) {
                     setQuizEnd(true);
                 }
-            } else {
-                evaluateQuiz();
             }
         }
-    }, [timeLimit, startQuiz])
+    }, [timeLimit, startQuiz]);
 
+    // get result from server
     useEffect(() => {
         if (result) {
             router.visit(`/quiz/${result.data.id}/score`, {
@@ -101,6 +98,13 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
             });
         }
     }, [result]);
+
+    // quiz end
+    useEffect(() => {
+        if (quizEnd === true) {
+            evaluateQuiz();
+        }
+    }, [quizEnd]);
 
     /**
      * sync answers every seconds
@@ -182,8 +186,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                     setQuizEnd(true);
                     setTimeout(() => {
                         evaluateQuiz();
-                    }, 2000)
-
+                    }, 2000);
                 }
             } else {
                 // next question
@@ -348,7 +351,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                            "multiple_response" ? ( // multiple response
+                          "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
