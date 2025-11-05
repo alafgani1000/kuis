@@ -92,19 +92,18 @@ export default function Welcome({
                 <div className="max-w-screen-lg mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4 py-6 rounded-lg ">
                     {categories.map((category, index) => {
                         return (
-                            <div
-                                className="bg-white px-4 py-4 font-medium text-gray-800 h-56 grid place-items-center rounded-md bg-cover bg-no-repeat bg-center"
-                                style={{
-                                    backgroundImage: `url(/storage/${category.thumbnail})`,
-                                }}
-                                key={index}
-                            >
-                                <div className="w-full text-center text-xl text-gray-800">
-                                    {category.name}
-                                    <div className="flex items-center justify-center space-x-1 mt-4">
-                                        <div className="bg-stone-400 text-white font-medium rounded-full px-2 py-1 text-xs">
-                                            {category.quizzes_count} Quiz
-                                        </div>
+                            <div>
+                                <div
+                                    className="bg-white px-4 py-4 font-medium text-gray-800 h-56 grid place-items-center rounded-t-md bg-cover bg-no-repeat bg-center"
+                                    style={{
+                                        backgroundImage: `url(/storage/${category.thumbnail})`,
+                                    }}
+                                    key={index}
+                                ></div>
+                                <div className="font-medium px-2 bg-emerald-500 text-white py-2">
+                                    <div className="text-center text-xl text-gray-800">
+                                        <div>{category.name}</div>
+                                        {category.quizzes_count} Quiz
                                     </div>
                                 </div>
                             </div>
