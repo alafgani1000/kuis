@@ -54,32 +54,39 @@ cd quiz-app
 composer install
 ```
 
-3. Create a database and configure the database connection in the `.env` file.
+3. Install dependencies:
 
-4. Create a new user and set the password in the `.env` file. for more details see the env.example file
+```bash
+cd quiz-app
+npm install
+```
 
-5. Run the migrations:
+4. Create a database and configure the database connection in the `.env` file.
+
+5. Create a new user and set the password in the `.env` file. for more details see the env.example file
+
+6. Run the migrations:
 
 ```bash
 php artisan migrate
 ```
 
-6. Seed the database with sample data:
+7. Seed the database with sample data:
 
 ```bash
 php artisan db:seed
 ```
 
-7. Start the application server:
+8. Start the application server:
 
 ```bash
 php artisan serve
 ```
 
-8. Open your web browser and navigate to `http://localhost:8000`.
+9. Open your web browser and navigate to `http://localhost:8000`.
 
-9. You can now access the Quiz App dashboard and start creating quizzes.
-10. Enjoy your quiz-building experience!
+10. You can now access the Quiz App dashboard and start creating quizzes.
+11. Enjoy your quiz-building experience!
 
 ## Contributing
 
