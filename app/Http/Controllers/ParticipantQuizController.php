@@ -158,9 +158,16 @@ class ParticipantQuizController extends Controller
      */
     public function evaluateQuiz(Request $request, $id)
     {
+        $userId = Auth::user()->id;
+        $questions = $request->quiz_data;
+        $key = "quiz-answers:{$userId}:{$id}";
+        Redis::hset($key, 'quiz', json_encode($questions));
+        $ttl = Redis::ttl($key);
+        if ($ttl === -1) {
+            Redis::expire($key, 3600);
+        }
         DB::beginTransaction();
-        // try {
-            $userId = Auth::user()->id;
+        try {
             if (Redis::exists("quiz-answers:{$userId}:{$id}")) {
                 // get take quiz
                 $take = Take::where('quiz_id', $id)
@@ -224,7 +231,7 @@ class ParticipantQuizController extends Controller
                             }
                         }
                     } else {
-                         $takeAnswer = TakeAnswer::create([
+                        $takeAnswer = TakeAnswer::create([
                             'take_id' => $take->id,
                             'quiz_question_id' => $question->id,
                             'quiz_question_answer_id' => NULL,
@@ -232,7 +239,6 @@ class ParticipantQuizController extends Controller
                             'correct' => NULL,
                         ]);
                     }
-                    
                 }
                 $take->score = $totalScore;
                 $take->finished_at = Carbon::now();
@@ -261,19 +267,16 @@ class ParticipantQuizController extends Controller
                 'message'   => 'Quiz evaluated successfully',
                 'data'      => $take
             ]);
-             DB::rollBack();
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return response()->json(
-        //         [
-        //             'error'     => 'Failed to evaluate quiz',
-        //             'message'   => $e->getMessage()
-        //         ],
-        //         500
-        //     );
-        // }
-
-        // dd($request->all());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'error'     => 'Failed to evaluate quiz',
+                    'message'   => $e->getMessage()
+                ],
+                500
+            );
+        }
     }
 
     /**

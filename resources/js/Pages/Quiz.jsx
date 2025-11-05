@@ -154,7 +154,6 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                 questionSkip: questionSkip,
                 currentQuestion: currentQuestion,
                 countQuestionChosed: countQuestionChosed,
-
             },
             quiz_end: quizEnd,
         });
@@ -294,19 +293,17 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
      * evaluate quiz and show score modal
      */
     const evaluateQuiz = () => {
-        axios.post("/quiz/sync-answers", {
-            quiz_id: quiz.id,
-            quiz_data: {
-                questions: questions,
-                index: index,
-                questionSkip: questionSkip,
-                currentQuestion: currentQuestion,
-                countQuestionChosed: countQuestionChosed,
-            },
-        });
         axios
             .put("/quiz/" + quiz.id + "/evaluate", {
+                quiz_data: {
+                    questions: questions,
+                    index: index,
+                    questionSkip: questionSkip,
+                    currentQuestion: currentQuestion,
+                    countQuestionChosed: countQuestionChosed,
+                },
                 quiz: questions,
+                quiz_end: quizEnd,
             })
             .then((res) => {
                 setResult(res.data);
@@ -350,7 +347,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                                 onAnswering={multiChoicePick}
                             />
                         ) : currentQuestion?.type?.code ===
-                            "multiple_response" ? ( // multiple response
+                          "multiple_response" ? ( // multiple response
                             <MultipleResponse
                                 question={currentQuestion}
                                 key={currentQuestion.id}
