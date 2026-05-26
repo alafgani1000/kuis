@@ -8,7 +8,14 @@ import Modal from "@/Components/Modal";
 import axios from "axios";
 import Alert from "@/Components/Alert";
 
-export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
+export default function Quiz({
+    quiz,
+    auth,
+    laravelVersion,
+    phpVersion,
+    take,
+    courseId = null,
+}) {
     const [questions, setQuestions] = useState(
         take == null ? quiz.questions : take.questions,
     );
@@ -329,6 +336,7 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const evaluateQuiz = () => {
         axios
             .put("/quiz/" + quiz.id + "/evaluate", {
+                course_id: courseId,
                 quiz_data: {
                     questions: questions,
                     index: index,

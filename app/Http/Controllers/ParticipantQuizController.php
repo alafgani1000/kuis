@@ -81,9 +81,10 @@ class ParticipantQuizController extends Controller
         return Inertia::render('CategoryQuiz', compact('category'));
     }
 
-    public function takeQuiz($id)
+    public function takeQuiz(Request $request, $id)
     {
         $userId = Auth::user()->id;
+        $courseId = $request->course_id;
         $startTed = Carbon::now();
         // cek sedang ambil quiz ini atau tidak
         $cek = Redis::hget("quiz-answers:{$userId}:{$id}", "quiz");
@@ -97,12 +98,17 @@ class ParticipantQuizController extends Controller
                 ->where('id', $id)
                 ->first();
             $take = json_decode($cek);
-            return Inertia::render('Quiz', compact('quiz', 'take'));
+            return Inertia::render('Quiz', [
+                'quiz' => $quiz,
+                'take' => $take,
+                'courseId' => $courseId,
+            ]);
         } else {
             // insert new take
             $takeQuiz = new Take();
             $takeQuiz->user_id = $userId;
             $takeQuiz->quiz_id = $id;
+            $takeQuiz->course_id = $courseId;
             $takeQuiz->started_at = $startTed;
             $takeQuiz->save();
             // get quiz
@@ -115,7 +121,10 @@ class ParticipantQuizController extends Controller
                 ->where('id', $id)
                 ->first();
             // return
-            return Inertia::render('Quiz', compact('quiz'));
+            return Inertia::render('Quiz', [
+                'quiz' => $quiz,
+                'courseId' => $courseId,
+            ]);
         }
     }
 
@@ -197,10 +206,17 @@ class ParticipantQuizController extends Controller
         }
         DB::beginTransaction();
         try {
-            $take = Take::where('quiz_id', $id)
+            $takeQuery = Take::where('quiz_id', $id)
                 ->where('user_id', $userId)
-                ->whereNull('finished_at')
-                ->first();
+                ->whereNull('finished_at');
+
+            if ($request->course_id) {
+                $takeQuery->where('course_id', $request->course_id);
+            } else {
+                $takeQuery->whereNull('course_id');
+            }
+
+            $take = $takeQuery->first();
 
             if (!$take) {
                 return response()->json([
@@ -315,7 +331,7 @@ class ParticipantQuizController extends Controller
     public function participantDashboard()
     {
         // get take quiz data
-        $takes = Take::with('quiz')
+        $takes = Take::with(['quiz', 'course'])
             ->where('user_id', Auth::user()->id)
             ->where('finished_at', '!=', null)
             ->get();

@@ -11,6 +11,8 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizQuestionController;
 use App\Http\Controllers\ParticipantQuizController;
+use App\Http\Controllers\ParticipantCourseController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\QuizCategoryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +36,8 @@ Route::get('/quiz/category', [ParticipantQuizController::class, 'byCategoryQuiz'
 Route::get('/quiz/category/{id}', [ParticipantQuizController::class, 'showCategoryQuiz'])->name('participant.category_quiz');
 // get new quiz
 Route::get('/quiz/new', [ParticipantQuizController::class, 'newQuiz'])->name('participant.new_quiz');
+Route::get('/courses', [ParticipantCourseController::class, 'index'])->name('participant.courses');
+Route::get('/course/{id}', [ParticipantCourseController::class, 'show'])->name('participant.course.show');
 
 Route::middleware('auth')->group(function () {
     // profile
@@ -51,6 +55,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/quiz/{id}/evaluate', [ParticipantQuizController::class, 'evaluateQuiz'])->name('participant.evaluate_quiz');
         Route::get('/quiz/{id}/score', [ParticipantQuizController::class, 'showScore'])->name('participant.show_score');
         Route::get('/dashboard', [ParticipantQuizController::class, 'participantDashboard'])->name('participant.dashboard');
+        Route::post('/course/{id}/enroll', [ParticipantCourseController::class, 'enroll'])->name('participant.course.enroll');
+        Route::get('/my-courses', [ParticipantCourseController::class, 'myCourses'])->name('participant.my_courses');
+        Route::get('/course/{id}/learn', [ParticipantCourseController::class, 'learn'])->name('participant.course.learn');
+        Route::get('/course/{course}/quiz/{quiz}/start', [ParticipantCourseController::class, 'takeCourseQuiz'])->name('participant.course.quiz.start');
     });
 
     Route::middleware(['role:admin|quiz_creator'])->prefix('admin')->group(function () {
@@ -118,6 +126,20 @@ Route::middleware('auth')->group(function () {
         Route::delete('/quiz/{id}/delete', [QuizController::class, 'destroy'])->name('quiz.delete');
         Route::put('/quiz/{id}/publish', [QuizController::class, 'publish'])->name('quiz.publish');
         Route::put('/quiz/{id}/unpublish', [QuizController::class, 'unpublish'])->name('quiz.unpublish');
+
+        // Course
+        Route::get('/courses', [CourseController::class, 'index'])->name('course.index');
+        Route::post('/course', [CourseController::class, 'store'])->name('course.store');
+        Route::put('/course/{id}/update', [CourseController::class, 'update'])->name('course.update');
+        Route::delete('/course/{id}/delete', [CourseController::class, 'destroy'])->name('course.delete');
+        Route::get('/course/{id}/builder', [CourseController::class, 'builder'])->name('course.builder');
+        Route::post('/course/{course}/lesson', [CourseController::class, 'storeLesson'])->name('course.lesson.store');
+        Route::delete('/course/{course}/lesson/{lesson}', [CourseController::class, 'deleteLesson'])->name('course.lesson.delete');
+        Route::post('/course/{course}/lesson/{lesson}/sublesson', [CourseController::class, 'storeSublesson'])->name('course.sublesson.store');
+        Route::put('/course/{course}/lesson/{lesson}/sublesson/{sublesson}', [CourseController::class, 'updateSublesson'])->name('course.sublesson.update');
+        Route::delete('/course/{course}/lesson/{lesson}/sublesson/{sublesson}', [CourseController::class, 'deleteSublesson'])->name('course.sublesson.delete');
+        Route::post('/course/{course}/quiz', [CourseController::class, 'attachQuiz'])->name('course.quiz.attach');
+        Route::delete('/course/{course}/quiz/{quiz}', [CourseController::class, 'detachQuiz'])->name('course.quiz.detach');
 
         // Quiz question
         Route::get('/quiz/{quiz_id}/question', [QuizQuestionController::class, 'index'])->name('quiz.question.index');

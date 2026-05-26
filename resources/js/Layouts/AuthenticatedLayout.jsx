@@ -95,6 +95,14 @@ export default function Authenticated({ auth, header, children }) {
                                     <i className="bi bi-question-circle me-4 text-base"></i>
                                     Quizz
                                 </NavLink>
+                                <NavLink
+                                    className="ms-2 block"
+                                    href={route("course.index")}
+                                    active={route().current("course.index")}
+                                >
+                                    <i className="bi bi-journal-bookmark me-4 text-base"></i>
+                                    Course
+                                </NavLink>
                             </div>
                             <div className="divider px-4 mt-6 text-xs text-gray-800 font-medium bg-gray-100 py-2 mx-6 rounded">
                                 <i className="bi bi-app me-2"></i>Master data

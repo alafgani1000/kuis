@@ -11,10 +11,15 @@ class Take extends Model
 
     protected $table = 'takes';
 
-    protected $fillable = ['user_id', 'quiz_id', 'score', 'started_at', 'finished_at', 'log_description'];
+    protected $fillable = ['user_id', 'quiz_id', 'course_id', 'score', 'started_at', 'finished_at', 'log_description'];
 
     public function quiz()
     {
         return $this->belongsTo(Quiz::class, 'quiz_id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
     }
 }

@@ -34,18 +34,38 @@ export default function ParticipantLayout({ auth, header, children }) {
                                 >
                                     Home
                                 </NavLinkFront>
+                                <NavLinkFront
+                                    href={route("participant.courses")}
+                                    active={route().current(
+                                        "participant.courses",
+                                    )}
+                                >
+                                    Courses
+                                </NavLinkFront>
                                 {user !== null &&
                                     (roles.participant === true ? (
-                                        <NavLinkFront
-                                            href={route(
-                                                "participant.dashboard",
-                                            )}
-                                            active={route().current(
-                                                "participant.dashboard",
-                                            )}
-                                        >
-                                            Dashboard
-                                        </NavLinkFront>
+                                        <>
+                                            <NavLinkFront
+                                                href={route(
+                                                    "participant.my_courses",
+                                                )}
+                                                active={route().current(
+                                                    "participant.my_courses",
+                                                )}
+                                            >
+                                                My Courses
+                                            </NavLinkFront>
+                                            <NavLinkFront
+                                                href={route(
+                                                    "participant.dashboard",
+                                                )}
+                                                active={route().current(
+                                                    "participant.dashboard",
+                                                )}
+                                            >
+                                                Dashboard
+                                            </NavLinkFront>
+                                        </>
                                     ) : (
                                         <NavLinkFront
                                             href={route("dashboard")}
@@ -169,13 +189,41 @@ export default function ParticipantLayout({ auth, header, children }) {
                         >
                             Home
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("participant.courses")}
+                            active={route().current("participant.courses")}
+                        >
+                            Courses
+                        </ResponsiveNavLink>
                         {user !== null && (
-                            <ResponsiveNavLink
-                                href={route("dashboard")}
-                                active={route().current("dashboard")}
-                            >
-                                Dashboard
-                            </ResponsiveNavLink>
+                            <>
+                                {roles.participant === true && (
+                                    <ResponsiveNavLink
+                                        href={route("participant.my_courses")}
+                                        active={route().current(
+                                            "participant.my_courses",
+                                        )}
+                                    >
+                                        My Courses
+                                    </ResponsiveNavLink>
+                                )}
+                                <ResponsiveNavLink
+                                    href={
+                                        roles.participant === true
+                                            ? route("participant.dashboard")
+                                            : route("dashboard")
+                                    }
+                                    active={
+                                        roles.participant === true
+                                            ? route().current(
+                                                  "participant.dashboard",
+                                              )
+                                            : route().current("dashboard")
+                                    }
+                                >
+                                    Dashboard
+                                </ResponsiveNavLink>
+                            </>
                         )}
                     </div>
                     {user !== null && (

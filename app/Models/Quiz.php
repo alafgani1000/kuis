@@ -34,4 +34,11 @@ class Quiz extends Model
     {
         return $this->belongsTo(QuizCategory::class, 'quiz_category_id');
     }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'course_quizzes')
+            ->withPivot(['sort_order', 'unlock_after_lesson_id', 'required'])
+            ->withTimestamps();
+    }
 }
