@@ -21,7 +21,18 @@ class ParticipantQuizController extends Controller
 {
     public function home(): Response
     {
-        return Inertia::render('Welcome');
+        $quizes = Quiz::has('questions')
+            ->with('category')
+            ->withCount('questions')
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get();
+
+        $categories = QuizCategory::withCount('quizzes')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Welcome', compact('quizes', 'categories'));
     }
 
     public function dashboard(): Response
@@ -31,25 +42,43 @@ class ParticipantQuizController extends Controller
 
     public function newQuiz()
     {
-        $quiz = Quiz::has('questions')
-            ->with('category', 'questions')
-            ->withCount('category', 'questions')
+        $quizes = Quiz::has('questions')
+            ->with('category')
+            ->withCount('questions')
             ->orderBy('created_at', 'desc')
-            ->take(8)
+            ->take(16)
             ->get();
-        return $quiz;
+
+        return Inertia::render('NewQuiz', compact('quizes'));
     }
 
     public function byCategoryQuiz()
     {
-        $quiz = QuizCategory::with(
+        $categories = QuizCategory::with(
             ['quizzes' => function (Builder $query) {
-                $query->take(8);
+                $query->take(8)->withCount('questions');
             }]
         )
             ->withCount('quizzes')
+            ->orderBy('name')
             ->get();
-        return $quiz;
+
+        return Inertia::render('QuizCategory', compact('categories'));
+    }
+
+    public function showCategoryQuiz($id)
+    {
+        $category = QuizCategory::with([
+            'quizzes' => function (Builder $query) {
+                $query->has('questions')
+                    ->with('category')
+                    ->withCount('questions')
+                    ->orderBy('created_at', 'desc');
+            },
+        ])
+            ->findOrFail($id);
+
+        return Inertia::render('CategoryQuiz', compact('category'));
     }
 
     public function takeQuiz($id)
@@ -144,8 +173,8 @@ class ParticipantQuizController extends Controller
     public function resetQuiz($id)
     {
         $userId = Auth::user()->id;
-        Redis::del("quiz-answers:{$userId}:{$id}", "quiz");
-        Redis::del("quiz-time-taken:{$userId}:{$id}", "time_taken");
+        Redis::del("quiz-answers:{$userId}:{$id}");
+        Redis::del("quiz-time-taken:{$userId}:{$id}");
         return response()->json(['status' => 'reset']);
     }
 
@@ -168,114 +197,97 @@ class ParticipantQuizController extends Controller
         }
         DB::beginTransaction();
         try {
-            if (Redis::exists("quiz-answers:{$userId}:{$id}")) {
-                // get take quiz
-                $take = Take::where('quiz_id', $id)
-                    ->where('user_id', $userId)
-                    ->whereNull("finished_at")
-                    ->first();
-                // get quiz data answers
-                $data = json_decode(Redis::hget("quiz-answers:{$userId}:{$id}", 'quiz'));
-                $questions = collect($data->questions);
+            $take = Take::where('quiz_id', $id)
+                ->where('user_id', $userId)
+                ->whereNull('finished_at')
+                ->first();
+
+            if (!$take) {
+                return response()->json([
+                    'status'  => 'not_found',
+                    'message' => 'Quiz not found',
+                ], 404);
+            }
+
+            if (Redis::exists($key)) {
+                $data = json_decode(Redis::hget($key, 'quiz'));
+                $questions = collect($data->questions ?? []);
                 $totalScore = 0;
+
                 foreach ($questions as $question) {
-                    $answers = collect($question->answers);
                     if (isset($question->pick_answers)) {
                         if (is_array($question->pick_answers)) {
                             foreach ($question->pick_answers as $pick) {
-                                $answer = QuizQuestionAnswer::where('id', $pick)->first();
+                                $answer = QuizQuestionAnswer::where('id', $pick)
+                                    ->where('quiz_question_id', $question->id)
+                                    ->first();
+
                                 $totalScore += $answer->score ?? 0;
-                                $takeAnswer = TakeAnswer::create([
+                                TakeAnswer::create([
                                     'take_id' => $take->id,
                                     'quiz_question_id' => $question->id,
-                                    'quiz_question_answer_id' => $answer->id,
-                                    'content' => $answer->content,
-                                    'correct' => $answer->correct,
-                                    'score' => $answer->score,
+                                    'quiz_question_answer_id' => $answer->id ?? null,
+                                    'content' => $answer->content ?? null,
+                                    'correct' => $answer->correct ?? 0,
+                                    'score' => $answer->score ?? 0,
                                 ]);
                             }
                         } else {
-                            $answer = QuizQuestionAnswer::where('id', $question->pick_answers)->first();
-                            if (is_null($answer)) {
-                                $answer = QuizQuestionAnswer::where('content', 'like', '%' . $question->pick_answers . '%')->first();
-                                $totalScore += $answer->score ?? 0;
-                                if (is_null($answer)) {
-                                    $takeAnswer = TakeAnswer::create([
-                                        'take_id' => $take->id,
-                                        'quiz_question_id' => $question->id,
-                                        'quiz_question_answer_id' => $answer->id ?? null,
-                                        'content' => $answer->content ?? null,
-                                        'correct' => 0,
-                                        'score' => $answer->score ?? 0,
-                                    ]);
-                                } else {
-                                    $takeAnswer = TakeAnswer::create([
-                                        'take_id' => $take->id,
-                                        'quiz_question_id' => $question->id,
-                                        'quiz_question_answer_id' => $answer->id,
-                                        'content' => $answer->content,
-                                        'correct' => $answer->correct,
-                                        'score' => $answer->score,
-                                    ]);
-                                }
-                            } else {
-                                $totalScore += $answer->score ?? 0;
-                                $takeAnswer = TakeAnswer::create([
-                                    'take_id' => $take->id,
-                                    'quiz_question_id' => $question->id,
-                                    'quiz_question_answer_id' => $answer->id,
-                                    'content' => $answer->content,
-                                    'correct' => $answer->correct,
-                                    'score' => $answer->score,
-                                ]);
+                            $answer = QuizQuestionAnswer::where('id', $question->pick_answers)
+                                ->where('quiz_question_id', $question->id)
+                                ->first();
+
+                            if (is_null($answer) && is_string($question->pick_answers)) {
+                                $answer = QuizQuestionAnswer::where('quiz_question_id', $question->id)
+                                    ->where('content', 'like', '%' . $question->pick_answers . '%')
+                                    ->first();
                             }
+
+                            $totalScore += $answer->score ?? 0;
+                            TakeAnswer::create([
+                                'take_id' => $take->id,
+                                'quiz_question_id' => $question->id,
+                                'quiz_question_answer_id' => $answer->id ?? null,
+                                'content' => $answer->content ?? ($question->pick_answers ?? null),
+                                'correct' => $answer->correct ?? 0,
+                                'score' => $answer->score ?? 0,
+                            ]);
                         }
                     } else {
-                        $takeAnswer = TakeAnswer::create([
+                        TakeAnswer::create([
                             'take_id' => $take->id,
                             'quiz_question_id' => $question->id,
-                            'quiz_question_answer_id' => NULL,
-                            'content' => NULL,
-                            'correct' => NULL,
+                            'quiz_question_answer_id' => null,
+                            'content' => null,
+                            'correct' => null,
+                            'score' => 0,
                         ]);
                     }
                 }
+
                 $take->score = $totalScore;
                 $take->finished_at = Carbon::now();
                 $take->save();
                 DB::commit();
-
                 $this->resetQuiz($id);
             } else {
-                $take = Take::where('quiz_id', $id)
-                    ->where('user_id', $userId)
-                    ->whereNull("finished_at")
-                    ->first();
-                if (!is_null($take)) {
-                    $take->score = 0;
-                    $take->finished_at = Carbon::now();
-                    $take->save();
-                } else {
-                    return response()->json([
-                        'status'    => 'not_found',
-                        'message'   => 'Quiz not found',
-                    ]);
-                }
+                $take->score = 0;
+                $take->finished_at = Carbon::now();
+                $take->save();
+                DB::commit();
             }
+
             return response()->json([
-                'status'    => 'evaluated',
-                'message'   => 'Quiz evaluated successfully',
-                'data'      => $take
+                'status'  => 'evaluated',
+                'message' => 'Quiz evaluated successfully',
+                'data'    => $take,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(
-                [
-                    'error'     => 'Failed to evaluate quiz',
-                    'message'   => $e->getMessage()
-                ],
-                500
-            );
+            return response()->json([
+                'error'   => 'Failed to evaluate quiz',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -286,17 +298,14 @@ class ParticipantQuizController extends Controller
      */
     public function showScore($id)
     {
-        // get data take
-        $take = Take::where('id', $id)
-            ->first();
-        // delete cache data
-        $this->resetQuiz($take->quiz_id);
-        // return
-        if ($take->user_id == Auth::user()->id) {
-            return Inertia::render('Score', compact('take'));
-        } else {
+        $take = Take::find($id);
+
+        if (!$take || $take->user_id !== Auth::user()->id) {
             return response(404);
         }
+
+        $this->resetQuiz($take->quiz_id);
+        return Inertia::render('Score', compact('take'));
     }
 
     /**

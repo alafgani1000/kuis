@@ -13,7 +13,7 @@ export default function ParticipantLayout({ auth, header, children }) {
 
     return (
         <div className="min-h-screen  bg-cover">
-            <nav className="max-w-full mx-auto border-b border-gray-200 bg-emerald-600 sticky top-0">
+            <nav className="sticky top-0 z-50 max-w-full mx-auto border-b border-gray-200 bg-emerald-600">
                 {/* <nav className="border-b border-gray-100 bg-indigo-500"> */}
                 <div className="max-w-7xl mx-auto px-4 pb-2 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -38,10 +38,10 @@ export default function ParticipantLayout({ auth, header, children }) {
                                     (roles.participant === true ? (
                                         <NavLinkFront
                                             href={route(
-                                                "participant.dashboard"
+                                                "participant.dashboard",
                                             )}
                                             active={route().current(
-                                                "participant.dashboard"
+                                                "participant.dashboard",
                                             )}
                                         >
                                             Dashboard
@@ -50,7 +50,7 @@ export default function ParticipantLayout({ auth, header, children }) {
                                         <NavLinkFront
                                             href={route("dashboard")}
                                             active={route().current(
-                                                "dashboard"
+                                                "dashboard",
                                             )}
                                         >
                                             Dashboard
@@ -117,7 +117,7 @@ export default function ParticipantLayout({ auth, header, children }) {
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
-                                        (previousState) => !previousState
+                                        (previousState) => !previousState,
                                     )
                                 }
                                 className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
@@ -214,9 +214,11 @@ export default function ParticipantLayout({ auth, header, children }) {
                 )}
             </nav>
 
-            <main>{children}</main>
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {children}
+            </main>
 
-            <div className="max-w-screen-lg mx-auto px-0 space-y-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <div className="bg-emerald-600 overflow-hidden py-4 px-4 rounded-lg">
                     <div className="text-white text-center">
                         2024 Free Sorfware

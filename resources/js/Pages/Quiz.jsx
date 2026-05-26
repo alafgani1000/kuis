@@ -1,6 +1,5 @@
 import { Link, Head, router } from "@inertiajs/react";
 import MultipleResponse from "./QuestionTypes/MultipleResponse";
-import { questions } from "@/Components/js/questions_example";
 import ShortAnswer from "./QuestionTypes/ShortAnswer";
 import { useEffect, useState } from "react";
 import MultipleChoice from "./QuestionTypes/MultipleChoice";
@@ -8,29 +7,27 @@ import QuizTimer from "@/Components/QuizTimer";
 import Modal from "@/Components/Modal";
 import axios from "axios";
 import Alert from "@/Components/Alert";
-import { data } from "autoprefixer";
 
 export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
     const [questions, setQuestions] = useState(
-        take == null ? quiz.questions : take.questions
+        take == null ? quiz.questions : take.questions,
     );
     const [currentQuestion, setCurrentQuestion] = useState(
-        take == null ? {} : take.currentQuestion
+        take == null ? {} : take.currentQuestion,
     );
     const [countQuestion, setCountQuestion] = useState(0);
     const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
     const [modalQuizEnd, setModalQuizEnd] = useState(false);
     const [questionSkip, setQuestionSkip] = useState(
-        take == null ? [] : take.questionSkip
+        take == null ? [] : take.questionSkip,
     );
     const [index, setIndex] = useState(take == null ? 0 : take.index);
     const [quizLastTimeChoice, setQuizLastTimeChoice] = useState(null);
     const [pleasePick, setPleasePick] = useState("");
     const [countQuestionChosed, setCountQuestionChosed] = useState(
-        take == null ? 0 : take.countQuestionChosed
+        take == null ? 0 : take.countQuestionChosed,
     );
     const [startQuiz, setStartQuiz] = useState(false);
-    const [counterStart, setCounterStart] = useState(0);
     const [timeLimit, setTimeLimit] = useState(null);
     const [lastActivity, setLastActivity] = useState(Date.now());
     const [result, setResult] = useState();
@@ -42,6 +39,48 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
         // You can also trigger other logic here (e.g., auto-submit when timeLeft === 0)
     };
 
+    const isQuestionAnswered = (question) => {
+        if (
+            !question ||
+            question.pick_answers === undefined ||
+            question.pick_answers === null
+        ) {
+            return false;
+        }
+
+        if (Array.isArray(question.pick_answers)) {
+            return question.pick_answers.length > 0;
+        }
+
+        if (typeof question.pick_answers === "string") {
+            return question.pick_answers.trim().length > 0;
+        }
+
+        return true;
+    };
+
+    const findNextUnansweredIndex = (fromIndex = 0) => {
+        for (let i = fromIndex + 1; i < questions.length; i++) {
+            if (
+                !isQuestionAnswered(questions[i]) &&
+                !questionSkip.includes(i)
+            ) {
+                return i;
+            }
+        }
+
+        for (let i = 0; i <= fromIndex; i++) {
+            if (
+                !isQuestionAnswered(questions[i]) &&
+                !questionSkip.includes(i)
+            ) {
+                return i;
+            }
+        }
+
+        return null;
+    };
+
     /**
      * start quiz
      * check if quiz start time is exist in local storage
@@ -51,34 +90,33 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
             if (localStorage.getItem("quizStartTime" + quiz.id) != null) {
                 setStartQuiz(true);
                 clearInterval(intervalId);
-            } else {
-                setCounterStart(counterStart + 1);
             }
         }, 1000);
-    }, [counterStart]);
+        return () => clearInterval(intervalId);
+    }, []);
 
     /**
      * if index changed, set current question, question choosed cound , and count question
      * call saveTolocalStorage
      */
     useEffect(() => {
-        setCurrentQuestion(questions[index]);
+        setCurrentQuestion(questions[index] ?? {});
         setCountQuestion(quiz.questions.length);
 
-        let countQuestionChosed = questions.filter(
-            (item) => item.pick_answers !== undefined
-        ).length;
+        let answeredCount = questions.filter(isQuestionAnswered).length;
+        setCountQuestionChosed(answeredCount);
+        setCurrentQuestionNumber(index + 1);
+    }, [index, questions]);
 
-        setCountQuestionChosed(countQuestionChosed + 1);
-
+    useEffect(() => {
         saveTolocalStorage();
-    }, [index]);
+    }, [questions, index, questionSkip, currentQuestion, countQuestionChosed]);
 
     useEffect(() => {
         if (startQuiz === true) {
             let startTime = localStorage.getItem("quizStartTime" + quiz.id);
             const elapsedTime = Math.floor(
-                (Date.now() - startTime) / (1000 * 60)
+                (Date.now() - startTime) / (1000 * 60),
             );
             const remainingTime = elapsedTime - quiz.time_limit;
             if (quizEnd === false) {
@@ -118,26 +156,29 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
                 }
             }, 1000);
             return () => clearInterval(syncInterval);
-        } else {
-            // router.visit(`/quiz/${result.id}/score`, {
-            //     preserveScroll: true,
-            //     replace: true,
-            // });
-            console.log("quiz end");
         }
-    }, [questions]);
+    }, [lastActivity, quizEnd]);
 
     /**
      * save data to local storage
      */
     const saveTolocalStorage = () => {
         localStorage.setItem("quiz" + quiz.id, JSON.stringify(questions));
-        localStorage.setItem("quiz" + quiz.id + "_index", index);
-        localStorage.setItem("quiz" + quiz.id + "_skip", questionSkip);
-        localStorage.setItem("quiz" + quiz.id + "_current", currentQuestion);
+        localStorage.setItem(
+            "quiz" + quiz.id + "_index",
+            JSON.stringify(index),
+        );
+        localStorage.setItem(
+            "quiz" + quiz.id + "_skip",
+            JSON.stringify(questionSkip),
+        );
+        localStorage.setItem(
+            "quiz" + quiz.id + "_current",
+            JSON.stringify(currentQuestion),
+        );
         localStorage.setItem(
             "quiz" + quiz.id + "_count_choosed",
-            countQuestionChosed
+            JSON.stringify(countQuestionChosed),
         );
     };
 
@@ -166,31 +207,25 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
      */
     const nextQuestion = () => {
         setLastActivity(Date.now());
-        if (currentQuestion.pick_answers === undefined) {
-            // check if question not answered
+        if (!isQuestionAnswered(currentQuestion)) {
             setPleasePick("Please choose an answer or skip");
-        } else {
-            // check if the last question
-            // next answer, new index set
-            if (
-                questions.length ===
-                countQuestionChosed + questionSkip.length
-            ) {
-                // check if question skip
-                if (questionSkip.length > 0) {
-                    setIndex(0);
-                    let newQuestionSkip = questionSkip.filter(
-                        (item, index) => index !== 0
-                    );
-                    setQuestionSkip(newQuestionSkip);
-                } else {
-                    setQuizEnd(true);
-                }
+            return;
+        }
+
+        setPleasePick("");
+        if (questions.length === countQuestionChosed + questionSkip.length) {
+            if (questionSkip.length > 0) {
+                setIndex(questionSkip[0]);
+                setQuestionSkip((prev) => prev.slice(1));
             } else {
-                // next question
-                let newIndex = index + 1;
-                setIndex(newIndex);
+                setQuizEnd(true);
             }
+            return;
+        }
+
+        const nextIndex = findNextUnansweredIndex(index);
+        if (nextIndex !== null) {
+            setIndex(nextIndex);
         }
     };
 
@@ -198,28 +233,27 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
      * skip question
      * @param {*} index
      */
-    const skipQuestion = (index) => {
+    const skipQuestion = (currentIndex) => {
         setLastActivity(Date.now());
+        setPleasePick("");
+
         if (questions.length === countQuestionChosed + questionSkip.length) {
             if (questionSkip.length === 0) {
                 setPleasePick("This is the last question");
-            } else {
-                let dataSkip = questionSkip;
-                let newIndex = 0;
-                let itemSkip = dataSkip[newIndex];
-                dataSkip.push(index);
-                let filterDataSkip = dataSkip.filter(
-                    (item, i) => i !== newIndex
-                );
-
-                setQuestionSkip(filterDataSkip);
-
-                setIndex(itemSkip);
+                return;
             }
-        } else {
-            let newIndex = index + 1;
-            setQuestionSkip((prev) => [...prev, index]);
-            setIndex(newIndex);
+            setIndex(questionSkip[0]);
+            setQuestionSkip((prev) => prev.slice(1));
+            return;
+        }
+
+        setQuestionSkip((prev) => [...prev, currentIndex]);
+        const nextIndex = findNextUnansweredIndex(currentIndex);
+        if (nextIndex !== null) {
+            setIndex(nextIndex);
+        } else if (questionSkip.length > 0) {
+            setIndex(questionSkip[0]);
+            setQuestionSkip((prev) => prev.slice(1));
         }
     };
 
@@ -229,16 +263,17 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
      * @param {*} answer
      */
     const multiChoicePick = (questionPick, answer) => {
-        let questionsMap = questions.map((question) => {
+        const questionsMap = questions.map((question) => {
             if (question.id === questionPick.id) {
-                question.pick_answers = answer;
+                return { ...question, pick_answers: answer };
             }
             return question;
         });
         setQuestions(questionsMap);
+        setPleasePick("");
         localStorage.setItem(
             "quizLastTimeChoice" + quiz.id,
-            JSON.stringify(new Date())
+            JSON.stringify(new Date()),
         );
     };
 
@@ -248,25 +283,23 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
      * @param {*} answer
      */
     const multiResponsePick = (questionPick, answer) => {
-        let questionsMap = questions.map((question) => {
+        const questionsMap = questions.map((question) => {
             if (question.id === questionPick.id) {
-                if (question.pick_answers === undefined) {
-                    question.pick_answers = [];
-                }
-                if (question.pick_answers.includes(answer)) {
-                    question.pick_answers = question.pick_answers.filter(
-                        (item) => item !== answer
-                    );
-                } else {
-                    question.pick_answers.push(answer);
-                }
+                const selectedAnswers = Array.isArray(question.pick_answers)
+                    ? question.pick_answers
+                    : [];
+                const nextAnswers = selectedAnswers.includes(answer)
+                    ? selectedAnswers.filter((item) => item !== answer)
+                    : [...selectedAnswers, answer];
+                return { ...question, pick_answers: nextAnswers };
             }
             return question;
         });
         setQuestions(questionsMap);
+        setPleasePick("");
         localStorage.setItem(
             "quizLastTimeChoice" + quiz.id,
-            JSON.stringify(new Date())
+            JSON.stringify(new Date()),
         );
     };
 
@@ -276,16 +309,17 @@ export default function Quiz({ quiz, auth, laravelVersion, phpVersion, take }) {
      * @param {*} answer
      */
     const shortAnswerPick = (questionPick, answer) => {
-        let questionsMap = questions.map((question) => {
+        const questionsMap = questions.map((question) => {
             if (question.id === questionPick.id) {
-                question.pick_answers = answer;
+                return { ...question, pick_answers: answer };
             }
             return question;
         });
         setQuestions(questionsMap);
+        setPleasePick("");
         localStorage.setItem(
             "quizLastTimeChoice" + quiz.id,
-            JSON.stringify(new Date())
+            JSON.stringify(new Date()),
         );
     };
 

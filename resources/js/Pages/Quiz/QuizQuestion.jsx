@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, router, useForm } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import parse from "html-react-parser";
 import Modal from "@/Components/Modal";
 import axios from "axios";
@@ -17,20 +17,9 @@ export default function QuizQuestion({
     quiz,
 }) {
     const [search, setSearch] = useState(pgSearch || "");
-    const [sort, setSort] = useState(pgSort || "");
+    const [sort, setSort] = useState(pgSort || "question");
     const [perPage, setPerPage] = useState(pgPerPage || 10);
-    const [wasSearch, setWasSearch] = useState(false);
     const [modalCreate, setModalCreate] = useState(false);
-    const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
-    const [question, setQuestion] = useState("");
-    const [active, setActive] = useState("");
-    const [type, setType] = useState("");
-    const [category, setCategory] = useState("");
-    const [score, setScore] = useState("");
-    const [id, setId] = useState("");
-    const [idDelete, setIdDelete] = useState("");
-    const [isEdit, setIsEdit] = useState(false);
-    const [formTitle, setFormTitle] = useState("Create New Quiz Question");
     const [masterQuestions, setMasterQuestions] = useState([]);
     const [types, setTypes] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -44,45 +33,26 @@ export default function QuizQuestion({
     const [processing, setProcessing] = useState(false);
     const [questionsData, setQuestionsData] = useState([]);
     const [tabStatusActive, setTabStatusActive] = useState("create");
-    const [tabCreate, setTabCreate] = useState("create");
-    const [tabUpdate, setTabUpdate] = useState("update");
-    const [updatePick, setUpdatePick] = useState({});
+    const [updatePick, setUpdatePick] = useState(null);
 
-    const handleSearch = () => {
-        // handle search
-        if (wasSearch) {
-            router.get(
-                route(route().current(), { quiz_id: quiz.id }),
-                { search: search, sort: sort, perPage: perPage },
-                {
-                    replace: true,
-                    preserveState: true,
-                }
-            );
-        }
-    };
+    const questionRows = questions?.data ?? [];
+    const totalQuestions = questions?.total ?? questionRows.length;
 
-    const handleRefresh = () => {
-        // handle search
+    const refreshPage = () => {
         router.get(
             route(route().current(), { quiz_id: quiz.id }),
-            { search: search, sort: sort, perPage: perPage },
+            { search, sort, perPage },
             {
                 replace: true,
                 preserveState: true,
-            }
+            },
         );
-    };
-
-    const setActiveTab = (tab) => {
-        setTabStatusActive(tab);
-        reset();
     };
 
     const getMasterQuestions = async () => {
         try {
             const response = await axios.get(
-                route("question.datas", { quiz: quiz.id })
+                route("question.datas", { quiz: quiz.id }),
             );
             setMasterQuestions(response.data);
         } catch (error) {
@@ -93,7 +63,7 @@ export default function QuizQuestion({
     const getQuestions = async () => {
         try {
             const response = await axios.get(
-                route("quiz.question.data", { quiz_id: quiz.id })
+                route("quiz.question.data", { quiz_id: quiz.id }),
             );
             setQuestionsData(response.data);
         } catch (error) {
@@ -112,76 +82,130 @@ export default function QuizQuestion({
     };
 
     useEffect(() => {
-        // categories
         dataQuestionCategories();
-        // end categories
         getMasterQuestions();
         dataTypes();
         getQuestions();
     }, [processing]);
 
     useEffect(() => {
-        handleSearch();
+        const timeout = setTimeout(() => {
+            refreshPage();
+        }, 350);
+
+        return () => clearTimeout(timeout);
     }, [search, sort, perPage]);
 
-    const showModalCreate = () => {
-        setModalCreate(true);
-    };
+    const selectedMasterQuestion = useMemo(() => {
+        return masterQuestions.find((question) => question.id === questionPick);
+    }, [masterQuestions, questionPick]);
+
+    const filteredMasterQuestions = useMemo(() => {
+        return masterQuestions.filter((question) => {
+            const matchesType =
+                filter.type === "" ||
+                filter.type === "All" ||
+                question.type_id == filter.type;
+            const matchesCategory =
+                filter.category === "" ||
+                filter.category === "All" ||
+                question.category_id == filter.category;
+            const matchesSearch = question.question
+                ?.toLowerCase()
+                .includes(filter.search.toLowerCase());
+
+            return matchesType && matchesCategory && matchesSearch;
+        });
+    }, [masterQuestions, filter]);
 
     const closeModalCreate = () => {
         setModalCreate(false);
+        resetForm();
     };
 
-    const reset = () => {
+    const resetForm = () => {
         setQuestionPick("");
-        setScore("");
-        setUpdatePick({});
+        setQuestionAnswers([]);
+        setUpdatePick(null);
     };
 
-    const addAnswer = (id, e) => {
-        const answers = questionAnswers;
-        const existingAnswer = answers.find((answer) => answer.id === id);
-        if (existingAnswer) {
-            // If the answer already exists, update its point
-            existingAnswer.point = e.target.value;
-        } else {
-            // If the answer does not exist, add it to the answers array
-            answers.push({ id: id, point: e.target.value });
-        }
-        setQuestionAnswers(answers);
+    const setActiveTab = (tab) => {
+        setTabStatusActive(tab);
+        resetForm();
     };
 
-    const updateAnswer = (id, e) => {
-        const updateData = updatePick.answers;
-        const pointData = updateData.find((data) => data.id == id);
-        if (pointData) {
-            pointData.score = e.target.value;
-        }
-        setUpdatePick((prev) => ({ ...prev, pointData }));
+    const addAnswer = (id, event) => {
+        const point = event.target.value;
+
+        setQuestionAnswers((answers) => {
+            const existingAnswer = answers.find((answer) => answer.id === id);
+
+            if (existingAnswer) {
+                return answers.map((answer) =>
+                    answer.id === id ? { ...answer, point } : answer,
+                );
+            }
+
+            return [...answers, { id, point }];
+        });
+    };
+
+    const updateAnswer = (id, event) => {
+        const score = event.target.value;
+
+        setUpdatePick((current) => ({
+            ...current,
+            answers: current.answers.map((answer) =>
+                answer.id === id ? { ...answer, score } : answer,
+            ),
+        }));
     };
 
     const quizQuestionStore = () => {
-        if (questionPick === "") {
-            alert("Please select a question from the master data.");
+        if (!questionPick) {
+            Swal.fire({
+                icon: "warning",
+                title: "Select a question",
+                text: "Please choose a master question before saving.",
+            });
             return;
         }
-        const data = {
-            question: questionPick,
-            answers: questionAnswers,
-            score: score,
-        };
+
+        const correctAnswers =
+            selectedMasterQuestion?.answers?.filter(
+                (answer) => answer.correct == 1,
+            ) ?? [];
+        const hasPointForCorrectAnswer = correctAnswers.every((answer) =>
+            questionAnswers.some(
+                (item) => item.id === answer.id && item.point !== "",
+            ),
+        );
+
+        if (!hasPointForCorrectAnswer) {
+            Swal.fire({
+                icon: "warning",
+                title: "Point is required",
+                text: "Fill the point for every correct answer.",
+            });
+            return;
+        }
+
         setProcessing(true);
         axios
-            .put(route("quiz.question.store", quiz.id), data)
-            .then((response) => {
+            .put(route("quiz.question.store", quiz.id), {
+                question: questionPick,
+                answers: questionAnswers,
+            })
+            .then(() => {
                 Swal.fire({
                     icon: "success",
                     title: "Success",
-                    text: "Question added successfully..",
+                    text: "Question added successfully.",
                 });
-                handleRefresh();
+                closeModalCreate();
+                refreshPage();
             })
-            .catch((error) => {
+            .catch(() => {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
@@ -190,40 +214,71 @@ export default function QuizQuestion({
             })
             .finally(() => {
                 setProcessing(false);
-                reset();
             });
     };
 
-    const addUpdatePick = (data) => {
-        setUpdatePick(data);
-        setQuestionAnswers({});
+    const openUpdateModal = (question) => {
+        setModalCreate(true);
+        setTabStatusActive("update");
+        setUpdatePick(question);
+        setQuestionPick("");
+        setQuestionAnswers([]);
     };
 
     const updateQuizQuestion = () => {
-        const data = {
-            answers: updatePick.answers,
-        };
+        if (!updatePick) {
+            Swal.fire({
+                icon: "warning",
+                title: "Select a question",
+                text: "Choose an existing quiz question to update.",
+            });
+            return;
+        }
+
         setProcessing(true);
         axios
-            .put(route("quiz.question.update", quiz.id), data)
-            .then((response) => {
+            .put(route("quiz.question.update", quiz.id), {
+                answers: updatePick.answers,
+            })
+            .then(() => {
                 Swal.fire({
                     icon: "success",
                     title: "Success",
-                    text: "Question added successfully..",
+                    text: "Question points updated successfully.",
                 });
-                handleRefresh();
+                closeModalCreate();
+                refreshPage();
             })
-            .catch((error) => {
+            .catch(() => {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
-                    text: "Failed to add question.",
+                    text: "Failed to update question points.",
                 });
             })
             .finally(() => {
                 setProcessing(false);
             });
+    };
+
+    const getTotalScore = (answers = []) => {
+        return answers.reduce(
+            (sum, item) => sum + (parseFloat(item.score) || 0),
+            0,
+        );
+    };
+
+    const totalPoints = questionsData.reduce(
+        (sum, question) => sum + getTotalScore(question.answers),
+        0,
+    );
+
+    const paginationHref = (url) => {
+        if (!url) {
+            return null;
+        }
+
+        return `${url}&search=${search}&sort=${sort}&perPage=${perPage}`;
     };
 
     return (
@@ -237,700 +292,691 @@ export default function QuizQuestion({
         >
             <Head title={quiz.title + " - question"} />
 
-            <div className="py-4 lg:py-12 md:py-12">
-                <div className="max-w-full mx-auto space-y-6">
-                    <div className="bg-white rounded-md shadow">
-                        <div className="text-gray-900 relative overflow-x-auto">
-                            <div className="bg-white py-3 px-6 mt-0 mb-4 text-gray-800 font-bold border-b border-zinc rounded-t-md text-lg">
-                                Data Question
-                            </div>
-                            <div className="flex justify-end mr-8">
+            <div className="py-6 lg:py-10">
+                <div className="mx-auto max-w-full space-y-6">
+                    <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+                        <div className="border-b border-slate-200 bg-white px-6 py-5">
+                            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
+                                        Quiz question manager
+                                    </p>
+                                    <h1 className="mt-2 text-2xl font-semibold text-slate-950">
+                                        {quiz.title}
+                                    </h1>
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        Manage questions and answer points for
+                                        this quiz.
+                                    </p>
+                                </div>
                                 <button
-                                    onClick={() => showModalCreate()}
-                                    className="border-sky-950 py-2 px-3 bg-sky-950 hover:text-white hover:bg-sky-900 hover:border-sky-900 rounded text-white text-sm"
+                                    onClick={() => {
+                                        setModalCreate(true);
+                                        setTabStatusActive("create");
+                                        resetForm();
+                                    }}
+                                    className="inline-flex items-center justify-center rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-100"
                                 >
-                                    <span className="text-sm mr-2">
-                                        <i className="bi bi-plus-square"></i>
-                                    </span>
-                                    New Qeustion
+                                    <i className="bi bi-plus-square mr-2"></i>
+                                    Manage Questions
                                 </button>
                             </div>
-                            <div className="lg:mx-8 md:mx-8 mx-0 my-8 border border-zinc-100 md:rounded-lg lg:rounded-lg">
-                                <div className="grid bg-zinc-100 py-4 px-4 border-b border-zinc-200 items-center">
-                                    <div className="lg:flex lg:space-x-4 justify-start">
-                                        <div className="flex items-center space-x-2 bg-white rounded-md ps-3 md:mb-2 mb-2">
-                                            <span className="text-base text-slate-400">
-                                                <i className="bi bi-book-half"></i>
-                                            </span>
-                                            <select
-                                                value={perPage}
-                                                onChange={(e) => {
-                                                    setPerPage(e.target.value);
-                                                    setWasSearch(true);
-                                                }}
-                                                className="py-2 bg-white border-none focus:outline-none focus:border-white focus:ring-white block rounded-md text-base focus:ring-0 text-gray-500 w-full"
-                                            >
-                                                <option value="10">10</option>
-                                                <option value="20">20</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>
-                                        </div>
-                                        <div className="flex items-center space-x-2 bg-white rounded-md ps-3 md:mb-2 mb-2">
-                                            <span className="text-base text-slate-500">
-                                                <i className="bi bi-sort-down-alt"></i>
-                                            </span>
-                                            <select
-                                                value={sort}
-                                                onChange={(e) => {
-                                                    setSort(e.target.value);
-                                                    setWasSearch(true);
-                                                }}
-                                                className="py-2 bg-white border-none focus:outline-none focus:border-white focus:ring-white block rounded-md text-base focus:ring-0 text-gray-500 w-full"
-                                            >
-                                                <option value="question">
-                                                    Question
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div className="flex items-center space-x-2 bg-white rounded-md ps-3 md:mb-2 mb-2">
-                                            <span className="text-sm text-slate-400">
-                                                <i className="bi bi-search"></i>
-                                            </span>
-                                            <input
-                                                value={search}
-                                                type="text"
-                                                className="bg-white shadow-sm border-none placeholder-slate-400 rounded-md focus:outline-none focus:ring-0 block sm:text-base text-gray-500 w-full"
-                                                placeholder="Search"
-                                                onChange={(e) => {
-                                                    setSearch(e.target.value);
-                                                    setWasSearch(true);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
+                        </div>
+
+                        <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+                            <div className="grid gap-3 lg:grid-cols-[150px_180px_1fr_auto_auto]">
+                                <label className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3">
+                                    <i className="bi bi-book-half text-slate-400"></i>
+                                    <select
+                                        value={perPage}
+                                        onChange={(event) =>
+                                            setPerPage(event.target.value)
+                                        }
+                                        className="w-full border-none bg-white py-2 text-sm text-slate-600 focus:ring-0"
+                                    >
+                                        <option value="10">10 rows</option>
+                                        <option value="20">20 rows</option>
+                                        <option value="50">50 rows</option>
+                                        <option value="100">100 rows</option>
+                                    </select>
+                                </label>
+                                <label className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3">
+                                    <i className="bi bi-sort-down-alt text-slate-400"></i>
+                                    <select
+                                        value={sort}
+                                        onChange={(event) =>
+                                            setSort(event.target.value)
+                                        }
+                                        className="w-full border-none bg-white py-2 text-sm text-slate-600 focus:ring-0"
+                                    >
+                                        <option value="question">
+                                            Sort by question
+                                        </option>
+                                    </select>
+                                </label>
+                                <label className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3">
+                                    <i className="bi bi-search text-slate-400"></i>
+                                    <input
+                                        value={search}
+                                        type="search"
+                                        className="w-full border-none bg-white py-2 text-sm text-slate-600 placeholder:text-slate-400 focus:ring-0"
+                                        placeholder="Search question..."
+                                        onChange={(event) =>
+                                            setSearch(event.target.value)
+                                        }
+                                    />
+                                </label>
+                                <div className="flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-600 ring-1 ring-slate-200">
+                                    {totalQuestions} questions
                                 </div>
-                                <table className="text-sm md:text-base w-full table-auto me-4">
-                                    <thead className="bg-zinc-100 p-2">
-                                        <tr className="p-8">
-                                            <th className="text-left py-4 px-4">
-                                                Question
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Type
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Category
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Active
-                                            </th>
-                                            <th className="text-center py-4 px-4">
-                                                Score / Point
-                                            </th>
-                                            <th className="text-left py-4 px-4">
-                                                Answers
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {questions.data.map(
-                                            (question, index) => {
-                                                return (
-                                                    <tr
-                                                        className="border-t last:border-b"
-                                                        key={index}
-                                                    >
-                                                        <td className="text-left py-3 px-4">
-                                                            {question.question}
-                                                        </td>
-                                                        <td className="text-left py-3 px-4">
-                                                            {
-                                                                question.type
-                                                                    ?.name
-                                                            }
-                                                        </td>
-                                                        <td className="text-left py-3 px-4">
-                                                            {
-                                                                question
-                                                                    .category
-                                                                    ?.name
-                                                            }
-                                                        </td>
-                                                        <td className="text-left py-3 px-4">
-                                                            {question.active ===
-                                                                1 ? (
-                                                                <span className="text-green-600 bg-green-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                    Active
-                                                                </span>
-                                                            ) : (
-                                                                <span className="text-red-600 bg-red-300 px-2 py-1 rounded shadow text-sm font-medium">
-                                                                    Inactive
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                        <td className="text-center py-3 px-4">
-                                                            {question.answers.reduce(
-                                                                (sum, item) =>
-                                                                    sum + (parseFloat(item.score) || 0),
-                                                                0
-                                                            )}
-                                                        </td>
-                                                        <td className="text-left py-3 px-4">
-                                                            <QuizQuestionAnswer
-                                                                answers={
-                                                                    question.answers
-                                                                }
-                                                            />
-                                                        </td>
-                                                        {/* <td className="content-center">
-                                                            <div className="flex flex-wrap space-x-1">
-                                                                <button className="bg-yellow-500 px-2 py-1 text-white text-sm rounded">
-                                                                    <i className="bi bi-pencil-square"></i>
-                                                                </button>
-                                                                <button className="bg-rose-600 px-2 py-1 text-white text-sm rounded">
-                                                                    <i className="bi bi-trash3-fill"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td> */}
-                                                    </tr>
-                                                );
-                                            }
-                                        )}
-                                    </tbody>
-                                </table>
-                                {/* pagination */}
-                                <div className="hidden mt-4 mb-4 w-full md:block md:w-auto">
-                                    <ul className="flex justify-center items-center -space-x-px text-base h-10">
-                                        {questions.links.map((link, index) => {
-                                            return (
-                                                <li
-                                                    key={index}
-                                                    className="first:rounded-l-md border last:rounded-e-md"
-                                                >
-                                                    {link.active === false ? (
-                                                        link.url === null ? (
-                                                            <Link
-                                                                href={null}
-                                                                className="flex items-center justify-center px-2 py-1 text-sm lg:text-base md:px-3 md:py-2"
-                                                                disabled
-                                                            >
-                                                                {parse(
-                                                                    link.label
-                                                                )}
-                                                            </Link>
-                                                        ) : (
-                                                            <Link
-                                                                href={`${link.url}&search=${search}&perPage=${perPage}`}
-                                                                className="flex items-center justify-center px-2 py-1 text-sm lg:text-base md:px-3 md:py-2"
-                                                                disabled
-                                                            >
-                                                                {parse(
-                                                                    link.label
-                                                                )}
-                                                            </Link>
-                                                        )
-                                                    ) : (
-                                                        <Link
-                                                            href={null}
-                                                            className="flex items-center justify-center px-2 py-1 lg:text-base bg-slate-100 text-sm md:px-3 md:py-2"
-                                                        >
-                                                            {`${parse(
-                                                                link.label
-                                                            )}`}
-                                                        </Link>
-                                                    )}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </div>
-                                <div className="md:hidden lg:hidden">
-                                    <div className="grid grid-cols-2 text-sm md:grid-cols-2 lg:grid-cols-2 md:text-base lg:text-base space-x-4 my-4 mx-8">
-                                        <div className="flex justify-start text-zinc-600 ">
-                                            <span className="py-2 px-2 bg-zinc-100 rounded">
-                                                Page {questions.current_page}
-                                                &nbsp; from{" "}
-                                                {questions.last_page}{" "}
-                                            </span>{" "}
-                                        </div>
-                                        <div className="flex justify-start space-x-4">
-                                            <Link
-                                                href={`${questions.prev_page_url}&search=${search}&perPage=${perPage}`}
-                                                className="border py-2 px-4 rounded-md hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                                            >
-                                                Prev
-                                            </Link>
-                                            <Link
-                                                href={`${questions.next_page_url}&search=${search}&perPage=${perPage}`}
-                                                className="border py-2 px-4 rounded-md hover:bg-sky-500 hover:border-sky-500 hover:text-white"
-                                            >
-                                                Next
-                                            </Link>
-                                        </div>
-                                    </div>
+                                <div className="flex items-center rounded-md bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                                    {totalPoints} total points
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <Modal show={modalCreate} vcenter="false">
-                <div className="bg-white rounded h-full max-w-full w-full mx-auto">
-                    <div className="grid h-full grid-cols-2">
-                        <div className="bg-white py-4 px-4 mx-4 my-4 border-2 rounded-lg">
-                            <h2 className="text-lg font-semibold text-gray-900">
-                                List of Question
-                            </h2>
-                            <table className="text-sm md:text-base w-full table-auto me-4 mt-4">
-                                <thead className="bg-zinc-100 p-2 border">
-                                    <tr className="p-8">
-                                        <th className="text-left py-4 px-4">
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[980px] text-left text-sm">
+                                <thead>
+                                    <tr className="bg-white text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                                        <th className="border-b border-slate-200 px-6 py-4">
                                             Question
                                         </th>
-                                        <th className="text-left py-4 px-4">
+                                        <th className="border-b border-slate-200 px-6 py-4">
                                             Type
                                         </th>
-                                        <th className="text-left py-4 px-4">
-                                            Score / Point
+                                        <th className="border-b border-slate-200 px-6 py-4">
+                                            Category
+                                        </th>
+                                        <th className="border-b border-slate-200 px-6 py-4">
+                                            Status
+                                        </th>
+                                        <th className="border-b border-slate-200 px-6 py-4 text-center">
+                                            Point
+                                        </th>
+                                        <th className="border-b border-slate-200 px-6 py-4">
+                                            Answers
+                                        </th>
+                                        <th className="border-b border-slate-200 px-6 py-4 text-right">
+                                            Action
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {questionsData.map((data, index) => {
-                                        return data.id === updatePick.id ? (
+                                    {questionRows.length > 0 ? (
+                                        questionRows.map((question, index) => (
                                             <tr
-                                                onClick={() =>
-                                                    addUpdatePick(data)
-                                                }
-                                                key={index}
-                                                className="border border-dashed bg-slate-200"
+                                                className="transition hover:bg-slate-50"
+                                                key={question.id ?? index}
                                             >
-                                                <td className="py-2 px-4">
-                                                    {data.question}
+                                                <td className="border-b border-slate-100 px-6 py-4 align-top font-medium text-slate-900">
+                                                    {question.question}
                                                 </td>
-                                                <td className="py-2 px-4">
-                                                    {data.type.name}
+                                                <td className="border-b border-slate-100 px-6 py-4 align-top text-slate-600">
+                                                    {question.type?.name ?? "-"}
                                                 </td>
-                                                <td className="py-2 px-4 text-center">
-                                                    {data.answers.reduce(
-                                                        (sum, item) =>
-                                                            sum +
-                                                            parseFloat(
-                                                                item.score
-                                                            ),
-                                                        0
+                                                <td className="border-b border-slate-100 px-6 py-4 align-top text-slate-600">
+                                                    {question.category?.name ??
+                                                        "-"}
+                                                </td>
+                                                <td className="border-b border-slate-100 px-6 py-4 align-top">
+                                                    {question.active === 1 ? (
+                                                        <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                                            Active
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
+                                                            Inactive
+                                                        </span>
                                                     )}
                                                 </td>
-                                            </tr>
-                                        ) : (
-                                            <tr
-                                                onClick={() =>
-                                                    addUpdatePick(data)
-                                                }
-                                                key={index}
-                                                className="border border-dashed"
-                                            >
-                                                <td className="py-2 px-4">
-                                                    {data.question}
-                                                </td>
-                                                <td className="py-2 px-4">
-                                                    {data.type.name}
-                                                </td>
-                                                <td className="py-2 px-4 text-center">
-                                                    {data.answers.reduce(
-                                                        (sum, item) =>
-                                                            sum +
-                                                            parseFloat(
-                                                                item.score
-                                                            ),
-                                                        0
+                                                <td className="border-b border-slate-100 px-6 py-4 text-center align-top font-semibold text-slate-900">
+                                                    {getTotalScore(
+                                                        question.answers,
                                                     )}
                                                 </td>
+                                                <td className="border-b border-slate-100 px-6 py-4 align-top">
+                                                    <QuizQuestionAnswer
+                                                        answers={
+                                                            question.answers
+                                                        }
+                                                    />
+                                                </td>
+                                                <td className="border-b border-slate-100 px-6 py-4 text-right align-top">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            openUpdateModal(
+                                                                question,
+                                                            )
+                                                        }
+                                                        className="inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                                                    >
+                                                        Edit points
+                                                    </button>
+                                                </td>
                                             </tr>
-                                        );
-                                    })}
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan={7}
+                                                className="px-6 py-12 text-center"
+                                            >
+                                                <p className="text-lg font-semibold text-slate-900">
+                                                    No questions found
+                                                </p>
+                                                <p className="mt-2 text-sm text-slate-500">
+                                                    Add a question or adjust the
+                                                    search filter.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
-                        <div className="bg-white py-4 px-4 mx-4 my-4 border-2 rounded-lg">
-                            <div className="flex flex-col items-end m-0 p-0">
-                                <button
-                                    onClick={() => closeModalCreate()}
-                                    className="bg-zinc-700 px-3 py-1 text-white hover:bg-rose-600 rounded-tr"
-                                >
-                                    <i className="bi bi-x-lg"></i>
-                                </button>
+
+                        {questions?.links?.length > 0 && (
+                            <div className="border-t border-slate-200 px-6 py-4">
+                                <div className="hidden md:block">
+                                    <ul className="flex flex-wrap items-center justify-center gap-1 text-sm">
+                                        {questions.links.map((link, index) => (
+                                            <li key={index}>
+                                                <Link
+                                                    href={paginationHref(
+                                                        link.url,
+                                                    )}
+                                                    className={
+                                                        "flex min-h-9 min-w-9 items-center justify-center rounded-md border px-3 py-2 " +
+                                                        (link.active
+                                                            ? "border-slate-900 bg-slate-900 text-white"
+                                                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")
+                                                    }
+                                                >
+                                                    {parse(link.label)}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="flex items-center justify-between gap-3 md:hidden">
+                                    <span className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
+                                        Page {questions.current_page} from{" "}
+                                        {questions.last_page}
+                                    </span>
+                                    <div className="flex gap-2">
+                                        <Link
+                                            href={paginationHref(
+                                                questions.prev_page_url,
+                                            )}
+                                            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+                                        >
+                                            Prev
+                                        </Link>
+                                        <Link
+                                            href={paginationHref(
+                                                questions.next_page_url,
+                                            )}
+                                            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700"
+                                        >
+                                            Next
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="px-4 pb-6 flex -space-x-6">
-                                <div
+                        )}
+                    </section>
+                </div>
+            </div>
+
+            <Modal
+                show={modalCreate}
+                onClose={closeModalCreate}
+                vcenter="items-start"
+                padding="p-4 sm:p-6"
+            >
+                <div className="mx-auto max-w-7xl overflow-hidden rounded-xl bg-white shadow-2xl">
+                    <div className="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
+                                Manage quiz questions
+                            </p>
+                            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+                                Add or update question points
+                            </h2>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={closeModalCreate}
+                            className="inline-flex h-10 w-10 items-center justify-center self-end rounded-md border border-slate-200 text-slate-600 transition hover:bg-rose-50 hover:text-rose-600 lg:self-auto"
+                            aria-label="Close modal"
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+
+                    <div className="grid gap-0 lg:grid-cols-[0.85fr_1.15fr]">
+                        <aside className="border-b border-slate-200 bg-slate-50 p-5 lg:border-b-0 lg:border-r">
+                            <div className="flex items-center justify-between gap-3">
+                                <div>
+                                    <h3 className="font-semibold text-slate-900">
+                                        Existing quiz questions
+                                    </h3>
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        Select one to edit its points.
+                                    </p>
+                                </div>
+                                <div className="flex flex-wrap justify-end gap-2">
+                                    <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-slate-600 ring-1 ring-slate-200">
+                                        {questionsData.length} questions
+                                    </span>
+                                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                                        {totalPoints} points
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 max-h-[560px] space-y-2 overflow-y-auto pr-1">
+                                {questionsData.length > 0 ? (
+                                    questionsData.map((question, index) => (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setActiveTab("update");
+                                                setUpdatePick(question);
+                                            }}
+                                            key={question.id ?? index}
+                                            className={
+                                                "w-full rounded-lg border p-4 text-left transition " +
+                                                (updatePick?.id === question.id
+                                                    ? "border-emerald-300 bg-white shadow-sm"
+                                                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50")
+                                            }
+                                        >
+                                            <p className="font-semibold text-slate-900">
+                                                {question.question}
+                                            </p>
+                                            <div className="mt-3 flex flex-wrap gap-2">
+                                                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                                    {question.type?.name ?? "-"}
+                                                </span>
+                                                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                    {getTotalScore(
+                                                        question.answers,
+                                                    )}{" "}
+                                                    points
+                                                </span>
+                                            </div>
+                                        </button>
+                                    ))
+                                ) : (
+                                    <div className="rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+                                        No quiz questions added yet.
+                                    </div>
+                                )}
+                            </div>
+                        </aside>
+
+                        <div className="p-5 sm:p-6">
+                            <div className="mb-6 inline-flex rounded-lg bg-slate-100 p-1">
+                                <button
+                                    type="button"
                                     onClick={() => setActiveTab("create")}
                                     className={
-                                        tabStatusActive == "create"
-                                            ? `shadow py-2 ps-6 pe-8 rounded-full bg-slate-700 text-white`
-                                            : `shadow py-2 ps-6 pe-8 rounded-full bg-gray-100`
+                                        "rounded-md px-4 py-2 text-sm font-semibold transition " +
+                                        (tabStatusActive === "create"
+                                            ? "bg-white text-slate-950 shadow-sm"
+                                            : "text-slate-600 hover:text-slate-950")
                                     }
                                 >
-                                    Create
-                                </div>
-                                <div
+                                    Add question
+                                </button>
+                                <button
+                                    type="button"
                                     onClick={() => setActiveTab("update")}
                                     className={
-                                        tabStatusActive == "update"
-                                            ? `shadow py-2 ps-6 pe-8 rounded-full bg-slate-700 text-white`
-                                            : `shadow py-2 ps-6 pe-8 rounded-full bg-gray-100`
+                                        "rounded-md px-4 py-2 text-sm font-semibold transition " +
+                                        (tabStatusActive === "update"
+                                            ? "bg-white text-slate-950 shadow-sm"
+                                            : "text-slate-600 hover:text-slate-950")
                                     }
                                 >
-                                    Update
-                                </div>
+                                    Update points
+                                </button>
                             </div>
-                            {tabStatusActive == "create" ? (
-                                <div className="px-6 pb-6">
-                                    <h2 className="text-lg font-semibold text-gray-900">
-                                        {formTitle}
-                                    </h2>
-                                    <div className="grid grid-cols-2 space-x-4">
-                                        <div className="grid mt-4">
-                                            <label className="mb-2">
-                                                Type:
-                                            </label>
+
+                            {tabStatusActive === "create" ? (
+                                <div>
+                                    <div className="grid gap-3 md:grid-cols-3">
+                                        <label>
+                                            <span className="mb-2 block text-sm font-semibold text-slate-700">
+                                                Type
+                                            </span>
                                             <select
                                                 value={filter.type}
-                                                onChange={(e) =>
+                                                onChange={(event) =>
                                                     setFilter({
                                                         ...filter,
-                                                        type: e.target.value,
+                                                        type: event.target
+                                                            .value,
                                                     })
                                                 }
-                                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                                className="w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-100"
                                             >
-                                                <option value="">
-                                                    --- Please Select Type ---
-                                                </option>
+                                                <option value="">Select type</option>
                                                 <option value="All">All</option>
                                                 {types.map((type, index) => (
                                                     <option
-                                                        key={index}
+                                                        key={type.id ?? index}
                                                         value={type.id}
                                                     >
                                                         {type.name}
                                                     </option>
                                                 ))}
                                             </select>
-                                        </div>
-                                        <div className="grid mt-4">
-                                            <label className="mb-2">
-                                                Category:
-                                            </label>
+                                        </label>
+                                        <label>
+                                            <span className="mb-2 block text-sm font-semibold text-slate-700">
+                                                Category
+                                            </span>
                                             <select
                                                 value={filter.category}
-                                                onChange={(e) =>
+                                                onChange={(event) =>
                                                     setFilter({
                                                         ...filter,
                                                         category:
-                                                            e.target.value,
+                                                            event.target.value,
                                                     })
                                                 }
-                                                className="rounded-lg focus:ring-sky-500 focus:border-sky-500"
+                                                className="w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-100"
                                             >
                                                 <option value="">
-                                                    --- Please Select Category
-                                                    ---
+                                                    Select category
                                                 </option>
                                                 <option value="All">All</option>
                                                 {categories.map(
                                                     (category, index) => (
                                                         <option
-                                                            key={index}
+                                                            key={
+                                                                category.id ??
+                                                                index
+                                                            }
                                                             value={category.id}
                                                         >
                                                             {category.name}
                                                         </option>
-                                                    )
+                                                    ),
                                                 )}
                                             </select>
-                                        </div>
-                                    </div>
-                                    <div className="grid mt-2 max-h-screen overflow-y-auto">
-                                        <div className="grid mt-4">
-                                            <label className="mb-2">
-                                                Search Question:
-                                            </label>
+                                        </label>
+                                        <label>
+                                            <span className="mb-2 block text-sm font-semibold text-slate-700">
+                                                Search
+                                            </span>
                                             <input
-                                                onChange={(e) =>
+                                                onChange={(event) =>
                                                     setFilter({
                                                         ...filter,
-                                                        search: e.target.value,
+                                                        search: event.target
+                                                            .value,
                                                     })
                                                 }
-                                                type="text"
+                                                type="search"
                                                 value={filter.search}
-                                                className="rounded-full  focus:ring-sky-500 focus:border-sky-500"
+                                                placeholder="Search question..."
+                                                className="w-full rounded-lg border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-100"
                                             />
-                                        </div>
-                                        <div className="grid mt-4">
-                                            <table className="w-full">
-                                                <thead>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th className="text-left py-2 px-4">
-                                                            Question
-                                                        </th>
-                                                        <th className="text-left py-2 px-4">
-                                                            Category
-                                                        </th>
-                                                        <th className="text-left py-2 px-4">
-                                                            Type
-                                                        </th>
-                                                        {/* <th className="text-left py-2 px-4">
-                                                        Answers
-                                                    </th> */}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {masterQuestions
-                                                        .filter(
-                                                            (q) =>
-                                                                (filter.type ===
-                                                                    "" &&
-                                                                    (filter.category ===
-                                                                        "" ||
-                                                                        filter.category ===
-                                                                        "All" ||
-                                                                        q.category_id ==
-                                                                        filter.category) &&
-                                                                    q.question
-                                                                        .toLowerCase()
-                                                                        .includes(
-                                                                            filter.search.toLowerCase()
-                                                                        )) ||
-                                                                (filter.type ===
-                                                                    "All" &&
-                                                                    (filter.category ===
-                                                                        "" ||
-                                                                        filter.category ===
-                                                                        "All" ||
-                                                                        q.category_id ==
-                                                                        filter.category) &&
-                                                                    q.question
-                                                                        .toLowerCase()
-                                                                        .includes(
-                                                                            filter.search.toLowerCase()
-                                                                        )) ||
-                                                                (q.type_id ==
-                                                                    filter.type &&
-                                                                    (filter.category ===
-                                                                        "" ||
-                                                                        filter.category ===
-                                                                        "All" ||
-                                                                        q.category_id ==
-                                                                        filter.category) &&
-                                                                    q.question
-                                                                        .toLowerCase()
-                                                                        .includes(
-                                                                            filter.search.toLowerCase()
-                                                                        ))
-                                                        )
-                                                        .map(
-                                                            (
-                                                                question,
-                                                                index
-                                                            ) => (
-                                                                <React.Fragment
-                                                                    key={index}
-                                                                >
-                                                                    <tr className="border-t last:border-b">
-                                                                        <td className="text-left py-2 px-4">
-                                                                            <input
-                                                                                onChange={() => {
-                                                                                    setQuestionPick(
-                                                                                        question.id
-                                                                                    );
-                                                                                }}
-                                                                                checked={
-                                                                                    questionPick ===
-                                                                                    question.id
-                                                                                }
-                                                                                type="radio"
-                                                                                name="pick_question"
-                                                                            />
-                                                                        </td>
-                                                                        <td className="text-left py-2 px-4">
-                                                                            {
-                                                                                question.question
-                                                                            }
-                                                                        </td>
-                                                                        <td className="text-left py-2 px-4">
-                                                                            {
-                                                                                question
-                                                                                    .category
-                                                                                    ?.name
-                                                                            }
-                                                                        </td>
-                                                                        <td className="text-left py-2 px-4">
-                                                                            {
-                                                                                question
-                                                                                    .type
-                                                                                    ?.name
-                                                                            }
-                                                                        </td>
-                                                                        {/* <td className="text-left py-2 px-4">
-                                                                    <QuizQuestionAnswer
-                                                                        answers={
-                                                                            question.answers
-                                                                        }
-                                                                    />
-                                                                </td> */}
-                                                                    </tr>
-                                                                    {questionPick ===
-                                                                        question.id && (
-                                                                            <tr>
-                                                                                <td
-                                                                                    colSpan={
-                                                                                        4
-                                                                                    }
-                                                                                    className="text-left py-2 ps-14"
-                                                                                >
-                                                                                    {question
-                                                                                        .answers
-                                                                                        .length >
-                                                                                        0 ? (
-                                                                                        <div>
-                                                                                            <ul className="list-disc pl-6">
-                                                                                                {question.answers.map(
-                                                                                                    (
-                                                                                                        answer,
-                                                                                                        answerIndex
-                                                                                                    ) => (
-                                                                                                        <li
-                                                                                                            key={
-                                                                                                                answerIndex
-                                                                                                            }
-                                                                                                            className="bg-white rounded px-2 py-1 my-1"
-                                                                                                        >
-                                                                                                            <span>
-                                                                                                                {
-                                                                                                                    answer.content
-                                                                                                                }
-                                                                                                            </span>{" "}
-                                                                                                            {answer.correct ==
-                                                                                                                1 ? (
-                                                                                                                <span>
-                                                                                                                    <i className="bi bi-check2-circle text-teal-600"></i>
-                                                                                                                    <input
-                                                                                                                        onChange={(
-                                                                                                                            e
-                                                                                                                        ) =>
-                                                                                                                            addAnswer(
-                                                                                                                                answer.id,
-                                                                                                                                e
-                                                                                                                            )
-                                                                                                                        }
-                                                                                                                        type="text"
-                                                                                                                        className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
-                                                                                                                        placeholder="Points"
-                                                                                                                    />
-                                                                                                                </span>
-                                                                                                            ) : (
-                                                                                                                <>
+                                        </label>
+                                    </div>
 
-                                                                                                                </>
-                                                                                                            )}
-                                                                                                        </li>
-                                                                                                    )
-                                                                                                )}
-                                                                                            </ul>
-                                                                                            <div className="grid justify-end mt-4">
-                                                                                                <button
-                                                                                                    onClick={() => {
-                                                                                                        quizQuestionStore();
-                                                                                                    }}
-                                                                                                    type="button"
-                                                                                                    className="border border-sky-500 py-2 px-4 rounded-md text-sm bg-sky-500 text-white hover:bg-sky-600"
-                                                                                                >
-                                                                                                    Save
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    ) : (
-                                                                                        <span className="text-gray-500">
-                                                                                            No
-                                                                                            answers
-                                                                                            available
-                                                                                        </span>
-                                                                                    )}
-                                                                                </td>
-                                                                            </tr>
+                                    <div className="mt-5 grid gap-5 xl:grid-cols-[1fr_0.85fr]">
+                                        <div className="max-h-[520px] overflow-y-auto rounded-lg border border-slate-200">
+                                            {filteredMasterQuestions.length >
+                                            0 ? (
+                                                <div className="divide-y divide-slate-100">
+                                                    {filteredMasterQuestions.map(
+                                                        (question, index) => (
+                                                            <label
+                                                                key={
+                                                                    question.id ??
+                                                                    index
+                                                                }
+                                                                className={
+                                                                    "flex cursor-pointer gap-3 p-4 transition hover:bg-slate-50 " +
+                                                                    (questionPick ===
+                                                                    question.id
+                                                                        ? "bg-emerald-50"
+                                                                        : "")
+                                                                }
+                                                            >
+                                                                <input
+                                                                    onChange={() => {
+                                                                        setQuestionPick(
+                                                                            question.id,
+                                                                        );
+                                                                        setQuestionAnswers(
+                                                                            [],
+                                                                        );
+                                                                    }}
+                                                                    checked={
+                                                                        questionPick ===
+                                                                        question.id
+                                                                    }
+                                                                    type="radio"
+                                                                    name="pick_question"
+                                                                    className="mt-1 text-emerald-600 focus:ring-emerald-500"
+                                                                />
+                                                                <span>
+                                                                    <span className="block font-semibold text-slate-900">
+                                                                        {
+                                                                            question.question
+                                                                        }
+                                                                    </span>
+                                                                    <span className="mt-2 flex flex-wrap gap-2">
+                                                                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                                                            {question
+                                                                                .category
+                                                                                ?.name ??
+                                                                                "-"}
+                                                                        </span>
+                                                                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                                                            {question
+                                                                                .type
+                                                                                ?.name ??
+                                                                                "-"}
+                                                                        </span>
+                                                                    </span>
+                                                                </span>
+                                                            </label>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="p-8 text-center text-sm text-slate-500">
+                                                    No master questions match
+                                                    the current filters.
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                                            <h3 className="font-semibold text-slate-900">
+                                                Answer points
+                                            </h3>
+                                            <p className="mt-1 text-sm text-slate-500">
+                                                Fill points for correct answers
+                                                before saving.
+                                            </p>
+
+                                            {selectedMasterQuestion ? (
+                                                selectedMasterQuestion.answers
+                                                    ?.length > 0 ? (
+                                                    <div className="mt-4 space-y-3">
+                                                        {selectedMasterQuestion.answers.map(
+                                                            (
+                                                                answer,
+                                                                index,
+                                                            ) => (
+                                                                <div
+                                                                    key={
+                                                                        answer.id ??
+                                                                        index
+                                                                    }
+                                                                    className="rounded-lg border border-slate-200 bg-white p-4"
+                                                                >
+                                                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                                        <p className="text-sm text-slate-700">
+                                                                            {
+                                                                                answer.content
+                                                                            }
+                                                                        </p>
+                                                                        {answer.correct ==
+                                                                        1 ? (
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                                                    Correct
+                                                                                </span>
+                                                                                <input
+                                                                                    onChange={(
+                                                                                        event,
+                                                                                    ) =>
+                                                                                        addAnswer(
+                                                                                            answer.id,
+                                                                                            event,
+                                                                                        )
+                                                                                    }
+                                                                                    type="number"
+                                                                                    min="0"
+                                                                                    className="w-24 rounded-md border-slate-200 px-2 py-1 text-sm focus:border-emerald-500 focus:ring-emerald-100"
+                                                                                    placeholder="Point"
+                                                                                />
+                                                                            </div>
+                                                                        ) : (
+                                                                            <span className="w-fit rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">
+                                                                                Wrong
+                                                                            </span>
                                                                         )}
-                                                                </React.Fragment>
-                                                            )
+                                                                    </div>
+                                                                </div>
+                                                            ),
                                                         )}
-                                                </tbody>
-                                            </table>
+                                                        <div className="flex justify-end pt-2">
+                                                            <button
+                                                                onClick={
+                                                                    quizQuestionStore
+                                                                }
+                                                                type="button"
+                                                                disabled={
+                                                                    processing
+                                                                }
+                                                                className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                                            >
+                                                                {processing
+                                                                    ? "Saving..."
+                                                                    : "Save question"}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+                                                        This question has no
+                                                        answers.
+                                                    </div>
+                                                )
+                                            ) : (
+                                                <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500">
+                                                    Select a master question to
+                                                    set answer points.
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="px-6 pb-6">
-                                    <h2 className="text-lg font-semibold text-gray-900">
-                                        Update Quiz Question
-                                    </h2>
-
-                                    <div className="grid space-x-4 border rounded-md mt-4 py-4 px-4">
-                                        <div>{updatePick.question}</div>
-                                        <div className="mt-2">
-                                            <ul className="list-disc">
+                                <div>
+                                    {updatePick ? (
+                                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-5">
+                                            <h3 className="font-semibold text-slate-900">
+                                                {updatePick.question}
+                                            </h3>
+                                            <div className="mt-4 space-y-3">
                                                 {updatePick.answers?.map(
-                                                    (answer, index) => {
-                                                        return (
-                                                            <li key={index}>
-                                                                {answer.content}
-                                                                <span>
+                                                    (answer, index) => (
+                                                        <div
+                                                            key={
+                                                                answer.id ??
+                                                                index
+                                                            }
+                                                            className="rounded-lg border border-slate-200 bg-white p-4"
+                                                        >
+                                                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                                                <p className="text-sm text-slate-700">
                                                                     {
                                                                         answer.content
                                                                     }
-                                                                </span>{" "}
+                                                                </p>
                                                                 {answer.correct ==
-                                                                    1 ? (
-                                                                    <span>
-                                                                        <i className="bi bi-check2-circle text-teal-600"></i>
+                                                                1 ? (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                                            Correct
+                                                                        </span>
                                                                         <input
                                                                             onChange={(
-                                                                                e
+                                                                                event,
                                                                             ) =>
                                                                                 updateAnswer(
                                                                                     answer.id,
-                                                                                    e
+                                                                                    event,
                                                                                 )
                                                                             }
-                                                                            type="text"
-                                                                            className="border border-gray-300 rounded-md px-2 py-1 ml-2 w-24"
-                                                                            placeholder="Points"
+                                                                            type="number"
+                                                                            min="0"
+                                                                            className="w-24 rounded-md border-slate-200 px-2 py-1 text-sm focus:border-emerald-500 focus:ring-emerald-100"
+                                                                            placeholder="Point"
                                                                             value={
-                                                                                answer.score
+                                                                                answer.score ??
+                                                                                ""
                                                                             }
                                                                         />
-                                                                    </span>
+                                                                    </div>
                                                                 ) : (
-                                                                    <></>
+                                                                    <span className="w-fit rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">
+                                                                        Wrong
+                                                                    </span>
                                                                 )}
-                                                            </li>
-                                                        );
-                                                    }
+                                                            </div>
+                                                        </div>
+                                                    ),
                                                 )}
-                                            </ul>
-                                            <button
-                                                onClick={() =>
-                                                    updateQuizQuestion()
-                                                }
-                                                type="button"
-                                                className="py-2 px-4 rounded bg-slate-800 text-white mt-6"
-                                            >
-                                                Update
-                                            </button>
+                                            </div>
+                                            <div className="mt-5 flex justify-end">
+                                                <button
+                                                    onClick={
+                                                        updateQuizQuestion
+                                                    }
+                                                    type="button"
+                                                    disabled={processing}
+                                                    className="inline-flex items-center justify-center rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                                >
+                                                    {processing
+                                                        ? "Updating..."
+                                                        : "Update points"}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                                            <p className="font-semibold text-slate-900">
+                                                Choose a question to update
+                                            </p>
+                                            <p className="mt-2 text-sm text-slate-500">
+                                                Select an existing quiz question
+                                                from the left panel first.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

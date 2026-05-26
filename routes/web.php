@@ -31,6 +31,7 @@ Route::get('/', [ParticipantQuizController::class, 'home'])->name('home');
 
 // get category quizes
 Route::get('/quiz/category', [ParticipantQuizController::class, 'byCategoryQuiz'])->name('participant.by_category_quiz');
+Route::get('/quiz/category/{id}', [ParticipantQuizController::class, 'showCategoryQuiz'])->name('participant.category_quiz');
 // get new quiz
 Route::get('/quiz/new', [ParticipantQuizController::class, 'newQuiz'])->name('participant.new_quiz');
 

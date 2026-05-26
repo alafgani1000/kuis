@@ -20,10 +20,7 @@ export default function Modal({
             <Dialog
                 as="div"
                 id="modal"
-                className={
-                    `fixed inset-0 flex overflow-y-autosm:px-0 z-50 transform transition-all py-8 ` +
-                    top
-                }
+                className="fixed inset-0 z-50 flex overflow-y-auto transform transition-all sm:px-0"
                 onClose={close}
             >
                 <Transition.Child
