@@ -1,8 +1,25 @@
 import { Head, Link } from "@inertiajs/react";
 import ParticipantLayout from "@/Layouts/ParticipanLayout";
 import parse from "html-react-parser";
+import { useState } from "react";
 
 export default function CourseLearn({ auth, course }) {
+    const [expandedLessons, setExpandedLessons] = useState({});
+    const [expandedSublessons, setExpandedSublessons] = useState({});
+
+    const toggleLesson = (lessonId) => {
+        setExpandedLessons((prev) => ({
+            ...prev,
+            [lessonId]: !prev[lessonId],
+        }));
+    };
+
+    const toggleSublesson = (sublessonId) => {
+        setExpandedSublessons((prev) => ({
+            ...prev,
+            [sublessonId]: !prev[sublessonId],
+        }));
+    };
     return (
         <ParticipantLayout auth={auth}>
             <Head title={`Learn ${course.title}`} />
@@ -31,29 +48,67 @@ export default function CourseLearn({ auth, course }) {
                                     key={lesson.id}
                                     className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
                                 >
-                                    <h2 className="text-xl font-semibold text-slate-900">
-                                        {lesson.title}
-                                    </h2>
-                                    <p className="mt-2 text-sm leading-6 text-slate-500">
-                                        {lesson.description}
-                                    </p>
-                                    <div className="mt-5 space-y-3">
-                                        {lesson.sublessons.map((sublesson) => (
-                                            <div
-                                                key={sublesson.id}
-                                                className="rounded-2xl bg-slate-50 p-4"
+                                    <div 
+                                        className="flex cursor-pointer items-start justify-between gap-4" 
+                                        onClick={() => toggleLesson(lesson.id)}
+                                    >
+                                        <div>
+                                            <h2 className="text-xl font-semibold text-slate-900">
+                                                {lesson.title}
+                                            </h2>
+                                            <p className="mt-2 text-sm leading-6 text-slate-500">
+                                                {lesson.description}
+                                            </p>
+                                        </div>
+                                        <button className="mt-1 flex-shrink-0 text-slate-400 hover:text-slate-600">
+                                            <svg 
+                                                className={`h-6 w-6 transform transition-transform duration-200 ${expandedLessons[lesson.id] ? 'rotate-180' : ''}`} 
+                                                fill="none" 
+                                                stroke="currentColor" 
+                                                viewBox="0 0 24 24"
                                             >
-                                                <h3 className="font-semibold text-slate-900">
-                                                    {sublesson.title}
-                                                </h3>
-                                                <div className="mt-2 text-sm leading-6 text-slate-600 [&_a]:text-emerald-700 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-300 [&_blockquote]:pl-4 [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:text-xl [&_h3]:font-semibold [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-lg [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6">
-                                                    {parse(
-                                                        sublesson.content ?? "",
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    {expandedLessons[lesson.id] && (
+                                        <div className="mt-5 space-y-3">
+                                            {lesson.sublessons.map((sublesson) => (
+                                                <div
+                                                    key={sublesson.id}
+                                                    className="rounded-2xl bg-slate-50 p-4"
+                                                >
+                                                    <div 
+                                                        className="flex cursor-pointer items-center justify-between"
+                                                        onClick={() => toggleSublesson(sublesson.id)}
+                                                    >
+                                                        <h3 className="font-semibold text-slate-900">
+                                                            {sublesson.title}
+                                                        </h3>
+                                                        <button className="flex-shrink-0 text-slate-400 hover:text-slate-600">
+                                                            <svg 
+                                                                className={`h-5 w-5 transform transition-transform duration-200 ${expandedSublessons[sublesson.id] ? 'rotate-180' : ''}`} 
+                                                                fill="none" 
+                                                                stroke="currentColor" 
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {expandedSublessons[sublesson.id] && (
+                                                        <div className="mt-4 border-t border-slate-200 pt-4 text-sm leading-6 text-slate-600 [&_a]:text-emerald-700 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-emerald-300 [&_blockquote]:pl-4 [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:text-xl [&_h3]:font-semibold [&_img]:my-4 [&_img]:max-w-full [&_img]:rounded-lg [&_ol]:list-decimal [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:pl-6">
+                                                            {parse(
+                                                                sublesson.content ?? "",
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </section>

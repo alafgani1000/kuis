@@ -145,6 +145,7 @@ export default function CourseBuilder({ auth, course, availableQuizzes = [] }) {
         required: true,
     });
     const [editingSublesson, setEditingSublesson] = useState(null);
+    const [activeTab, setActiveTab] = useState("lessons");
 
     const refresh = () => {
         router.reload({ preserveScroll: true });
@@ -280,7 +281,31 @@ export default function CourseBuilder({ auth, course, availableQuizzes = [] }) {
                     </div>
                 </div>
 
-                <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                <div className="mb-6 flex gap-4 border-b border-slate-200">
+                    <button
+                        onClick={() => setActiveTab("lessons")}
+                        className={`border-b-2 px-4 py-2 text-sm font-semibold ${
+                            activeTab === "lessons"
+                                ? "border-emerald-600 text-emerald-700"
+                                : "border-transparent text-slate-500 hover:text-slate-700"
+                        }`}
+                    >
+                        Lessons
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("quizzes")}
+                        className={`border-b-2 px-4 py-2 text-sm font-semibold ${
+                            activeTab === "quizzes"
+                                ? "border-emerald-600 text-emerald-700"
+                                : "border-transparent text-slate-500 hover:text-slate-700"
+                        }`}
+                    >
+                        Course Quizzes
+                    </button>
+                </div>
+
+                <div>
+                    {activeTab === "lessons" && (
                     <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                         <h2 className="text-xl font-semibold text-slate-950">
                             Lessons
@@ -473,7 +498,9 @@ export default function CourseBuilder({ auth, course, availableQuizzes = [] }) {
                             )}
                         </div>
                     </section>
+                    )}
 
+                    {activeTab === "quizzes" && (
                     <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
                         <h2 className="text-xl font-semibold text-slate-950">
                             Course quizzes
@@ -584,6 +611,7 @@ export default function CourseBuilder({ auth, course, availableQuizzes = [] }) {
                             )}
                         </div>
                     </section>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>
