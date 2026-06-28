@@ -13,7 +13,14 @@ class Course extends Model
         'title',
         'description',
         'teacher_id',
+        'category_id',
+        'rating',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 
     public function teacher()
     {

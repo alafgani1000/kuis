@@ -4,13 +4,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Modal from "@/Components/Modal";
 import axios from "axios";
 
-export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
+export default function Course({ auth, courses, categories, pgSearch, pgSort, pgPerPage }) {
     const [search, setSearch] = useState(pgSearch || "");
     const [sort, setSort] = useState(pgSort || "id");
     const [perPage, setPerPage] = useState(pgPerPage || 10);
     const [showForm, setShowForm] = useState(false);
     const [editingCourse, setEditingCourse] = useState(null);
-    const [form, setForm] = useState({ title: "", description: "" });
+    const [form, setForm] = useState({ title: "", description: "", category_id: "", rating: 0 });
     const [processing, setProcessing] = useState(false);
 
     const refresh = () => {
@@ -28,7 +28,7 @@ export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
 
     const openCreate = () => {
         setEditingCourse(null);
-        setForm({ title: "", description: "" });
+        setForm({ title: "", description: "", category_id: "", rating: 0 });
         setShowForm(true);
     };
 
@@ -37,6 +37,8 @@ export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
         setForm({
             title: course.title,
             description: course.description,
+            category_id: course.category_id || "",
+            rating: course.rating || 0,
         });
         setShowForm(true);
     };
@@ -44,7 +46,7 @@ export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
     const closeForm = () => {
         setShowForm(false);
         setEditingCourse(null);
-        setForm({ title: "", description: "" });
+        setForm({ title: "", description: "", category_id: "", rating: 0 });
     };
 
     const saveCourse = (event) => {
@@ -147,6 +149,12 @@ export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
                                     <th className="border-b border-slate-200 px-6 py-4">
                                         Teacher
                                     </th>
+                                    <th className="border-b border-slate-200 px-6 py-4">
+                                        Category
+                                    </th>
+                                    <th className="border-b border-slate-200 px-6 py-4 text-center">
+                                        Rating
+                                    </th>
                                     <th className="border-b border-slate-200 px-6 py-4 text-center">
                                         Lessons
                                     </th>
@@ -177,6 +185,19 @@ export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
                                         </td>
                                         <td className="border-b border-slate-100 px-6 py-4 text-slate-600">
                                             {course.teacher?.name ?? "-"}
+                                        </td>
+                                        <td className="border-b border-slate-100 px-6 py-4 text-slate-600">
+                                            {course.category?.name ?? "-"}
+                                        </td>
+                                        <td className="border-b border-slate-100 px-6 py-4 text-center font-semibold text-amber-500">
+                                            {course.rating > 0 ? (
+                                                <div className="flex items-center justify-center gap-1">
+                                                    <i className="bi bi-star-fill text-xs"></i>
+                                                    {course.rating}
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400 font-normal">No rating</span>
+                                            )}
                                         </td>
                                         <td className="border-b border-slate-100 px-6 py-4 text-center font-semibold">
                                             {course.lessons_count}
@@ -272,6 +293,49 @@ export default function Course({ auth, courses, pgSearch, pgSort, pgPerPage }) {
                                 required
                             />
                         </label>
+                        <div className="grid grid-cols-2 gap-4">
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-semibold text-slate-700">
+                                    Category
+                                </span>
+                                <select
+                                    value={form.category_id}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            category_id: event.target.value,
+                                        })
+                                    }
+                                    className="w-full rounded-lg border-slate-200 text-sm"
+                                >
+                                    <option value="">Select Category</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-semibold text-slate-700">
+                                    Rating (0 - 5)
+                                </span>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="5"
+                                    step="0.1"
+                                    value={form.rating}
+                                    onChange={(event) =>
+                                        setForm({
+                                            ...form,
+                                            rating: event.target.value,
+                                        })
+                                    }
+                                    className="w-full rounded-lg border-slate-200 text-sm"
+                                />
+                            </label>
+                        </div>
                         <div className="flex justify-end">
                             <button
                                 disabled={processing}

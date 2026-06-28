@@ -21,10 +21,18 @@ export default function CourseDetail({ auth, course, isEnrolled = false }) {
                                 >
                                     Back to courses
                                 </Link>
-                                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">
-                                    Course detail
-                                </p>
-                                <h1 className="mt-3 text-4xl font-semibold text-slate-950 sm:text-5xl">
+                                <div className="mt-6 flex items-center gap-3">
+                                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">
+                                        {course.category?.name ?? "Course detail"}
+                                    </p>
+                                    {course.rating > 0 && (
+                                        <div className="flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+                                            <i className="bi bi-star-fill"></i>
+                                            {course.rating}
+                                        </div>
+                                    )}
+                                </div>
+                                <h1 className="mt-4 text-4xl font-semibold text-slate-950 sm:text-5xl">
                                     {course.title}
                                 </h1>
                                 <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">

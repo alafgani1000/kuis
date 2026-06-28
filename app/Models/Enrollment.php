@@ -13,6 +13,7 @@ class Enrollment extends Model
         'user_id',
         'course_id',
         'enroll_at',
+        'rating',
     ];
 
     public function user()

@@ -1,7 +1,19 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import ParticipantLayout from "@/Layouts/ParticipanLayout";
+import { useState } from "react";
 
-export default function CourseCatalog({ auth, courses = [] }) {
+export default function CourseCatalog({ auth, courses = [], categories = [], filters = {} }) {
+    const [search, setSearch] = useState(filters.search || "");
+    const [categoryId, setCategoryId] = useState(filters.category_id || "");
+
+    const handleFilter = (e) => {
+        e.preventDefault();
+        router.get(
+            route("participant.courses"),
+            { search, category_id: categoryId },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
     return (
         <ParticipantLayout auth={auth}>
             <Head title="Courses" />
@@ -20,6 +32,34 @@ export default function CourseCatalog({ auth, courses = [] }) {
                             attached quizzes when you are ready.
                         </p>
                     </section>
+
+                    <form onSubmit={handleFilter} className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <input
+                            type="text"
+                            placeholder="Search courses..."
+                            className="flex-1 rounded-full border-slate-200 px-6 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                        <select
+                            className="rounded-full border-slate-200 px-6 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500 sm:w-64"
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                        >
+                            <option value="">All Categories</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="submit"
+                            className="rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                        >
+                            Search
+                        </button>
+                    </form>
 
                     <div className="mb-5 flex items-end justify-between gap-3">
                         <div>
@@ -48,14 +88,22 @@ export default function CourseCatalog({ auth, courses = [] }) {
                                 >
                                     <div className="flex items-start justify-between gap-4">
                                         <div>
-                                            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
-                                                Course
-                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
+                                                    {course.category?.name ?? "Course"}
+                                                </p>
+                                                {course.rating > 0 && (
+                                                    <div className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                                                        <i className="bi bi-star-fill"></i>
+                                                        {course.rating}
+                                                    </div>
+                                                )}
+                                            </div>
                                             <h3 className="mt-2 text-xl font-semibold text-slate-900">
                                                 {course.title}
                                             </h3>
                                         </div>
-                                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 whitespace-nowrap">
                                             {course.lessons_count} lessons
                                         </span>
                                     </div>

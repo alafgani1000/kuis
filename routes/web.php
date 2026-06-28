@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/quiz/{id}/score', [ParticipantQuizController::class, 'showScore'])->name('participant.show_score');
         Route::get('/dashboard', [ParticipantQuizController::class, 'participantDashboard'])->name('participant.dashboard');
         Route::post('/course/{id}/enroll', [ParticipantCourseController::class, 'enroll'])->name('participant.course.enroll');
+        Route::post('/course/{id}/rate', [ParticipantCourseController::class, 'rateCourse'])->name('participant.course.rate');
         Route::get('/my-courses', [ParticipantCourseController::class, 'myCourses'])->name('participant.my_courses');
         Route::get('/course/{id}/learn', [ParticipantCourseController::class, 'learn'])->name('participant.course.learn');
         Route::get('/course/{course}/quiz/{quiz}/start', [ParticipantCourseController::class, 'takeCourseQuiz'])->name('participant.course.quiz.start');

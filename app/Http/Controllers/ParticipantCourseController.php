@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
 use Carbon\Carbon;
@@ -11,20 +12,40 @@ use Inertia\Response;
 
 class ParticipantCourseController extends Controller
 {
-    public function index(): Response
+    public function index(\Illuminate\Http\Request $request): Response
     {
-        $courses = Course::with('teacher')
+        $search = $request->search ?? '';
+        $categoryId = $request->category_id ?? '';
+
+        $courses = Course::with('teacher', 'category')
             ->withCount(['lessons', 'quizzes', 'enrollments'])
+            ->when($search, function ($query, $search) {
+                return $query->where('title', 'like', '%' . $search . '%')
+                             ->orWhere('description', 'like', '%' . $search . '%');
+            })
+            ->when($categoryId, function ($query, $categoryId) {
+                return $query->where('category_id', $categoryId);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return Inertia::render('CourseCatalog', compact('courses'));
+        $categories = Category::orderBy('name')->get();
+
+        return Inertia::render('CourseCatalog', [
+            'courses' => $courses,
+            'categories' => $categories,
+            'filters' => [
+                'search' => $search,
+                'category_id' => $categoryId,
+            ]
+        ]);
     }
 
     public function show($id): Response
     {
         $course = Course::with([
             'teacher',
+            'category',
             'lessons.sublessons',
             'quizzes' => function ($query) {
                 $query->with('category')->withCount('questions');
@@ -57,6 +78,7 @@ class ParticipantCourseController extends Controller
     {
         $enrollments = Enrollment::with([
             'course.teacher',
+            'course.category',
             'course.lessons',
             'course.quizzes',
         ])->where('user_id', Auth::id())
@@ -70,6 +92,7 @@ class ParticipantCourseController extends Controller
     {
         $course = Course::with([
             'teacher',
+            'category',
             'lessons.sublessons',
             'quizzes' => function ($query) {
                 $query->with('category')->withCount('questions');
@@ -109,5 +132,31 @@ class ParticipantCourseController extends Controller
             'id' => $quizId,
             'course_id' => $course->id,
         ]);
+    }
+    public function rateCourse(\Illuminate\Http\Request $request, $id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $course = Course::findOrFail($id);
+
+        $enrollment = Enrollment::where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->firstOrFail();
+
+        $enrollment->update([
+            'rating' => $request->rating,
+        ]);
+
+        $averageRating = Enrollment::where('course_id', $course->id)
+            ->whereNotNull('rating')
+            ->avg('rating');
+
+        $course->update([
+            'rating' => $averageRating,
+        ]);
+
+        return redirect()->back();
     }
 }

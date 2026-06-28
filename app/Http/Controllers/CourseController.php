@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Quiz;
@@ -20,7 +21,7 @@ class CourseController extends Controller
         $perPage = $request->perPage ?? 10;
         $sort = $request->sort ?? 'id';
 
-        $courses = Course::with('teacher')
+        $courses = Course::with('teacher', 'category')
             ->withCount(['lessons', 'quizzes', 'enrollments'])
             ->where(function (Builder $query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%');
@@ -28,8 +29,11 @@ class CourseController extends Controller
             ->orderBy($sort)
             ->paginate($perPage);
 
+        $categories = Category::orderBy('name')->get();
+
         return Inertia::render('Course/Course', [
             'courses' => $courses,
+            'categories' => $categories,
             'pgSearch' => $search,
             'pgPerPage' => $perPage,
             'pgSort' => $sort,
@@ -41,11 +45,15 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'category_id' => 'nullable|exists:categories,id',
+            'rating' => 'nullable|numeric|min:0|max:5',
         ]);
 
         Course::create([
             'title' => $request->title,
             'description' => $request->description,
+            'category_id' => $request->category_id,
+            'rating' => $request->rating ?? 0,
             'teacher_id' => Auth::id(),
         ]);
 
@@ -57,12 +65,16 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'category_id' => 'nullable|exists:categories,id',
+            'rating' => 'nullable|numeric|min:0|max:5',
         ]);
 
         $course = Course::findOrFail($id);
         $course->update([
             'title' => $request->title,
             'description' => $request->description,
+            'category_id' => $request->category_id,
+            'rating' => $request->rating ?? 0,
         ]);
 
         return response('Course updated successfully');
@@ -92,6 +104,7 @@ class CourseController extends Controller
     {
         $course = Course::with([
             'teacher',
+            'category',
             'lessons.sublessons',
             'quizzes' => function ($query) {
                 $query->with('category')->withCount('questions');

@@ -1,11 +1,24 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import ParticipantLayout from "@/Layouts/ParticipanLayout";
 import parse from "html-react-parser";
 import { useState } from "react";
 
-export default function CourseLearn({ auth, course }) {
+export default function CourseLearn({ auth, course, enrollment }) {
     const [expandedLessons, setExpandedLessons] = useState({});
     const [expandedSublessons, setExpandedSublessons] = useState({});
+    const [rating, setRating] = useState(enrollment?.rating || 0);
+
+    const handleRate = (value) => {
+        setRating(value);
+        router.post(
+            route("participant.course.rate", course.id),
+            { rating: value },
+            {
+                preserveScroll: true,
+                preserveState: true,
+            }
+        );
+    };
 
     const toggleLesson = (lessonId) => {
         setExpandedLessons((prev) => ({
@@ -29,16 +42,42 @@ export default function CourseLearn({ auth, course }) {
                     <div className="mb-8 rounded-[32px] border border-emerald-100 bg-white p-8 shadow-lg shadow-slate-200/70">
                         <Link
                             href={route("participant.my_courses")}
-                            className="text-sm font-semibold text-emerald-700"
+                            className="text-sm font-semibold text-emerald-700 hover:underline"
                         >
-                            Back to my courses
+                            &larr; Back to my courses
                         </Link>
-                        <h1 className="mt-4 text-4xl font-semibold text-slate-950">
+                        {course.category && (
+                            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-emerald-700">
+                                {course.category.name}
+                            </p>
+                        )}
+                        <h1 className="mt-2 text-4xl font-semibold text-slate-950">
                             {course.title}
                         </h1>
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-500">
                             {course.description}
                         </p>
+                        
+                        <div className="mt-8 flex items-center gap-4 border-t border-slate-100 pt-6">
+                            <span className="text-sm font-semibold text-slate-700">
+                                Rate this course:
+                            </span>
+                            <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                        key={star}
+                                        onClick={() => handleRate(star)}
+                                        className={`transition hover:scale-110 ${
+                                            rating >= star
+                                                ? "text-amber-400 drop-shadow-sm"
+                                                : "text-slate-200"
+                                        }`}
+                                    >
+                                        <i className="bi bi-star-fill text-2xl"></i>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
