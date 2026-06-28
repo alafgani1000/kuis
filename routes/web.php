@@ -63,9 +63,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:admin|quiz_creator'])->prefix('admin')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('Dashboard');
-        })->middleware(['verified'])->name('dashboard');
+        Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware(['verified'])->name('dashboard');
 
         // user
         Route::get('/users', [UserController::class, 'index'])->name('user.index');

@@ -32,12 +32,10 @@ export default function MyCourses({ auth, enrollments = [] }) {
                                         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
                                             {enrollment.course.category?.name ?? "Course"}
                                         </p>
-                                        {enrollment.course.rating > 0 && (
-                                            <div className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                                                <i className="bi bi-star-fill"></i>
-                                                {enrollment.course.rating}
-                                            </div>
-                                        )}
+                                        <div className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                                            <i className="bi bi-star-fill"></i>
+                                            {Number(enrollment.course.rating) > 0 ? Number(enrollment.course.rating).toFixed(1) : "0.0"}
+                                        </div>
                                     </div>
                                     <h3 className="text-xl font-semibold text-slate-900">
                                         {enrollment.course.title}

@@ -92,12 +92,10 @@ export default function CourseCatalog({ auth, courses = [], categories = [], fil
                                                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
                                                     {course.category?.name ?? "Course"}
                                                 </p>
-                                                {course.rating > 0 && (
-                                                    <div className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
-                                                        <i className="bi bi-star-fill"></i>
-                                                        {course.rating}
-                                                    </div>
-                                                )}
+                                                <div className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                                                    <i className="bi bi-star-fill"></i>
+                                                    {Number(course.rating) > 0 ? Number(course.rating).toFixed(1) : "0.0"}
+                                                </div>
                                             </div>
                                             <h3 className="mt-2 text-xl font-semibold text-slate-900">
                                                 {course.title}
